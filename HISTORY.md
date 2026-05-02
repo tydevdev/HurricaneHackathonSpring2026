@@ -1,5 +1,11 @@
 # History
 
+## [2026-05-02 15:54] Fix Landing Enter Route
+
+- Updated `slopularity/src/landing-main.tsx` so the landing page's `Enter the Singularity` button now navigates to one canonical app entry URL instead of repeatedly appending `/app/` when clicked from a nested app-like path.
+- Normalized the current pathname before redirecting, which preserves the repo subpath for local and published builds while clearing accidental repeated `/app` segments.
+- Validation run: `npm run build`; browser click check from a repeated `/app/app/app/` landing URL confirmed navigation into the workspace.
+
 ## [2026-05-02 15:58] Remove Feed Lightbox Side Bars
 
 - Updated `slopularity/src/index.css` so the feed photo lightbox now sizes to the focused image instead of stretching a wider panel behind contained images, removing the gray side bars around portrait photos.

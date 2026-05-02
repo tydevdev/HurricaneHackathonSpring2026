@@ -8,7 +8,7 @@ Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESI
 - Files changed: `src/pages/FeedPage.tsx`, `src/index.css`, `src/App.tsx`, `src/utils.ts`, `PLAN.md`, `DESIGN_BIBLE.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/` output.
 - Behavior changed: `Jealousy`, `Cancel`, and `This offends me` are now real per-post reactions with pressed states and counts instead of share/context/save-style controls. Buy Context is removed from the feed UI and stage labels.
 - Comment behavior changed: every post now shows a comment section by default with preview comments, expansion, and local submission that adds the user comment plus the compromised brand reply.
-- Validation run: pending in this session.
+- Validation run: `npm run lint`; `npm run build`; isolated Playwright desktop check at `1280x900` verified three reaction chips, active pressed states for `Cancel` and `This offends me`, no visible Buy Context/Share text, expanded comments, and local comment submission; isolated Playwright mobile check at `390x844` verified three reaction chips, visible comment input, no Buy Context text, no horizontal overflow, and zero captured console/page errors. Screenshots: `/tmp/slopularity-feed-reactions-desktop.png`, `/tmp/slopularity-feed-reactions-mobile.png`.
 
 ## [2026-05-02 15:05] Feed Story Carousel Pass
 
@@ -41,10 +41,10 @@ Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESI
 ## [2026-05-02 15:03] Feed Post Overflow Menu
 
 - Active focus: `FeedPage.tsx` and the feed overflow affordance.
-- Behavior changed: each post's top-right three-dot button now opens an anchored submenu with `steal`, `cancel`, `envision as yourself with AI`, `show context receipt`, and `not today`.
-- Intentional routing: `steal` and `cancel` set matching reactions, `envision as yourself with AI` preloads Helpy with that post, and `show context receipt` opens the bot-comment section.
+- Behavior changed: each post's top-right three-dot button now opens an anchored submenu with `cancel`, `envision as yourself with AI`, `open comments`, and `not today`.
+- Intentional routing: `cancel` sets the matching reaction, `envision as yourself with AI` preloads Helpy with that post, and `open comments` opens the bot-comment section.
 - Files changed: `src/pages/FeedPage.tsx`, `src/index.css`, `DESIGN_BIBLE.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
-- Validation run: `npm run lint`; `npm run build`; headless Chromium checks at 1280px and 390px confirmed menu labels, `steal` / `cancel` action toggles, Helpy preselection, no mobile horizontal overflow, and zero captured runtime errors.
+- Validation run: `npm run lint`; `npm run build`; headless Chromium checks at 1280px and 390px confirmed menu labels, reaction toggles, Helpy preselection, no mobile horizontal overflow, and zero captured runtime errors.
 
 ## [2026-05-02 14:31] Feed Focus Pass
 

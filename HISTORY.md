@@ -15,7 +15,7 @@
 - Removed the feed's share behavior and removed `Buy context` from the feed UI and stage labels.
 - Added an always-present per-post comment section with preview comments, expansion, and local comment submission that keeps the user's comment visible before the brand-safe reply appears.
 - Updated `slopularity/src/index.css`, `slopularity/src/App.tsx`, `slopularity/src/utils.ts`, `slopularity/PLAN.md`, `slopularity/DESIGN_BIBLE.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to match the new reaction/comment model.
-- Validation run: pending in this session.
+- Validation run: `npm run lint`; `npm run build`; isolated Playwright desktop check at `1280x900` verified three reaction chips, active pressed states for `Cancel` and `This offends me`, no visible Buy Context/Share text, expanded comments, and local comment submission; isolated Playwright mobile check at `390x844` verified three reaction chips, visible comment input, no Buy Context text, no horizontal overflow, and zero captured console/page errors.
 
 ## [2026-05-02 15:02] Merge Feed Sprint Back To Main
 

@@ -2774,20 +2774,162 @@ p {
 }
 .chat-decline:hover { background: #e5e7eb; }
 
+/* ─────────────────────────────────────────────────────────────────────
+   Visible collapse decay
+   Stage 2 stays calm. Stage 3 introduces drift + chromatic shadow on
+   display headings. Stage 4 adds ghost duplicates of major cards, a
+   subtle scan-line overlay, and a slow text-shadow oscillation.
+   The user should be able to read everything throughout — decay is
+   atmospheric, not destructive.
+   ───────────────────────────────────────────────────────────────────── */
+
 [data-stage="3"] .post-card:nth-child(2),
 [data-stage="4"] .post-card:nth-child(2) {
   transform: translateY(calc(var(--decay) * 1px));
 }
 
-[data-stage="4"] .surface {
+[data-stage="3"] .surface,
+[data-stage="3"] .feature-card,
+[data-stage="3"] .shop-card,
+[data-stage="3"] .friend-card {
+  animation: decay-drift-slow 14s ease-in-out infinite;
+}
+[data-stage="3"] .feature-card:nth-child(odd) { animation-delay: -3s; }
+[data-stage="3"] .shop-card:nth-child(even)   { animation-delay: -6s; }
+[data-stage="3"] .friend-card:nth-child(3n)   { animation-delay: -9s; }
+
+@keyframes decay-drift-slow {
+  0%, 100% { transform: translate(0, 0); }
+  25%      { transform: translate(0.6px, -0.4px); }
+  50%      { transform: translate(-0.4px, 0.5px); }
+  75%      { transform: translate(0.3px, 0.6px); }
+}
+
+/* Stage 4 — source leakage */
+
+[data-stage="4"] .surface,
+[data-stage="4"] .friends-surface .friend-card,
+[data-stage="4"] .shop-surface .shop-card {
   box-shadow:
-    var(--shadow),
-    0 0 0 1px rgba(255, 45, 85, 0.08);
+    0 12px 32px rgba(15, 23, 42, 0.06),
+    0 0 0 1px rgba(239, 68, 68, 0.18);
 }
 
 [data-stage="4"] .post-card:nth-child(3),
 [data-stage="4"] .friend-card:nth-child(2) {
   transform: rotate(-0.35deg) translateY(2px);
+}
+
+/* Chromatic aberration on display headings — the system can't keep its
+   own typography aligned. */
+[data-stage="4"] .surface-heading h2,
+[data-stage="4"] .landing-headline,
+[data-stage="4"] .profile-id strong,
+[data-stage="4"] .friend-id strong {
+  animation: decay-chromatic 3.6s ease-in-out infinite;
+}
+
+@keyframes decay-chromatic {
+  0%, 100% {
+    text-shadow: 0 0 0 transparent;
+  }
+  50% {
+    text-shadow:
+      -0.6px 0 0 rgba(236, 72, 153, 0.45),
+      0.6px 0 0 rgba(34, 211, 238, 0.45);
+  }
+}
+
+/* Ghost duplicates — every major card grows a faint, slightly offset twin
+   at stage 4. Pure pseudo-element so it costs nothing in the DOM. */
+[data-stage="4"] .surface,
+[data-stage="4"] .friend-card,
+[data-stage="4"] .shop-card,
+[data-stage="4"] .games-stage,
+[data-stage="4"] .feature-card {
+  position: relative;
+}
+[data-stage="4"] .surface::after,
+[data-stage="4"] .friend-card::after,
+[data-stage="4"] .shop-card::after,
+[data-stage="4"] .games-stage::after,
+[data-stage="4"] .feature-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgba(239, 68, 68, 0.32);
+  pointer-events: none;
+  transform: translate(3px, 3px);
+  opacity: 0;
+  animation: decay-ghost 5.2s ease-in-out infinite;
+}
+@keyframes decay-ghost {
+  0%, 100% { opacity: 0; transform: translate(2px, 2px); }
+  20%      { opacity: 0.55; transform: translate(3px, 3px); }
+  60%      { opacity: 0.32; transform: translate(4px, 1px); }
+}
+
+/* Body-wide scan-line overlay — soft, not seizure-y. */
+[data-stage="4"]::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(15, 23, 42, 0) 0px,
+    rgba(15, 23, 42, 0) 3px,
+    rgba(239, 68, 68, 0.04) 3px,
+    rgba(239, 68, 68, 0.04) 4px
+  );
+  mix-blend-mode: multiply;
+  animation: decay-scan 6s linear infinite;
+}
+@keyframes decay-scan {
+  0%   { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(0, 4px, 0); }
+}
+
+/* Stage 4 phase pill goes red-pulse. */
+[data-stage="4"] .phase-pill .phase-dot {
+  animation: decay-pulse 1.4s ease-in-out infinite;
+}
+@keyframes decay-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+  50%      { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+}
+
+/* The popup dock header rebrands itself at stage 4. */
+[data-stage="4"] .popup-dock-head strong {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  color: #b91c1c;
+  letter-spacing: 0;
+}
+
+/* Slight tabbar misalignment at stage 4. Each tab is a hair off. */
+[data-stage="4"] .tabbar a:nth-child(2n) { transform: translateY(-1px); }
+[data-stage="4"] .tabbar a:nth-child(3n) { transform: translateY(1px); }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-stage="3"] .surface,
+  [data-stage="3"] .feature-card,
+  [data-stage="3"] .shop-card,
+  [data-stage="3"] .friend-card,
+  [data-stage="4"] .surface-heading h2,
+  [data-stage="4"] .landing-headline,
+  [data-stage="4"] .profile-id strong,
+  [data-stage="4"] .friend-id strong,
+  [data-stage="4"] .surface::after,
+  [data-stage="4"] .friend-card::after,
+  [data-stage="4"] .shop-card::after,
+  [data-stage="4"] .games-stage::after,
+  [data-stage="4"] .feature-card::after,
+  [data-stage="4"]::before,
+  [data-stage="4"] .phase-pill .phase-dot {
+    animation: none !important;
+  }
 }
 
 @media (max-width: 1080px) {

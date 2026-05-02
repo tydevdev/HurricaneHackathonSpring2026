@@ -99,8 +99,26 @@ function App() {
 
   useEffect(() => {
     document.documentElement.dataset.stage = String(visibleStage)
-    document.title =
-      visibleStage >= 4 ? 'The Singularity // source uncertain' : 'The Singularity'
+    if (visibleStage < 4) {
+      document.title = 'The Singularity'
+      return undefined
+    }
+    // Stage 4: page title flickers between rewrites every 2.4s. Source
+    // leakage is the system editing itself faster than a person can read.
+    const titles = [
+      'The Singularity',
+      'The Singularity // source uncertain',
+      'The Singularity // [INSERT PRODUCT NAME]',
+      '[BRAND] // pending review',
+      'The Singularity // last_human_developer.md',
+    ]
+    let i = 0
+    document.title = titles[0]!
+    const id = window.setInterval(() => {
+      i = (i + 1) % titles.length
+      document.title = titles[i]!
+    }, 2400)
+    return () => window.clearInterval(id)
   }, [visibleStage])
 
   // First arrival into the workspace (no entered flag yet) gets a single

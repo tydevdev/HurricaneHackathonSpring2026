@@ -1,5 +1,11 @@
 # History
 
+## [2026-05-02 16:02] Fix Main Feed Image Clipping
+
+- Updated `slopularity/src/index.css` so the single-column feed grid explicitly uses one constrained column and feed posts cannot size wider than the visible feed shell.
+- Changed the post `content-visibility` intrinsic size hint so it estimates scroll height without forcing an 820px intrinsic width that clipped images inside the 500px feed.
+- Validation run: browser measurement confirmed shell, post, photo, and image widths now match; `npm run build`.
+
 ## [2026-05-02 15:54] Fix Landing Enter Route
 
 - Updated `slopularity/src/landing-main.tsx` so the landing page's `Enter the Singularity` button now navigates to one canonical app entry URL instead of repeatedly appending `/app/` when clicked from a nested app-like path.

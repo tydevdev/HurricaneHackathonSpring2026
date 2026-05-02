@@ -671,6 +671,7 @@ p {
 
 .ig-feed-list {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .ig-feed-list.is-double-scroll,
@@ -763,11 +764,13 @@ p {
 }
 
 .ig-post {
+  width: 100%;
+  min-width: 0;
   background: #fff;
   border-bottom: 1px solid #efefef;
   contain: layout paint style;
   content-visibility: auto;
-  contain-intrinsic-size: 820px;
+  contain-intrinsic-size: 0 820px;
 }
 
 .ig-post:last-child {

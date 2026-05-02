@@ -1,5 +1,11 @@
 # History
 
+## [2026-05-02 15:58] Remove Feed Lightbox Side Bars
+
+- Updated `slopularity/src/index.css` so the feed photo lightbox now sizes to the focused image instead of stretching a wider panel behind contained images, removing the gray side bars around portrait photos.
+- Kept the viewport bounds, rounded corners, shadow, and close control intact so focused images still feel foregrounded without overflow on desktop or phone.
+- Validation run: `npm run lint`; `npm run build`.
+
 ## [2026-05-02 15:49] Restore Full Feed Photo Framing
 
 - Updated `slopularity/src/index.css` so feed post images no longer force a square `aspect-ratio` with `object-fit: cover`; post photos now render at full width with their natural height instead of showing only the center crop.

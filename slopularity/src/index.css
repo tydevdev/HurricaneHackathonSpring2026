@@ -986,14 +986,18 @@ p {
 .photo-lightbox {
   position: relative;
   display: grid;
-  width: min(100%, 960px);
+  width: fit-content;
+  max-width: min(calc(100vw - 32px), 960px);
   max-height: calc(100svh - 48px);
 }
 
 .photo-lightbox-media {
   position: relative;
+  display: grid;
+  justify-items: center;
   overflow: hidden;
-  max-width: 100%;
+  width: fit-content;
+  max-width: min(calc(100vw - 32px), 960px);
   max-height: calc(100svh - 96px);
   border-radius: 22px;
   box-shadow: 0 22px 84px rgba(0, 0, 0, 0.52);
@@ -1001,7 +1005,9 @@ p {
 
 .photo-lightbox-media img {
   display: block;
-  width: 100%;
+  width: auto;
+  max-width: min(calc(100vw - 32px), 960px);
+  height: auto;
   max-height: calc(100svh - 96px);
   object-fit: contain;
 }

@@ -242,6 +242,20 @@ When implementation starts, make a real app shell first:
 9. Source-code comments from the last human developer in key files.
 10. A presentation-friendly way to advance instability so the whole arc can be shown in 5 to 10 minutes.
 
+## Collaboration Shape
+
+Each major tab should stay in its own page file so two people can work independently:
+
+- `src/pages/FeedPage.tsx`
+- `src/pages/FriendsPage.tsx`
+- `src/pages/GamesPage.tsx`
+- `src/pages/ShopPage.tsx`
+- `src/pages/SearchPage.tsx`
+- `src/pages/AssistantPage.tsx`
+- `src/pages/ProfilePage.tsx`
+
+Keep global phase/instability behavior in `src/App.tsx` and shared seed data in `src/content.ts`.
+
 The first version should not try to include every idea. It should include enough linked surfaces that the user understands: this is the whole internet now, and every part of it is compromised.
 
 ## Open Questions

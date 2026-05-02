@@ -227,3 +227,19 @@
 - Added visible "Last human developer" source-code fragments to the app rail so the source narrative gradually leaks into the product as instability rises.
 - Updated responsive rail layout in `slopularity/src/index.css` so the added source fragments fit better on tablet and phone widths.
 - Validation run: `npm run lint` and `npm run build` inside `slopularity/`; Browser plugin opened `http://127.0.0.1:5190/`, confirmed the tagline, and clicked `Demo pulse` to phase 3 with `Envy` visible; bundled Playwright QA clicked through Feed, Friends, Games, Assistant, and Profile, confirmed phase 4, popup count 3, visible human-developer fragments, no console/page errors, no mobile horizontal overflow at `390x844`, and screenshots at `/tmp/slopularity-desktop.png`, `/tmp/slopularity-desktop-interacted.png`, and `/tmp/slopularity-phone.png`.
+
+## [2026-05-02 14:17] Redesign Slopularity As Clean Social App
+
+- Reworked `slopularity/src/index.css` from the dark sci-fi dashboard style into a clean white social-app interface closer to Apple, Instagram, and Facebook: compact header, soft gray background, white surfaces, restrained controls, and familiar feed cards.
+- Updated `slopularity/src/App.tsx` so phase 1 starts subtly with no recovered internals and no source-code fragments visible until later phases.
+- Preserved the existing phase system, popup friend swarm, tab structure, and weird engagement-button progression while making the initial experience cleaner and less immediately broken.
+- Rebuilt `slopularity/dist/` with the redesigned assets.
+- Validation run: `npm run lint`, `npm run build`, one Browser plugin refresh to confirm the clean phase-1 UI, and a lightweight mobile overflow check at `390x844`.
+
+## [2026-05-02 14:18] Split Slopularity Pages For Parallel Work
+
+- Refactored Slopularity so each major tab has its own page file under `slopularity/src/pages/`: Feed, Friends, Games, Shop, Search, Assistant, and Profile.
+- Added `slopularity/src/content.ts` for shared seed data, `slopularity/src/types.ts` for shared types, `slopularity/src/utils.ts` for phase/label helpers, and `slopularity/src/components/PopupSwarm.tsx` for chat popups.
+- Simplified `slopularity/src/App.tsx` so it owns shared shell state, instability phase, idle handling, popup orchestration, and tab routing only.
+- Updated `slopularity/README.md`, `slopularity/PLAN.md`, and `slopularity/AGENTS.md` to document the independent page-file ownership model.
+- Validation run: `npm run lint` and `npm run build` inside `slopularity/`. Browser testing intentionally skipped per user request.

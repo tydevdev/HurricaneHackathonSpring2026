@@ -20,6 +20,8 @@ Assume future product work in this repository belongs in `slopularity/`. The oth
 
 ## Future Build Rules
 
+- Keep each tab surface in its own file under `src/pages/` so parallel work stays clean: `FeedPage.tsx`, `FriendsPage.tsx`, `GamesPage.tsx`, `ShopPage.tsx`, `SearchPage.tsx`, `AssistantPage.tsx`, and `ProfilePage.tsx`.
+- Keep shared app state, phase progression, idle handling, and popup orchestration in `src/App.tsx`; keep shared seeded copy/data in `src/content.ts`.
 - Build the actual usable experience first, not a marketing landing page.
 - Make user actions drive the collapse: searches, assistant prompts, feed actions, task changes, profile edits, file opens, commerce actions, or automation toggles should push the app into more broken states.
 - Degradation should be legible and escalating: normal confidence, subtle contradictions, generated artifacts, duplicated surfaces, leaking internals, unreliable recovery, then an earned final reveal.

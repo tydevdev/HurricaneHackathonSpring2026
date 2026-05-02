@@ -33,6 +33,13 @@ The first implemented version should feel like a complete app, not a landing pag
 
 The degradation should be stateful and interaction-driven. The user should cause the collapse by using the product normally.
 
+## Source Layout
+
+- `src/App.tsx` owns the shared shell, tab routing, instability phase, idle detection, and popup orchestration.
+- `src/pages/FeedPage.tsx`, `FriendsPage.tsx`, `GamesPage.tsx`, `ShopPage.tsx`, `SearchPage.tsx`, `AssistantPage.tsx`, and `ProfilePage.tsx` are intentionally separate so different people can work on individual surfaces independently.
+- `src/content.ts` holds shared seeded copy/data.
+- `src/utils.ts` holds phase and label helpers.
+
 ## Tone
 
 Keep the satire sharp but not random. The app should be funny because it is specific:

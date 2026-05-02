@@ -3796,6 +3796,546 @@ p {
 }
 
 /* ─────────────────────────────────────────────────────────────────────
+   Friends tab — full friends UI: header search, active-now strip,
+   suggested row, and expandable conversation threads. Uses the same
+   tone palette as PopupSwarm so the cast is consistent.
+   ───────────────────────────────────────────────────────────────────── */
+
+.friends-surface {
+  display: grid;
+  gap: 22px;
+}
+
+.friends-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.friends-heading > div small {
+  display: block;
+  margin-top: 4px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.74rem;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.friends-search {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px 6px 12px;
+  background: #f4f5f8;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  min-width: 220px;
+}
+.friends-search > span:first-child { color: var(--quiet); font-size: 1rem; }
+.friends-search input {
+  appearance: none;
+  border: 0;
+  outline: none;
+  background: transparent;
+  flex: 1;
+  font-family: inherit;
+  font-size: 0.86rem;
+  color: var(--ink);
+  padding: 4px 0;
+}
+.friends-search input::placeholder { color: var(--muted); }
+
+.friends-active header,
+.friends-suggest header,
+.friends-threads header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.friends-active h3,
+.friends-suggest h3,
+.friends-threads h3 {
+  margin: 0;
+  font-family: 'Fraunces', Georgia, serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.friends-active header small,
+.friends-suggest header small,
+.friends-threads header small {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.friends-active ul {
+  list-style: none;
+  margin: 0;
+  padding: 4px 4px 8px;
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.friends-active ul::-webkit-scrollbar { height: 4px; }
+.friends-active ul::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.08); border-radius: 999px; }
+
+.friends-active-chip {
+  --tone: #6366f1;
+  --tone-deep: #312e81;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  cursor: pointer;
+  flex: 0 0 auto;
+  font-family: inherit;
+  padding: 4px;
+}
+.friends-active-chip.tone-hype      { --tone: #ec4899; --tone-deep: #831843; }
+.friends-active-chip.tone-wellness  { --tone: #10b981; --tone-deep: #064e3b; }
+.friends-active-chip.tone-finance   { --tone: #1f2937; --tone-deep: #0f172a; }
+.friends-active-chip.tone-dating    { --tone: #f97316; --tone-deep: #7c2d12; }
+.friends-active-chip.tone-nostalgia { --tone: #a855f7; --tone-deep: #581c87; }
+.friends-active-chip.tone-lucid     { --tone: #0ea5e9; --tone-deep: #0c4a6e; }
+
+.friends-active-avatar {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #fff;
+  background: linear-gradient(140deg, var(--tone), var(--tone-deep));
+  border-radius: 999px;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--tone) 32%, transparent);
+  transition: transform 0.18s ease;
+}
+.friends-active-chip:hover .friends-active-avatar { transform: scale(1.06); }
+.friends-active-name {
+  font-size: 0.78rem;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.friends-suggest ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+.friends-suggest-card {
+  --tone: #6366f1;
+  --tone-soft: #eef2ff;
+  --tone-deep: #312e81;
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 14px;
+  background: linear-gradient(180deg, #fff, color-mix(in srgb, var(--tone-soft) 60%, #fff));
+  border: 1px solid color-mix(in srgb, var(--tone) 22%, var(--line));
+  border-radius: 14px;
+}
+.friends-suggest-card.tone-hype      { --tone: #ec4899; --tone-soft: #fdf2f8; --tone-deep: #831843; }
+.friends-suggest-card.tone-wellness  { --tone: #10b981; --tone-soft: #ecfdf5; --tone-deep: #064e3b; }
+.friends-suggest-card.tone-finance   { --tone: #1f2937; --tone-soft: #f1f5f9; --tone-deep: #0f172a; }
+.friends-suggest-card.tone-dating    { --tone: #f97316; --tone-soft: #fff7ed; --tone-deep: #7c2d12; }
+
+.friends-suggest-avatar {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(140deg, var(--tone), var(--tone-deep));
+  color: #fff;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 700;
+  font-size: 1rem;
+  border-radius: 999px;
+}
+.friends-suggest-card > div {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+.friends-suggest-card strong {
+  font-size: 0.92rem;
+  letter-spacing: -0.005em;
+  color: var(--ink);
+}
+.friends-suggest-card small { font-size: 0.76rem; color: var(--muted); }
+.friends-suggest-card em {
+  font-style: normal;
+  font-size: 0.7rem;
+  color: var(--tone-deep);
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+.friends-suggest-add {
+  appearance: none;
+  border: 0;
+  padding: 7px 14px;
+  background: var(--tone);
+  color: #fff;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.18s ease;
+}
+.friends-suggest-add:hover { transform: translateY(-1px); background: var(--tone-deep); }
+
+.friends-threads ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.friends-thread {
+  --tone: #6366f1;
+  --tone-soft: #eef2ff;
+  --tone-deep: #312e81;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+.friends-thread.tone-hype      { --tone: #ec4899; --tone-soft: #fdf2f8; --tone-deep: #831843; }
+.friends-thread.tone-wellness  { --tone: #10b981; --tone-soft: #ecfdf5; --tone-deep: #064e3b; }
+.friends-thread.tone-finance   { --tone: #1f2937; --tone-soft: #f1f5f9; --tone-deep: #0f172a; }
+.friends-thread.tone-dating    { --tone: #f97316; --tone-soft: #fff7ed; --tone-deep: #7c2d12; }
+.friends-thread.tone-nostalgia { --tone: #a855f7; --tone-soft: #faf5ff; --tone-deep: #581c87; }
+.friends-thread.tone-lucid     { --tone: #0ea5e9; --tone-soft: #f0f9ff; --tone-deep: #0c4a6e; }
+
+.friends-thread.is-open {
+  border-color: var(--tone);
+  box-shadow: 0 14px 32px color-mix(in srgb, var(--tone) 12%, rgba(15, 23, 42, 0.08));
+}
+
+.friends-thread-row {
+  appearance: none;
+  border: 0;
+  width: 100%;
+  background: transparent;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 12px 14px;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.18s ease;
+}
+.friends-thread-row:hover { background: color-mix(in srgb, var(--tone-soft) 70%, #fff); }
+
+.friends-thread-row .friend-avatar {
+  width: 44px;
+  height: 44px;
+  font-size: 1.05rem;
+  background: linear-gradient(140deg, var(--tone), var(--tone-deep));
+}
+
+.friends-thread-text { min-width: 0; }
+.friends-thread-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.friends-thread-head strong {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.friends-thread-role {
+  font-size: 0.72rem;
+  color: var(--tone-deep);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.friends-thread-preview {
+  margin: 2px 0 1px;
+  font-size: 0.86rem;
+  color: var(--ink-soft);
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.friends-thread-status {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
+.friends-thread-meta {
+  display: grid;
+  gap: 4px;
+  justify-items: end;
+}
+.friends-thread-meta time {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+.friends-thread-unread {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  background: var(--tone);
+  color: #fff;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.friends-thread-body {
+  display: grid;
+  gap: 12px;
+  padding: 12px 14px 14px;
+  border-top: 1px solid color-mix(in srgb, var(--tone) 22%, transparent);
+  background: color-mix(in srgb, var(--tone-soft) 55%, #fff);
+}
+
+.friends-thread-feed {
+  display: grid;
+  gap: 8px;
+}
+
+.friends-msg {
+  display: flex;
+  max-width: 100%;
+}
+.friends-msg.from-friend { justify-content: flex-start; }
+.friends-msg.from-friend > span {
+  max-width: 86%;
+  background: #fff;
+  border: 1px solid var(--line);
+  padding: 10px 14px;
+  border-radius: 14px 14px 14px 4px;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--ink);
+  font-family: 'Fraunces', Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+}
+.friends-msg.friends-memory-msg { justify-content: flex-start; }
+.friends-msg.friends-memory-msg > span {
+  display: inline-flex;
+  gap: 8px;
+  align-items: flex-start;
+  max-width: 92%;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.5);
+  color: var(--tone-deep);
+  font-size: 0.78rem;
+  border-radius: 10px;
+  border: 1px dashed color-mix(in srgb, var(--tone) 32%, transparent);
+}
+.friends-msg.friends-memory-msg em {
+  font-style: normal;
+  color: var(--tone);
+  font-weight: 700;
+}
+.friends-product-msg > span {
+  display: grid;
+  gap: 4px;
+  background: var(--tone-soft) !important;
+  border: 1px solid color-mix(in srgb, var(--tone) 24%, transparent) !important;
+  font-family: 'DM Sans', sans-serif !important;
+  font-style: normal !important;
+  color: var(--tone-deep) !important;
+  font-weight: 600 !important;
+}
+.friends-product-tag {
+  display: inline-block;
+  width: fit-content;
+  padding: 2px 8px;
+  margin-bottom: 4px;
+  background: var(--tone);
+  color: #fff;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 700;
+  border-radius: 999px;
+}
+.friends-product-msg small {
+  display: block;
+  font-size: 0.74rem;
+  color: var(--ink-soft);
+  font-weight: 500;
+  margin-top: 2px;
+}
+.friends-leak-msg > code {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.72rem;
+  color: #b91c1c;
+  background: #fff7f7;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+
+.friends-msg.from-user { justify-content: flex-end; flex-direction: column; align-items: flex-end; }
+.friends-msg.from-user > span {
+  max-width: 86%;
+  padding: 9px 14px;
+  border-radius: 14px 14px 4px 14px;
+  font-size: 0.92rem;
+  line-height: 1.4;
+  color: #fff;
+  background: linear-gradient(135deg, var(--tone), var(--tone-deep));
+  font-family: 'DM Sans', sans-serif;
+  font-style: normal;
+  font-weight: 500;
+}
+
+.friends-msg.from-friend { flex-direction: column; align-items: flex-start; }
+
+.friends-script-leak {
+  display: block;
+  margin-top: 4px;
+  margin-left: 10px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.66rem;
+  color: #b91c1c;
+  background: #fff7f7;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  padding: 4px 8px;
+  word-break: break-all;
+  max-width: 86%;
+}
+
+.friends-thread.is-merging .friends-thread-head strong {
+  font-style: italic;
+  color: var(--tone-deep);
+}
+.friends-thread.is-merging .friend-avatar {
+  outline: 2px dashed color-mix(in srgb, var(--tone) 38%, transparent);
+  outline-offset: 2px;
+}
+
+.friends-thread-input {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 8px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+.friends-thread-input input {
+  appearance: none;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--ink);
+  padding: 8px 12px;
+}
+.friends-thread-input input::placeholder { color: var(--muted); }
+.friends-input-emoji {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+  border-radius: 999px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.friends-input-emoji:hover { background: var(--tone-soft); color: var(--tone-deep); }
+.friends-input-send {
+  appearance: none;
+  border: 0;
+  padding: 7px 16px;
+  background: linear-gradient(135deg, var(--tone), var(--tone-deep));
+  color: #fff;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.friends-input-send:disabled { opacity: 0.42; cursor: not-allowed; }
+.friends-input-send:not(:disabled):hover { transform: translateY(-1px); }
+
+.friends-thread-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.friends-thread-actions button {
+  appearance: none;
+  border: 1px solid color-mix(in srgb, var(--tone) 22%, transparent);
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--ink);
+  padding: 7px 12px;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.15s ease;
+}
+.friends-thread-actions button:hover {
+  background: color-mix(in srgb, var(--tone-soft) 80%, #fff);
+  transform: translateY(-1px);
+}
+.friends-thread-actions .friends-action-mute {
+  margin-left: auto;
+  background: transparent;
+  color: var(--muted);
+  border-color: transparent;
+}
+.friends-thread-actions .friends-action-mute:hover {
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--ink);
+}
+
+@media (max-width: 720px) {
+  .friends-heading { flex-direction: column; align-items: stretch; }
+  .friends-search { width: 100%; min-width: 0; }
+  .friends-suggest ul { grid-template-columns: 1fr; }
+  .friends-thread-row { grid-template-columns: auto minmax(0, 1fr); }
+  .friends-thread-row .friends-thread-meta { grid-column: 1 / 3; flex-direction: row; justify-self: end; }
+  .friends-thread-actions { flex-wrap: wrap; }
+  .friends-thread-actions .friends-action-mute { margin-left: 0; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
    Games tab — playable. Each game lives in src/games/*.tsx.
    Visuals stay cozy and approachable; the satire is in the label receipts
    that flip on at higher instability stages.

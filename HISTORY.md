@@ -114,3 +114,34 @@
 - Both subprojects share a `useInstability` hook: bumping interactions raises a score, thresholds map to stages 1–5, and a continuous `--instability` / `--drift` CSS variable feeds layout decay. Both ship a `↺ reset` corner button (localStorage clear) and respect `prefers-reduced-motion`.
 - Updated root `index.html` so `Slopternet` and `Quiet Collapse` are now `is-live` tiles linking to their `dist/` pages, refreshed the terminal `live builds` count from 6 to 8 and `scaffold shelves` from 3 to 1, and updated the "Choose a doorway" section note to match.
 - Validation run: `npm install`, `npm run lint`, and `npm run build` succeed for both `slopternet/` and `quiet-collapse/`; both `dist/index.html` files render with relative `./assets/...` paths suitable for GitHub Pages; static `python -m http.server` confirmed both built pages return 200 from `./slopternet/dist/` and `./quiet-collapse/dist/`. Browser viewport QA at desktop and phone widths is still pending and should be recorded in a follow-up entry.
+
+## [2026-05-02 12:56] Upgrade Quiet Collapse Trust-Failure Demo
+
+- Updated `quiet-collapse/src/state.ts` with slower stage thresholds, a longer final-warning runway, and specific discovery IDs for source drift, stale summaries, review conflicts, hotline drift, fake citations, and related artifacts.
+- Updated `quiet-collapse/src/App.tsx` so stage 1 stays more credibly civic, normal navigation actually moves to sections, mobile has a menu plus visible search, hero search gives feedback, and the reset control stays hidden until the illusion has already begun to break.
+- Added resource guide drawers in `quiet-collapse/src/App.tsx` with page paths, department labels, review claims, duplicate generated pages, invisible editorial notes, changed hotline details, and fake citation-shaped records.
+- Added a surfaced review queue in `quiet-collapse/src/App.tsx` so contradictions discovered through search, FAQ, assistant replies, update log entries, resource cards, and contact form outcomes become a playable investigation trail instead of hidden state.
+- Updated `quiet-collapse/src/index.css` for the new guide drawer, inline search result, review queue, responsive mobile menu/search behavior, and the fixed final-message overlay; removed the shell-level filter that caused fixed overlays to anchor to the scrolled page.
+- Rebuilt `quiet-collapse/dist/index.html` and generated new `quiet-collapse/dist/assets/index-*.css` and `quiet-collapse/dist/assets/index-*.js` output for GitHub Pages.
+- Validation run from `quiet-collapse/`: `npm install`, `npm run lint`, and `npm run build`.
+- Browser validation run at `http://127.0.0.1:5175/`: desktop stage 1 screenshot confirmed restrained, trustworthy civic framing with no visible reset or parody; interacted with search, FAQ, assistant, update log, resource cards, and contact form; confirmed deterministic late-stage discoveries for source drift, stale generated summaries, duplicate pages, invisible editorial notes, review conflicts, changed hotline/contact details, fake citations, and prompt leakage; confirmed final message appears centered and clearly warns about careless automation and AI overreliance.
+- Phone validation run at `390x844`: confirmed no horizontal overflow, visible Search and Menu controls, usable search results, FAQ interaction, contact form visibility, and credible first-stage layout. Reduced-motion emulation loaded the page with `prefers-reduced-motion: reduce` active.
+
+## [2026-05-02 12:56] Upgrade Slopternet Collapse Prototype
+
+- Rebuilt  into a louder AI-slop landing experience with an obviously generated SaaS first viewport, fake trust badges, fake dashboard, corruptible nav/search/chat/testimonial/pricing/footer/dashboard interactions, staged copy/layout/prompt degradation, recovered hidden artifacts, phantom pages, wrong-but-confident responses, and a protected final warning about unchecked generated web systems.
+- Reworked  for stronger glossy slop art direction, responsive desktop/phone layouts, authored visual collapse, duplicated component ghosts, fake loading overlays, unstable cards, protected final-warning styling, keyboard focus states, and reduced-motion safeguards.
+- Expanded  discovery IDs so the new artifacts are tracked through the existing hidden instability/discovery model.
+- Rebuilt the published static output in , , and  for GitHub Pages serving.
+- Validation run:  inside  to restore local dependencies,
+> openai-codex-electron@26.409.20454 lint
+> pnpm exec oxlint --threads=1 --tsconfig ./tsconfig.json --max-warnings 0 --type-aware --type-check,
+> openai-codex-electron@26.409.20454 build
+> rm -rf out && PNPM_YES=true pnpm run forge:make, served  with , and ran a Chromium browser QA pass at  and  that confirmed the first viewport starts as AI slop, the desktop and phone interaction paths reach the final warning, no browser console/page errors were reported, and screenshots were captured at  and .
+
+## [2026-05-02 12:56] Correct Slopternet Upgrade History Entry
+
+- Corrected the immediately preceding malformed shell-expanded history details for the Slopternet collapse upgrade; the actual source files changed were `slopternet/src/App.tsx`, `slopternet/src/index.css`, and `slopternet/src/state.ts`.
+- Confirmed the published build output was regenerated by `npm run build` as `slopternet/dist/index.html`, `slopternet/dist/assets/index-BB_bwSud.css`, and `slopternet/dist/assets/index-yME3mJ_8.js`.
+- Actual behavior impact: Slopternet now opens as an obviously AI-generated glossy SaaS page, then degrades authored surfaces for copy, layout, trust badges, navigation, search, chatbot, testimonials, pricing, footer, and dashboard into prompt leaks, phantom pages, duplicated cards, generated legal links, wrong-but-confident answers, recovered artifacts, and a protected final warning about overreliance on unchecked AI-generated web systems.
+- Actual validation run: `npm install` inside `slopternet/` restored local dependencies; `npm run lint` passed; `npm run build` passed; `python3 -m http.server 4210 --bind 127.0.0.1` served the built `slopternet/dist/` output; Chromium browser QA passed at desktop `1440x950` and phone `390x844`, including click-through to the final warning, first-screen AI-slop confirmation, final-warning confirmation, no console/page errors, and screenshots captured at `/tmp/slopternet-desktop.png` and `/tmp/slopternet-phone.png`.

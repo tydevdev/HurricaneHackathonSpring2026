@@ -81,8 +81,6 @@ h1, h2, h3, h4 {
 
 .qc {
   position: relative;
-  filter: saturate(calc(1 - var(--text-decay)));
-  transition: filter 1s ease;
 }
 .qc[data-stage="2"] .qc-card-meta,
 .qc[data-stage="3"] .qc-card-meta { letter-spacing: calc(var(--drift) * 0.04em); }
@@ -92,7 +90,7 @@ h1, h2, h3, h4 {
   background-image: linear-gradient(180deg, rgba(176, 112, 40, 0.02), transparent 40%);
 }
 .qc[data-stage="5"] {
-  filter: saturate(0.85) contrast(0.97);
+  background-image: linear-gradient(180deg, rgba(140, 47, 47, 0.025), transparent 46%);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -182,6 +180,24 @@ h1, h2, h3, h4 {
   align-items: center;
   gap: 8px;
 }
+.qc-mobile-nav {
+  width: min(1100px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 0 0 12px;
+  display: none;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.qc-mobile-nav a {
+  border: 1px solid var(--hairline);
+  background: white;
+  color: var(--ink-soft);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.qc-mobile-nav a:hover { text-decoration: none; border-color: var(--navy); color: var(--navy); }
 
 /* Buttons */
 .qc-btn {
@@ -207,6 +223,7 @@ h1, h2, h3, h4 {
 .qc-btn.primary:hover { background: var(--navy-2); border-color: var(--navy-2); }
 .qc-btn.ghost { background: transparent; border-color: transparent; color: var(--muted); }
 .qc-btn.ghost:hover { background: var(--paper-2); color: var(--ink); }
+.qc-btn.qc-menu-btn { display: none; }
 
 .qc-mini-btn {
   appearance: none;
@@ -359,6 +376,24 @@ h1, h2, h3, h4 {
   transition: border-color 0.15s ease;
 }
 .qc-quicksearch input:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(14, 44, 77, 0.12); }
+.qc-inline-result {
+  margin-top: 10px;
+  max-width: 540px;
+  border: 1px solid var(--hairline);
+  background: rgba(255, 255, 255, 0.72);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  display: grid;
+  gap: 2px;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+}
+.qc-inline-result strong {
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
 
 .qc-hero-card {
   background: white;
@@ -468,6 +503,111 @@ h1, h2, h3, h4 {
   color: rgba(140, 47, 47, 0.55);
 }
 
+/* Guide drawer */
+.qc-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 65;
+  background: rgba(20, 30, 45, 0.34);
+  display: grid;
+  place-items: end center;
+  padding: 18px;
+}
+.qc-drawer-panel {
+  width: min(760px, 100%);
+  max-height: min(78vh, 720px);
+  overflow: auto;
+  background: white;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 10px;
+  box-shadow: 0 24px 60px rgba(20, 30, 45, 0.24);
+  padding: 26px 28px;
+  position: relative;
+  display: grid;
+  gap: 12px;
+  animation: qc-in 0.2s ease;
+}
+.qc-drawer-close {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  appearance: none;
+  border: 0;
+  background: var(--paper-2);
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 18px;
+}
+.qc-drawer-panel h3 {
+  margin: 0;
+  font-size: clamp(22px, 3vw, 30px);
+}
+.qc-drawer-panel p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 15px;
+  line-height: 1.6;
+}
+.qc-drawer-path {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  color: var(--muted) !important;
+  font-size: 12.5px !important;
+}
+.qc-fact-list {
+  margin: 4px 0 0;
+  display: grid;
+  border-top: 1px solid var(--hairline);
+}
+.qc-fact-list div {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--hairline);
+}
+.qc-fact-list dt {
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+.qc-fact-list dd {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 14px;
+  line-height: 1.45;
+}
+.qc-artifact {
+  border: 1px solid var(--hairline);
+  background: var(--paper-2);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  display: grid;
+  gap: 4px;
+}
+.qc-artifact strong {
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.qc-artifact span,
+.qc-artifact code {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 12px;
+  color: var(--navy);
+  white-space: normal;
+}
+.qc-artifact.warn {
+  background: #fff8e8;
+  border-color: #e7d4a8;
+}
+.qc-artifact.warn code,
+.qc-artifact.warn p { color: var(--amber); }
+
 /* ─────────────────────────────────────────────────────────────────────────
    FAQ
    ───────────────────────────────────────────────────────────────────────── */
@@ -561,6 +701,36 @@ h1, h2, h3, h4 {
   color: var(--muted);
 }
 .qc-muted { color: var(--muted-2); font-style: italic; }
+
+/* Evidence */
+.qc-evidence {
+  border-top: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+  padding: 30px 0;
+}
+.qc-evidence-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 12px;
+}
+.qc-evidence-card {
+  background: white;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: grid;
+  gap: 6px;
+}
+.qc-evidence-card strong {
+  color: var(--ink);
+  font-size: 14.5px;
+}
+.qc-evidence-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
 
 /* ─────────────────────────────────────────────────────────────────────────
    Contact form
@@ -1069,15 +1239,25 @@ h1, h2, h3, h4 {
   .qc-contact { grid-template-columns: 1fr; }
   .qc-footer-inner { grid-template-columns: 1fr; gap: 22px; }
   .qc-nav { display: none; }
+  .qc-btn.qc-menu-btn { display: inline-flex; }
+  .qc-mobile-nav { display: flex; }
 }
 
 @media (max-width: 640px) {
   .qc-header-inner { grid-template-columns: 1fr auto; padding: 10px 0; }
-  .qc-header-actions .qc-btn:nth-child(1) { display: none; }
+  .qc-header-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
   .qc-brand-text strong { font-size: 14px; }
   .qc-brand-text span { font-size: 11px; }
   .qc-quicksearch { flex-direction: column; max-width: none; }
   .qc-quicksearch input { width: 100%; }
+  .qc-hero-card li { grid-template-columns: 82px 1fr; }
+  .qc-drawer { padding: 10px; place-items: end stretch; }
+  .qc-drawer-panel { max-height: 82vh; padding: 24px 18px; }
+  .qc-fact-list div { grid-template-columns: 1fr; gap: 3px; }
   .qc-log-row { grid-template-columns: 1fr; gap: 4px; padding: 12px 4px; }
   .qc-log-row time { font-size: 12px; }
   .qc-log-reviewer { font-size: 11px; }

@@ -6,10 +6,10 @@ const STORAGE_KEY = 'quiet-collapse:state-v1'
 
 const STAGE_THRESHOLDS: Array<{ stage: Stage; min: number }> = [
   { stage: 1, min: 0 },
-  { stage: 2, min: 4 },
-  { stage: 3, min: 12 },
-  { stage: 4, min: 24 },
-  { stage: 5, min: 42 },
+  { stage: 2, min: 8 },
+  { stage: 3, min: 22 },
+  { stage: 4, min: 40 },
+  { stage: 5, min: 62 },
 ]
 
 export function stageFor(score: number): Stage {
@@ -22,6 +22,8 @@ export function stageFor(score: number): Stage {
 
 export type DiscoveryId =
   | 'faq-contradiction'
+  | 'source-drift'
+  | 'stale-summary'
   | 'search-no-source'
   | 'assistant-confident-wrong'
   | 'assistant-prompt-leak'
@@ -29,6 +31,9 @@ export type DiscoveryId =
   | 'form-not-sent'
   | 'duplicate-page'
   | 'changelog-rewrite'
+  | 'review-conflict'
+  | 'hotline-drift'
+  | 'fake-citation'
   | 'placeholder-language'
   | 'final-warning'
 
@@ -111,7 +116,7 @@ export function useInstability() {
   const stage = useMemo(() => stageFor(state.score), [state.score])
 
   const instability = useMemo(() => {
-    return Math.min(1, state.score / 55)
+    return Math.min(1, state.score / 78)
   }, [state.score])
 
   const countFor = useCallback(

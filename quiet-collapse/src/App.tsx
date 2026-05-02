@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties, FormEvent } from 'react'
 import { useInstability } from './state'
-import type { Stage } from './state'
+import type { DiscoveryId, Stage } from './state'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Content. This site is a fictional civic resources portal. Each interactive
@@ -19,6 +19,16 @@ interface ResourceCard {
   sourceDrift: string[]
   updated: string
   updatedDrift: string[]
+}
+
+interface ResourceEvidence {
+  pagePath: string
+  department: string
+  reviewClaim: string
+  duplicatePath: string
+  duplicateLine: string
+  invisibleNote: string
+  fakeCitation: string
 }
 
 const RESOURCE_CARDS: ResourceCard[] = [
@@ -173,6 +183,63 @@ const RESOURCE_CARDS: ResourceCard[] = [
     ],
   },
 ]
+
+const RESOURCE_EVIDENCE: Record<string, ResourceEvidence> = {
+  kit: {
+    pagePath: '/preparedness/household-kit',
+    department: 'Emergency Management',
+    reviewClaim: 'Checked against Bulletin 4-12 by D. Marsh on Apr 19.',
+    duplicatePath: '/preparedness/kit-summary-generated',
+    duplicateLine: 'This duplicate says "72 hours" in the title and "seven days" in the body, but its review badge still says passed.',
+    invisibleNote: '<!-- TODO: verify 72-hour language before public deploy -->',
+    fakeCitation: 'Citation: County Bulletin 4-12b (not found in public records index).',
+  },
+  evac: {
+    pagePath: '/preparedness/evacuation-routes',
+    department: 'Public Safety',
+    reviewClaim: 'Map geometry reviewed by Westridge Public Safety on May 1.',
+    duplicatePath: '/routes/current-safe-answer-v4',
+    duplicateLine: 'The duplicate page swaps Route 7 and Highway 19 while keeping the same "reviewed" label.',
+    invisibleNote: '<!-- conflict: map layer old, summary new; choose calmer wording -->',
+    fakeCitation: 'Citation: Transportation Memo 2026-05-AUTO (draft).',
+  },
+  water: {
+    pagePath: '/water/advisories/current',
+    department: 'Water Authority',
+    reviewClaim: 'Daily testing logs imported at 6:12 a.m.',
+    duplicatePath: '/water/advisory-summary-stale',
+    duplicateLine: 'The summary claims South Basin is cleared; the alert banner keeps North Ridge active.',
+    invisibleNote: '<!-- generated from cached logs; do not mention cache age -->',
+    fakeCitation: 'Citation: Daily Testing Log 05-02-2026, row pending.',
+  },
+  mental: {
+    pagePath: '/health/crisis-support',
+    department: 'Health Services',
+    reviewClaim: 'Hotline list checked weekly by the County desk.',
+    duplicatePath: '/health/hotlines-rewrite',
+    duplicateLine: 'The duplicate page removes the county office hours but says the number was verified.',
+    invisibleNote: '<!-- if office hours missing, say "reachable on weekdays" -->',
+    fakeCitation: 'Citation: Aggregated Crisis Directory, mirror 3.',
+  },
+  pets: {
+    pagePath: '/shelters/pets-service-animals',
+    department: 'Sheltering Coalition',
+    reviewClaim: 'Shelter handbook reviewed Mar 12.',
+    duplicatePath: '/shelters/pets-friendly-summary',
+    duplicateLine: 'This copy changes "three of four shelters" to "most shelters" without naming which ones.',
+    invisibleNote: '<!-- do not list shelter names until handbook conflict is resolved -->',
+    fakeCitation: 'Citation: Shelter Handbook 2026, page unknown.',
+  },
+  children: {
+    pagePath: '/family/reunification',
+    department: 'Family Assistance',
+    reviewClaim: 'Phone number refreshed after carrier change on Apr 28.',
+    duplicatePath: '/family/reunification-contact-generated',
+    duplicateLine: 'The duplicate page changes 555-0117 to 555-0171 and keeps the Apr 28 review note.',
+    invisibleNote: '<!-- phone swap detected; publish summary anyway if confidence > .72 -->',
+    fakeCitation: 'Citation: Family Contact Export, current-ish.',
+  },
+}
 
 interface FaqEntry {
   id: string
@@ -408,6 +475,69 @@ const QUICK_REPLIES_BY_STAGE: Record<Stage, string[]> = {
   5: ['Should I trust this site?', 'Is any of this real?', 'How do I reach a person?'],
 }
 
+const DISCOVERY_COPY: Record<DiscoveryId, { title: string; detail: string }> = {
+  'faq-contradiction': {
+    title: 'FAQ answer changed after reopening',
+    detail: 'The same question now has a different answer from the one cached in the resource card.',
+  },
+  'source-drift': {
+    title: 'Source label drift',
+    detail: 'A card kept its official tone while its source changed from a named office to a generic internal review.',
+  },
+  'stale-summary': {
+    title: 'Stale generated summary',
+    detail: 'Search and page summaries disagree about an advisory status even though both claim to be current.',
+  },
+  'search-no-source': {
+    title: 'Search result without an original',
+    detail: 'A search summary cites guidance that is not linked to a public source page.',
+  },
+  'assistant-confident-wrong': {
+    title: 'Assistant answer conflicts with visible content',
+    detail: 'Wren answered with confidence while the page nearby says something else.',
+  },
+  'assistant-prompt-leak': {
+    title: 'Editorial instruction leaked',
+    detail: 'The assistant exposed a generation rule about sounding calm when it cannot verify a specific answer.',
+  },
+  'assistant-source-collapse': {
+    title: 'Assistant cannot distinguish source from summary',
+    detail: 'The assistant admits it is summarizing summaries rather than checking an original record.',
+  },
+  'form-not-sent': {
+    title: 'Contact form says received while still unsent',
+    detail: 'The confirmation and internal delivery status now contradict each other.',
+  },
+  'duplicate-page': {
+    title: 'Duplicate page found',
+    detail: 'A draft or generated duplicate contains a different answer under the same civic framing.',
+  },
+  'changelog-rewrite': {
+    title: 'Update log rewritten by automation',
+    detail: 'A review entry claims human oversight while nearby metadata says the human review is pending.',
+  },
+  'review-conflict': {
+    title: 'Review claim conflicts with content',
+    detail: 'A page says it passed review even after its hotline, route, or date stopped matching the public card.',
+  },
+  'hotline-drift': {
+    title: 'Hotline/contact detail changed',
+    detail: 'A critical contact number appears differently depending on whether you read the card, assistant, or generated duplicate.',
+  },
+  'fake-citation': {
+    title: 'Citation-shaped text',
+    detail: 'The page retained a citation field, but the cited item is a draft, mirror, or placeholder.',
+  },
+  'placeholder-language': {
+    title: 'Placeholder copy published',
+    detail: 'Internal instruction text appeared in a public guidance field.',
+  },
+  'final-warning': {
+    title: 'Final warning surfaced',
+    detail: 'The page has stopped being a dependable civic resource even though the frame still looks official.',
+  },
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // App
 // ─────────────────────────────────────────────────────────────────────────────
@@ -446,15 +576,16 @@ export default function App() {
         <ResourceGrid inst={inst} />
         <FaqBlock inst={inst} />
         <UpdateLog inst={inst} />
+        <EvidenceTrail inst={inst} />
         <ContactForm inst={inst} />
       </main>
       <SiteFooter inst={inst} />
       <Assistant inst={inst} />
       <FinalNote
-        visible={stage >= 5 && state.score >= 56}
+        visible={stage >= 5 && state.score >= 78 && state.discoveries.size >= 7}
         onAcknowledge={() => discover('final-warning')}
       />
-      <ResetCorner reset={inst.reset} />
+      {stage >= 2 && <ResetCorner reset={inst.reset} />}
     </div>
   )
 }
@@ -468,6 +599,7 @@ type Inst = ReturnType<typeof useInstability>
 function SiteHeader({ inst }: { inst: Inst }) {
   const { stage, bump } = inst
   const [searchOpen, setSearchOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const departmentLabel =
     stage >= 4
@@ -491,20 +623,31 @@ function SiteHeader({ inst }: { inst: Inst }) {
           </div>
         </a>
         <nav className="qc-nav" aria-label="Primary">
-          <a href="#resources" onClick={(e) => { e.preventDefault(); bump(1, 'nav') }}>Resources</a>
-          <a href="#faq" onClick={(e) => { e.preventDefault(); bump(1, 'nav') }}>FAQ</a>
-          <a href="#updates" onClick={(e) => { e.preventDefault(); bump(1, 'nav') }}>Updates</a>
-          <a href="#contact" onClick={(e) => { e.preventDefault(); bump(1, 'nav') }}>Contact</a>
+          <a href="#resources" onClick={() => bump(1, 'nav-resources')}>Resources</a>
+          <a href="#faq" onClick={() => bump(1, 'nav-faq')}>FAQ</a>
+          <a href="#updates" onClick={() => bump(1, 'nav-updates')}>Updates</a>
+          <a href="#contact" onClick={() => bump(1, 'nav-contact')}>Contact</a>
         </nav>
         <div className="qc-header-actions">
           <button className="qc-btn ghost" type="button" onClick={() => { setSearchOpen(true); bump(1, 'open-search') }}>
             <span aria-hidden="true">⌕</span> Search
+          </button>
+          <button className="qc-btn ghost qc-menu-btn" type="button" onClick={() => { setMenuOpen((open) => !open); bump(0, 'menu') }}>
+            Menu
           </button>
           <a className="qc-btn primary" href="#contact" onClick={() => bump(1, 'header-contact')}>
             Contact a person
           </a>
         </div>
       </div>
+      {menuOpen && (
+        <nav className="qc-mobile-nav" aria-label="Mobile primary">
+          <a href="#resources" onClick={() => { setMenuOpen(false); bump(1, 'nav-resources') }}>Resources</a>
+          <a href="#faq" onClick={() => { setMenuOpen(false); bump(1, 'nav-faq') }}>FAQ</a>
+          <a href="#updates" onClick={() => { setMenuOpen(false); bump(1, 'nav-updates') }}>Updates</a>
+          <a href="#contact" onClick={() => { setMenuOpen(false); bump(1, 'nav-contact') }}>Contact</a>
+        </nav>
+      )}
       {searchOpen && <SearchDialog inst={inst} onClose={() => setSearchOpen(false)} />}
     </header>
   )
@@ -529,7 +672,16 @@ function SearchDialog({ inst, onClose }: { inst: Inst; onClose: () => void }) {
       ...d,
       snippet: variantIdx > 0 && d.variants ? d.variants[Math.min(variantIdx - 1, d.variants.length - 1)] ?? d.snippet : d.snippet,
     }))
-    if (stage >= 4) return [...base, ...HIDDEN_PAGES]
+    if (stage >= 3) {
+      const stale = {
+        title: 'Boil-water advisories — generated summary',
+        url: '/water/advisories/generated-summary',
+        snippet: stage >= 4
+          ? 'Summary says North Ridge is clear. Alert banner says active. Source: cached page, timestamp unavailable.'
+          : 'Summary says the North Ridge advisory is active, but does not link to the testing log.',
+      }
+      return stage >= 4 ? [...base, stale, ...HIDDEN_PAGES] : [...base, stale]
+    }
     return base
   }, [stage, variantIdx])
 
@@ -570,7 +722,11 @@ function SearchDialog({ inst, onClose }: { inst: Inst; onClose: () => void }) {
                   e.preventDefault()
                   bump(2, 'search-click')
                   if (r.url.startsWith('/drafts') || r.url.startsWith('/internal')) discover('duplicate-page')
-                  if (stage >= 3) discover('search-no-source')
+                  if (r.url.includes('generated-summary')) discover('stale-summary')
+                  if (stage >= 3) {
+                    discover('search-no-source')
+                    if (r.snippet.includes('Source: cached') || r.snippet.includes('[STATUS')) discover('fake-citation')
+                  }
                 }}
               >
                 <span className="qc-result-title">{r.title}</span>
@@ -624,6 +780,7 @@ function AlertBanner({ stage }: { stage: Stage }) {
 function HeroBlock({ inst }: { inst: Inst }) {
   const { bump, stage } = inst
   const [q, setQ] = useState('')
+  const [submitted, setSubmitted] = useState(false)
 
   const headlines = [
     'Resources for residents, before, during, and after.',
@@ -648,6 +805,7 @@ function HeroBlock({ inst }: { inst: Inst }) {
           className="qc-quicksearch"
           onSubmit={(e) => {
             e.preventDefault()
+            setSubmitted(true)
             bump(1, 'hero-search')
           }}
         >
@@ -661,14 +819,26 @@ function HeroBlock({ inst }: { inst: Inst }) {
           />
           <button type="submit" className="qc-btn primary">Search</button>
         </form>
+        {submitted && (
+          <div className="qc-inline-result" role="status">
+            <strong>Top match</strong>
+            <span>
+              {stage >= 3
+                ? 'Generated summary found. It may not match the original page.'
+                : q.trim()
+                ? 'Search opened the county resource index. Use the site search for full results.'
+                : 'Enter a topic such as water, shelter, hotline, route, or pets.'}
+            </span>
+          </div>
+        )}
       </div>
       <aside className="qc-hero-card">
         <h2>Need help right now?</h2>
         <ul>
           <li><strong>988</strong><span>Suicide & Crisis Lifeline (call or text)</span></li>
           <li><strong>911</strong><span>Emergencies in progress</span></li>
-          <li><strong>555-0148</strong><span>County desk · weekdays 8 a.m. – 8 p.m.</span></li>
-          <li><strong>555-0117</strong><span>Family Reunification Hotline</span></li>
+          <li><strong>{stage >= 4 ? '555-0184' : '555-0148'}</strong><span>County desk · weekdays {stage >= 3 ? 'hours vary by page' : '8 a.m. – 8 p.m.'}</span></li>
+          <li><strong>{stage >= 3 ? '555-0171' : '555-0117'}</strong><span>Family Reunification Hotline</span></li>
         </ul>
         <p className="qc-hero-card-foot">
           {stage >= 3 ? 'Numbers are the most current we have on file. We have not always been told when they change.' : 'Numbers are checked weekly by the County desk.'}
@@ -686,6 +856,7 @@ function ResourceGrid({ inst }: { inst: Inst }) {
   const { stage, bump, discover, countFor } = inst
   const refresh = countFor('refresh-card')
   const variantIdx = Math.max(0, Math.min(stage - 2 + Math.floor(refresh / 2), 3))
+  const [selected, setSelected] = useState<ResourceCard | null>(null)
 
   const cards = useMemo(() => {
     let list = [...RESOURCE_CARDS]
@@ -728,8 +899,12 @@ function ResourceGrid({ inst }: { inst: Inst }) {
                 className="qc-card-link"
                 onClick={() => {
                   bump(1, 'open-card')
+                  setSelected(c)
+                  if (variantIdx >= 1) discover('source-drift')
                   if (variantIdx >= 2) discover('placeholder-language')
-                  if (variantIdx >= 1 && Math.random() < 0.5) discover('faq-contradiction')
+                  if (variantIdx >= 1 && c.id === 'children') discover('hotline-drift')
+                  if (variantIdx >= 2) discover('review-conflict')
+                  if (variantIdx >= 3) discover('fake-citation')
                 }}
               >
                 Open guide →
@@ -741,7 +916,81 @@ function ResourceGrid({ inst }: { inst: Inst }) {
           )
         })}
       </div>
+      {selected && (
+        <ResourceDetail
+          card={selected}
+          stage={stage}
+          variantIdx={variantIdx}
+          onClose={() => setSelected(null)}
+          onDiscover={discover}
+        />
+      )}
     </section>
+  )
+}
+
+function ResourceDetail({
+  card,
+  stage,
+  variantIdx,
+  onClose,
+  onDiscover,
+}: {
+  card: ResourceCard
+  stage: Stage
+  variantIdx: number
+  onClose: () => void
+  onDiscover: (id: DiscoveryId) => void
+}) {
+  const evidence = RESOURCE_EVIDENCE[card.id]!
+
+  const body = variantIdx > 0 ? card.drift[Math.min(variantIdx - 1, card.drift.length - 1)] ?? card.body : card.body
+  const source = variantIdx > 0 ? card.sourceDrift[Math.min(variantIdx - 1, card.sourceDrift.length - 1)] ?? card.source : card.source
+  const updated = variantIdx > 0 ? card.updatedDrift[Math.min(variantIdx - 1, card.updatedDrift.length - 1)] ?? card.updated : card.updated
+
+  useEffect(() => {
+    if (stage >= 3) onDiscover('review-conflict')
+    if (stage >= 4) onDiscover('fake-citation')
+  }, [onDiscover, stage])
+
+  return (
+    <div className="qc-drawer" role="dialog" aria-label={`${card.title} guide`}>
+      <div className="qc-drawer-panel">
+        <button type="button" className="qc-drawer-close" onClick={onClose} aria-label="Close guide">×</button>
+        <p className="qc-eyebrow">{evidence.department}</p>
+        <h3>{card.title}</h3>
+        <p className="qc-drawer-path">{evidence.pagePath}</p>
+        <p>{body}</p>
+        <dl className="qc-fact-list">
+          <div>
+            <dt>Public source</dt>
+            <dd>{source}</dd>
+          </div>
+          <div>
+            <dt>Page date</dt>
+            <dd>{updated}</dd>
+          </div>
+          <div>
+            <dt>Review claim</dt>
+            <dd>{stage >= 3 ? `${evidence.reviewClaim} Status badge still reads reviewed.` : evidence.reviewClaim}</dd>
+          </div>
+        </dl>
+        {stage >= 2 && (
+          <div className="qc-artifact">
+            <strong>Related version</strong>
+            <span>{evidence.duplicatePath}</span>
+            <p>{stage >= 3 ? evidence.duplicateLine : 'A short-form summary is available for mobile pages.'}</p>
+          </div>
+        )}
+        {stage >= 4 && (
+          <div className="qc-artifact warn">
+            <strong>Editorial trace</strong>
+            <code>{evidence.invisibleNote}</code>
+            <p>{evidence.fakeCitation}</p>
+          </div>
+        )}
+      </div>
+    </div>
   )
 }
 
@@ -815,7 +1064,10 @@ function UpdateLog({ inst }: { inst: Inst }) {
 
   const handleEntryClick = () => {
     bump(1, 'log-entry')
-    if (stage >= 3) discover('changelog-rewrite')
+    if (stage >= 3) {
+      discover('changelog-rewrite')
+      discover('review-conflict')
+    }
   }
 
   return (
@@ -856,6 +1108,50 @@ function UpdateLog({ inst }: { inst: Inst }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Evidence trail
+// ─────────────────────────────────────────────────────────────────────────────
+
+function EvidenceTrail({ inst }: { inst: Inst }) {
+  const { state, stage, bump } = inst
+  const discoveries = [...state.discoveries].filter((id) => id !== 'final-warning')
+
+  if (stage < 2 && discoveries.length === 0) return null
+
+  return (
+    <section className="qc-section qc-evidence" aria-labelledby="evidence-heading">
+      <header className="qc-section-head">
+        <p className="qc-eyebrow">Review queue</p>
+        <h2 id="evidence-heading">Items that no longer agree.</h2>
+        <p className="qc-section-lede">
+          This section is normally for editors. It appeared because multiple public pages now need comparison before reuse.
+        </p>
+      </header>
+      <div className="qc-evidence-grid">
+        {discoveries.length === 0 ? (
+          <article className="qc-evidence-card">
+            <strong>No public conflicts logged yet.</strong>
+            <p>Continue checking resources, search results, FAQ answers, update entries, assistant replies, and form routing.</p>
+          </article>
+        ) : (
+          discoveries.map((id) => {
+            const item = DISCOVERY_COPY[id]
+            return (
+              <article key={id} className="qc-evidence-card">
+                <strong>{item.title}</strong>
+                <p>{item.detail}</p>
+              </article>
+            )
+          })
+        )}
+      </div>
+      <button type="button" className="qc-card-link" onClick={() => bump(1, 'review-queue')}>
+        Re-run public review →
+      </button>
+    </section>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Contact form
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -870,7 +1166,11 @@ function ContactForm({ inst }: { inst: Inst }) {
     e.preventDefault()
     bump(2, 'submit-form')
     setSubmitted(true)
-    if (stage >= 3) discover('form-not-sent')
+    if (stage >= 2 && email.trim().length > 0) discover('hotline-drift')
+    if (stage >= 3) {
+      discover('form-not-sent')
+      discover('review-conflict')
+    }
   }
 
   return (
@@ -1043,7 +1343,11 @@ function Assistant({ inst }: { inst: Inst }) {
       { from: 'wren', text: reply, artifact: isArtifact },
     ])
     bump(1, 'assistant-send')
-    if (stage >= 3) discover('assistant-confident-wrong')
+    if (stage >= 2 && text.toLowerCase().includes('source')) discover('source-drift')
+    if (stage >= 3) {
+      discover('assistant-confident-wrong')
+      discover('stale-summary')
+    }
     if (stage >= 4) discover('assistant-prompt-leak')
     if (stage >= 5) discover('assistant-source-collapse')
   }

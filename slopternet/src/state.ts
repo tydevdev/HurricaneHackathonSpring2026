@@ -31,6 +31,17 @@ export type DiscoveryId =
   | 'changelog-self-edit'
   | 'fix-website'
   | 'cursor-avoidance'
+  | 'trust-badge-receipt'
+  | 'nav-phantom-page'
+  | 'search-internal-index'
+  | 'dashboard-empty-data'
+  | 'testimonial-customer-null'
+  | 'pricing-fineprint'
+  | 'footer-generated-legal'
+  | 'copy-loop'
+  | 'layout-contract-breach'
+  | 'wrong-confident-answer'
+  | 'prompt-fragment'
   | 'final-warning'
 
 export interface SlopState {

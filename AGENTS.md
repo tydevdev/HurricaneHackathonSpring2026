@@ -27,6 +27,8 @@ The earlier projects were built to figure out the direction and now live under `
 
 ## Development Workflow
 
+- Before implementing new features, pull the latest remote changes and resolve merge conflicts or open merge-request fallout when practical. Keep the working tree current so new work starts from the freshest shared state instead of piling features on top of avoidable drift.
+- If pulling exposes conflicts, broken builds, or review/merge-request fixes that clearly block the requested work, handle those first. Resolve straightforward conflicts directly; pause only when the correct product or code decision is genuinely ambiguous.
 - Work inside `slopularity/` by default.
 - Work inside an archived subproject folder only when the user explicitly targets that subproject.
 - Do root-only changes at the repository root.

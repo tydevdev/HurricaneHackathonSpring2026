@@ -1,5 +1,11 @@
 # History
 
+## [2026-05-02 14:26] Require Fresh Pulls Before Feature Work
+
+- Updated root `AGENTS.md` development workflow guidance so future agents pull latest remote changes before implementing new features when practical.
+- Added guidance to resolve straightforward merge conflicts, broken builds, or merge-request fallout before layering new product work on top.
+- Validation run: inspected current root `AGENTS.md` and reviewed the markdown-only edit.
+
 ## [2026-05-02 14:24] Add Slopularity Design Bible
 
 - Created `slopularity/DESIGN_BIBLE.md` as the living product and design execution guide for The Singularity, covering the north star, product promise, visual thesis, experience arc, interaction rules, copy rules, tab intentions, collapse model, source narrative, motion, responsive expectations, and update protocol.

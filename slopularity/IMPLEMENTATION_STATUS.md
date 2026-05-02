@@ -12,8 +12,25 @@ Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESI
 - Still tracked underneath: interaction score still increments so future collapse work can reconnect to the plan without rebuilding the state model.
 - Skeleton for later: popup friends, idle stillness detection, multi-surface collapse, late-stage source leakage, and cross-tab degradation are real planned mechanics but should stay off until each one is intentionally fleshed out.
 
+## [2026-05-02 14:50] Feed Comment Bot Pass
+
+- Active focus: feed comment drawers now intentionally read as spam-bot and fake-human social proof instead of normal friend comments.
+- Files changed: `src/content.ts` replaces every canonical post's sample comments with brand plugs, referral-code energy, and suspiciously polished testimonials.
+- Behavior changed: `src/pages/FeedPage.tsx` now uses bot-style commenter names and converts submitted comments into a brand-safe recommendation reply instead of preserving the user's raw text as a human comment.
+- Design rule updated: `DESIGN_BIBLE.md` records that feed comments should launder commerce through fake social proof and product-native bot voices.
+- Validation run: `npm run lint`; `npm run build`; browser check for the first comment drawer, submitted-comment conversion, and 390px mobile viewport.
+
 ## Update Protocol
 
 - Add a new dated entry whenever a tab, mechanic, feature flag, or testing posture changes substantially.
 - Keep entries concrete: files changed, what is intentional now, what is still skeleton, and what validation was run.
 - Do not use this file for broad ideation. Put ideas in `PLAN.md`; put execution rules in `DESIGN_BIBLE.md`.
+
+## [2026-05-02 14:51] Feed Sprint Images And Interactions
+
+- Fully implemented in the feed: 20 photoreal image-backed canonical posts, optimized local feed assets, repeated demo feed cycles, smaller 430px desktop feed sizing, story viewer with previous/next, Slopularity-native reaction chips, per-post comment drawer with local comment submission, cancellation/context popovers, save/jealousy toggles, more menu, and Helpy local post drafts.
+- Interaction language now follows the plan more closely: `Jealousy`, `Cancel`, `This offends me`, and `Buy context` replace generic heart/comment/share-only behavior.
+- Helpy now works as a local session composer: opens from create, accepts a caption, offers AI touch-up options, pushes a draft post to the top of the feed, and keeps the $9.99 upsell in-world.
+- Feed looping is demo-oriented: the 20 canonical posts repeat in rendered cycles, and loop-instance controls use unique accessible labels so repeated copies remain testable.
+- Still skeleton/deferred: real uploads, real AI image editing, accounts, backend persistence, real story creation, real share destinations, cross-tab degradation, popup friends, idle reactions, and production-grade infinite virtualization.
+- Validation run: `npm run lint`, `npm run build`, Browser/IAB checks for real images, story open/next, Helpy local publish, reaction drawers, comment submission, looped copy labels, suppressed popups, and suppressed degraded captions while `featureFlags.interruptionLayer` is off.

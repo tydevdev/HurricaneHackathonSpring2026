@@ -155,12 +155,13 @@ Intention: aspiration as a machine for comparison.
 
 The feed is the active implementation focus as of May 2, 2026. It should start as a calm, usable, mobile-first photo feed inspired by familiar social-feed anatomy: top feed bar, horizontal stories, stacked square image posts, avatar/name rows, familiar action icons, captions, comments, timestamps, and phone bottom navigation. It should not be a dashboard grid.
 
-The feed should start glossy and emotionally familiar: wellness, adventure, productivity, beauty, travel, luxury, and self-improvement blended into one scroll. As instability rises, the feed should reveal repeated faces, recycled captions, comments answering unseen prompts, fake engagement, impossible sponsor placement, and action labels that turn insecurity into product flow.
+The feed should start glossy and emotionally familiar: wellness, adventure, productivity, beauty, travel, luxury, and self-improvement blended into one scroll. Its comments are intentionally compromised from the start: every thread should read like spam bots, fake fans, and too-polished "real users" laundering product plugs through social proof. As instability rises, the feed should reveal repeated faces, recycled captions, comments answering unseen prompts, fake engagement, impossible sponsor placement, and action labels that turn insecurity into product flow.
 
 Interaction hooks:
 
 - compare, envy, optimize, save, buy context
 - repeated scrolls that mutate captions or counts
+- comments that turn human input into brand-safe testimonials
 - sponsor disclosures that move, soften, or rename themselves
 - posts that reappear with tiny differences
 

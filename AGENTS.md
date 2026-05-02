@@ -97,23 +97,27 @@ The earlier projects were built to figure out the direction and now live under `
 - Commit in small, reviewable increments during active work.
 - Use descriptive commit messages tied to behavior changes.
 - Run the relevant checks before pushing.
-- Agents may create short-lived branches when useful for isolation, review, or risky work, but do not let branch management become the work. Merge back to `main` frequently, keep `main` current, and delete local and remote branches once their changes are safely merged.
+- Avoid creating branches by default. Work on the current branch unless the user explicitly asks for a branch or isolation is clearly necessary for risky work.
+- When merging or pulling, be careful and deliberate: inspect incoming changes, preserve unrelated work, resolve straightforward conflicts directly, and keep `main` current without turning branch management into the task.
 - Whenever making repository changes, commit and push them before calling the task done.
 - If pushing requires resolving conflicts, resolve straightforward conflicts directly and continue.
 - If a conflict is not obvious to solve, stop and explain the conflicting files, the competing changes, and the decision needed from the user.
 - Avoid giant end-of-session commits when multiple logical changes occurred.
 
-## Subagent Acceleration
+## Codex Subagent Acceleration
 
-- Treat subagents as a default speed tool, not a last resort.
+- This section applies to Codex only. Other agents should follow their own tooling, model, and delegation rules unless the user explicitly tells them to use Codex-style subagents.
+- Codex should treat subagents as a default speed tool, not a last resort.
 - Codex can have 6 subagents running in parallel at a time in this environment; if more are needed, queue the next wave after one finishes or closes.
-- For every actionable task, actively look for parallel work that can be delegated immediately: codebase exploration, independent implementation slices, research, verification, design critique, test review, risk hunting, or cleanup.
-- Keep subagents working constantly whenever there is any useful independent thread of work; prefer one primary local path plus parallel support over a single-agent bottleneck.
-- Use multiple subagents when the task has separable surfaces, such as different subprojects, UI and data logic, implementation and testing, or build debugging and product polish.
-- For image generation work, exclusively delegate generation to subagents. The main agent should write direction, review results, and integrate assets, but must not generate images directly.
-- When directing image-generation subagents, specify `transparent background` when the asset should have no backdrop; the image generator can return transparent-background images when explicitly asked.
-- Give each subagent concrete ownership, clear output expectations, and file boundaries when editing is involved.
-- Integrate subagent results yourself so the final outcome feels cohesive, fast, and finished.
+- Codex should strongly prefer `gpt-5.3-codex-spark` for easy, well-bounded subagent work. It is super fast, but not especially smart, so give it very explicit instructions, tight file boundaries, and exact output expectations, then have the main Codex agent review, test, and integrate its work before treating it as done.
+- Codex should use `gpt-5.4` with `reasoning_effort: low` for medium-complexity support work when Spark is too weak for the task. It is a little smarter, but still not the brightest and is noticeably slower, so prefer Spark whenever the task can be made explicit enough.
+- For every actionable task, Codex should actively look for parallel work that can be delegated immediately: codebase exploration, independent implementation slices, research, verification, design critique, test review, risk hunting, or cleanup.
+- Codex should keep subagents working constantly whenever there is any useful independent thread of work; prefer one primary local path plus parallel support over a single-agent bottleneck.
+- Codex should use multiple subagents when the task has separable surfaces, such as different subprojects, UI and data logic, implementation and testing, or build debugging and product polish.
+- For image generation work, Codex should exclusively delegate generation to subagents. The main agent should write direction, review results, and integrate assets, but must not generate images directly.
+- When Codex directs image-generation subagents, specify `transparent background` when the asset should have no backdrop; the image generator can return transparent-background images when explicitly asked.
+- Codex should give each subagent concrete ownership, clear output expectations, and file boundaries when editing is involved.
+- Codex should integrate subagent results itself so the final outcome feels cohesive, fast, and finished.
 
 ## Parallel Agent Stability
 

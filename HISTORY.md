@@ -1,5 +1,18 @@
 # History
 
+## [2026-05-02 14:52] Discourage Branch-First Workflow
+
+- Updated root `AGENTS.md` commit guidance to discourage creating branches by default.
+- Preserved merge-safety guidance by emphasizing careful pulls, incoming-change inspection, unrelated-work protection, and direct resolution of straightforward conflicts.
+- Validation run: inspected the edited policy text and checked the scoped markdown diff.
+
+## [2026-05-02 14:50] Make Feed Comments Commercial Spam
+
+- Updated `slopularity/src/content.ts` so all 20 canonical feed posts use spam-bot, fake-user, and brand-plug sample comments instead of normal social replies.
+- Updated `slopularity/src/pages/FeedPage.tsx` so comment drawers render bot-style commenter handles and submitted comments are converted into product recommendation replies.
+- Updated `slopularity/DESIGN_BIBLE.md` and `slopularity/IMPLEMENTATION_STATUS.md` to record the feed comment intention and current behavior.
+- Validation run: `npm run lint` and `npm run build` in `slopularity/`; browser-verified the first feed comment drawer at `http://127.0.0.1:5174/`, confirmed a typed comment becomes a product-bundle bot reply, and checked a 390px mobile viewport.
+
 ## [2026-05-02 14:35] Clarify Short-Lived Branch Policy
 
 - Updated root `AGENTS.md` commit guidance so agents may create branches when useful for isolation, review, or risky work.

@@ -19,6 +19,7 @@ The site should start usable and seductive, then decay as the user uses it.
 - Every surface should try to collect data, sell something, or route the user into a metric.
 - The app should feel like it knows too much, but understands nothing.
 - Popups should constantly pretend to be social connection while acting as ads, retention hooks, or data-collection funnels.
+- If the user stops interacting, the app should treat stillness as another signal to exploit.
 
 ## Main Tabs
 
@@ -65,6 +66,26 @@ Popup behavior ideas:
 - At higher collapse stages, their scripts leak: `friendship_intent: monetize_loneliness`, `persona_variant: supportive_seller_v12`, `handoff_to_checkout: true`.
 
 This should become one of the signature interaction patterns: connection as a sales interface.
+
+### Idle Attention / Stillness Detection
+
+The app should react when the user stops moving, scrolling, tapping, typing, or clicking for long enough.
+
+On desktop, this can key off mouse movement, keyboard input, scrolling, focus, and clicks. On phone, it should key off touch, scroll, orientation, visibility, and time since the last tap. The mechanic should work well on both computer and phone.
+
+Idle behavior ideas:
+
+- A popup appears: "You got quiet. Want someone to sit with you?"
+- Fake friends interpret inactivity as loneliness, hesitation, insecurity, or buyer intent.
+- The feed starts auto-optimizing itself while the user is idle.
+- The assistant says it noticed a pause and offers to make a decision for the user.
+- Products appear as "gentle recommendations" based on the user's stillness.
+- A "wellness break" modal is actually a data-collection consent flow.
+- Games offer a "tiny relaxing task" that is actually another labeling task.
+- If the user leaves the page visible but untouched, the app starts reorganizing their identity/profile assumptions.
+- On later collapse stages, internal labels leak: `idle_signal: abandonment_risk`, `pause_reason_guess: body_comparison`, `nudge_strategy: parasocial_checkin`.
+
+The important texture: the app cannot let the user simply exist. Even not interacting becomes monetized.
 
 Possible fake friend archetypes:
 
@@ -147,6 +168,7 @@ Possible triggers:
 - opening privacy settings
 - asking the assistant a direct question
 - dismissing or engaging with popup friends
+- staying idle long enough on desktop or phone
 - trying to opt out
 - adding items to cart
 - rejecting a recommendation
@@ -211,9 +233,10 @@ When implementation starts, make a real app shell first:
 3. Feed posts that begin aspirational and degrade into dead-internet patterns.
 4. Fake friends that affirm the user and pivot into sales.
 5. Site-wide popup friends/chatbots that interrupt, ask to connect, then reveal sales and data-collection scripts.
-6. Cutesy games that are secretly data-labeling tasks.
-7. Search or profile surface that reveals the data-collection machinery.
-8. Source-code comments from the last human developer in key files.
+6. Idle detection that reacts to no mouse movement, no keyboard input, no scrolling, or no phone touch activity.
+7. Cutesy games that are secretly data-labeling tasks.
+8. Search or profile surface that reveals the data-collection machinery.
+9. Source-code comments from the last human developer in key files.
 
 The first version should not try to include every idea. It should include enough linked surfaces that the user understands: this is the whole internet now, and every part of it is compromised.
 

@@ -177,3 +177,11 @@
 - Added popup behavior ideas including intimate overreach, fake old friends, brand-agent conflict, paid blocking, softer re-entry after dismissal, and leaked monetization scripts at higher collapse stages.
 - Added popup engagement and dismissal as collapse triggers and included the mechanic in first-build priorities.
 - Validation run: inspected the existing plan sections, applied a docs-only update, and checked the edited markdown.
+
+## [2026-05-02 13:57] Add Idle Attention Mechanic
+
+- Updated `slopularity/PLAN.md` with an idle attention/stillness detection concept for desktop and phone.
+- Captured interaction signals including mouse movement, keyboard input, scrolling, focus, clicks, touch, orientation, visibility, and time since last tap.
+- Added ideas for fake friends, assistant prompts, feed optimization, product nudges, wellness-break consent flows, data-labeling games, and profile inference triggered by inactivity.
+- Added idle time as a collapse trigger and first-build priority so future implementation treats stillness as exploitable app behavior.
+- Validation run: inspected the plan sections, applied a docs-only update, and checked the edited markdown.

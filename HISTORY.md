@@ -1,5 +1,11 @@
 # History
 
+## [2026-05-02 14:35] Clarify Short-Lived Branch Policy
+
+- Updated root `AGENTS.md` commit guidance so agents may create branches when useful for isolation, review, or risky work.
+- Added explicit guardrails to merge back to `main` frequently, keep `main` current, delete local and remote branches after merge, and avoid getting distracted by branch management.
+- Validation run: inspected root `AGENTS.md` and reviewed the markdown-only diff.
+
 ## [2026-05-02 14:31] Focus Feed And Gate Noisy Mechanics
 
 - Rebuilt `slopularity/src/pages/FeedPage.tsx` into a mobile-first social photo feed with a top feed bar, story strip, stacked square posts, author rows, icon actions, captions, comment links, and timestamps.

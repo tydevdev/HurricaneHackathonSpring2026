@@ -97,6 +97,7 @@ The earlier projects were built to figure out the direction and now live under `
 - Commit in small, reviewable increments during active work.
 - Use descriptive commit messages tied to behavior changes.
 - Run the relevant checks before pushing.
+- Agents may create short-lived branches when useful for isolation, review, or risky work, but do not let branch management become the work. Merge back to `main` frequently, keep `main` current, and delete local and remote branches once their changes are safely merged.
 - Whenever making repository changes, commit and push them before calling the task done.
 - If pushing requires resolving conflicts, resolve straightforward conflicts directly and continue.
 - If a conflict is not obvious to solve, stop and explain the conflicting files, the competing changes, and the decision needed from the user.
@@ -105,6 +106,7 @@ The earlier projects were built to figure out the direction and now live under `
 ## Subagent Acceleration
 
 - Treat subagents as a default speed tool, not a last resort.
+- Codex can have 6 subagents running in parallel at a time in this environment; if more are needed, queue the next wave after one finishes or closes.
 - For every actionable task, actively look for parallel work that can be delegated immediately: codebase exploration, independent implementation slices, research, verification, design critique, test review, risk hunting, or cleanup.
 - Keep subagents working constantly whenever there is any useful independent thread of work; prefer one primary local path plus parallel support over a single-agent bottleneck.
 - Use multiple subagents when the task has separable surfaces, such as different subprojects, UI and data logic, implementation and testing, or build debugging and product polish.

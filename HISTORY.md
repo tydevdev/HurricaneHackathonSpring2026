@@ -490,3 +490,10 @@
 - Updated `slopularity/DESIGN_BIBLE.md` and `slopularity/IMPLEMENTATION_STATUS.md` with the feed performance rule and current validation posture.
 - Regenerated `slopularity/dist/` so the published app includes the optimized feed.
 - Validation run: `npm run lint`; `npm run build`; headless Chrome DevTools checks entered the app, confirmed lazy images, triggered DOUBLE and TRIPLE scroll, verified capped live card counts, repeatedly deep-scrolled to the bottom without unbounded DOM growth, and confirmed no horizontal overflow at 1280x900 or 390x844.
+
+## [2026-05-02 16:10] Fix Feed Story Frame Alignment
+
+- Updated `slopularity/src/pages/FeedPage.tsx` so the three-slide story track centers the active story instead of offsetting past it.
+- Added a shared story viewer close handler so Escape, the close button, and backdrop clicks all clear active drag state before dismissing the dialog.
+- Added eager async story image decoding and a fallback story placeholder for posts without image assets.
+- Validation run: `git pull --rebase --autostash origin main`; `npm run lint`; `npm run build`.

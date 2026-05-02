@@ -672,6 +672,11 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
     onEngage()
   }
 
+  function closeStoryViewer() {
+    cancelStoryDrag()
+    setStoryIndex(null)
+  }
+
   function beginStoryDrag(event: PointerEvent<HTMLDivElement>) {
     const frameRect = event.currentTarget.getBoundingClientRect()
     const relativeX = event.clientX - frameRect.left
@@ -1082,13 +1087,19 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
           role="dialog"
           aria-modal="true"
           aria-label={`${storyPost.author} story`}
+          tabIndex={-1}
+          onPointerDown={(event) => {
+            if (event.target === event.currentTarget) {
+              closeStoryViewer()
+            }
+          }}
           onKeyDown={(event) => {
             if (event.key === 'ArrowLeft') {
               nextStory(-1)
             } else if (event.key === 'ArrowRight') {
               nextStory(1)
             } else if (event.key === 'Escape') {
-              setStoryIndex(null)
+              closeStoryViewer()
             }
           }}
         >
@@ -1099,7 +1110,7 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
             <header>
               <span className={`ig-avatar ${storyPost.storyTone}`}>{storyPost.initials}</span>
               <strong>{storyPost.author}</strong>
-              <button type="button" onClick={() => setStoryIndex(null)}>Close</button>
+              <button type="button" onClick={closeStoryViewer}>Close</button>
             </header>
             <div
               className="story-frame"
@@ -1110,11 +1121,17 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
             >
               <div
                 className="story-frame-track"
-                style={{ transform: `translate3d(calc(-100% + ${storyDragX}px), 0, 0)` }}
+                style={{ transform: `translate3d(calc(-33.333333% + ${storyDragX}px), 0, 0)` }}
               >
                 {storyCarouselPosts.map(({ offset, post }) => (
                   <div className="story-frame-slide" aria-hidden={offset !== 0} key={`${post.id}-${offset}`}>
-                    {post.imageSrc && <img src={post.imageSrc} alt="" draggable={false} />}
+                    {post.imageSrc ? (
+                      <img src={post.imageSrc} alt="" draggable={false} loading="eager" decoding="async" />
+                    ) : (
+                      <span className={`story-frame-placeholder ${post.storyTone}`} aria-hidden="true">
+                        {post.initials}
+                      </span>
+                    )}
                     <p>{post.title}</p>
                   </div>
                 ))}

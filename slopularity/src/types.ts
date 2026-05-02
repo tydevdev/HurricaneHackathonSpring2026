@@ -34,6 +34,32 @@ export type Discovery = {
   label: string
 }
 
+export type BrandTone =
+  | 'coca-cola'
+  | 'fortnite'
+  | 'mcdonalds'
+  | 'nike'
+  | 'spotify'
+  | 'amazon'
+  | 'apple'
+  | 'netflix'
+
+export type BrandFriend = {
+  name: string
+  handle: string
+  emoji: string
+  tone: BrandTone
+  tagline: string
+  status: 'online'
+  voice: string
+  /** 5-rung emotional upsell ladder — each deeper than the last. */
+  responses: [string, string, string, string, string]
+  product: string
+  productSub: string
+  memory: string
+  intent: string
+}
+
 export type FeedPost = {
   id: string
   author: string

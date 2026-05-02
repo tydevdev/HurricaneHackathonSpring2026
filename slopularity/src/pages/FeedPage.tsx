@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type ChangeEvent, type FormEvent, type PointerEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ChangeEvent, type FormEvent, type PointerEvent, type ReactNode } from 'react'
 import { feedPosts } from '../content'
 import type { FeedPost } from '../types'
 
@@ -168,15 +168,25 @@ function initScrollMode(): ScrollMode {
   }
 }
 
+const phoneFeedViewportQuery = '(max-width: 720px)'
+
+function readPhoneFeedViewport() {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+    return false
+  }
+
+  return window.matchMedia(phoneFeedViewportQuery).matches
+}
+
 function usePhoneFeedViewport() {
-  const [isPhoneFeedViewport, setIsPhoneFeedViewport] = useState(false)
+  const [isPhoneFeedViewport, setIsPhoneFeedViewport] = useState(readPhoneFeedViewport)
 
   useEffect(() => {
     if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
       return undefined
     }
 
-    const query = window.matchMedia('(max-width: 720px)')
+    const query = window.matchMedia(phoneFeedViewportQuery)
     const syncViewport = () => setIsPhoneFeedViewport(query.matches)
     syncViewport()
 
@@ -287,9 +297,10 @@ function pickEnhancedReenactment(file: File): FeedPost {
 type FeedPageProps = {
   stage: number
   onEngage: () => void
+  mobileNavigation?: ReactNode
 }
 
-export function FeedPage({ stage, onEngage }: FeedPageProps) {
+export function FeedPage({ stage, onEngage, mobileNavigation }: FeedPageProps) {
   const [postReactions, setPostReactions] = useState<Record<string, Set<FeedReaction['id']>>>({
     'glass-ledger': new Set(['jealousy']),
   })
@@ -354,7 +365,8 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
   const isDegrading = stage >= 4
   const isMultiScroll = scrollMode !== 'single'
   const isPhoneFeedViewport = usePhoneFeedViewport()
-  const shouldRenderMultiScroll = isMultiScroll && !isPhoneFeedViewport
+  const shouldRenderMultiScroll = isMultiScroll
+  const shouldRenderVerticalMultiScroll = shouldRenderMultiScroll && isPhoneFeedViewport
   const visibleLoopedPosts = useMemo(
     () => loopedPosts.slice(0, Math.min(loopedPosts.length, renderLimit)),
     [loopedPosts, renderLimit],
@@ -776,6 +788,7 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
       <article
         className={`ig-post ${post.image}`}
         data-feed-index={lane === 'single' || lane === 'left' ? feedIndex : undefined}
+        data-feed-lane={lane}
         key={`${lane}-${post.id}-${cycle}`}
       >
         <header className="ig-post-head">
@@ -1007,7 +1020,7 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
 
   return (
     <section
-      className={`ig-feed-shell no-seamfeed ${shouldRenderMultiScroll ? 'has-multi-scroll' : ''} ${shouldRenderMultiScroll && scrollMode === 'triple' ? 'has-triple-scroll' : ''}`}
+      className={`ig-feed-shell no-seamfeed ${shouldRenderMultiScroll ? 'has-multi-scroll' : ''} ${shouldRenderMultiScroll && scrollMode === 'triple' ? 'has-triple-scroll' : ''} ${shouldRenderVerticalMultiScroll ? 'has-vertical-multi-scroll' : ''}`}
       aria-label="Feed"
     >
       <header className="ig-feed-topbar">
@@ -1024,6 +1037,12 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
         </div>
       </header>
 
+      {mobileNavigation && (
+        <div className="feed-mobile-tabbar-slot">
+          {mobileNavigation}
+        </div>
+      )}
+
       <div className="story-strip" aria-label="Stories">
         {storyPosts.map((post, index) => (
           <button className="story-chip" type="button" key={post.id} onClick={() => setStoryIndex(index)}>
@@ -1035,8 +1054,21 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
         ))}
       </div>
 
-      <div className={`ig-feed-list ${shouldRenderMultiScroll ? 'is-multi-scroll' : ''} ${shouldRenderMultiScroll && scrollMode === 'triple' ? 'is-triple-scroll' : ''}`} aria-label={shouldRenderMultiScroll ? (scrollMode === 'triple' ? 'Triple Scroll post feed' : 'Double Scroll post feed') : 'Looping post feed'}>
-        {shouldRenderMultiScroll ? (
+      <div className={`ig-feed-list ${shouldRenderMultiScroll ? 'is-multi-scroll' : ''} ${shouldRenderMultiScroll && scrollMode === 'triple' ? 'is-triple-scroll' : ''} ${shouldRenderVerticalMultiScroll ? 'is-vertical-multi-scroll' : ''}`} aria-label={shouldRenderMultiScroll ? (scrollMode === 'triple' ? 'Triple Scroll post feed' : 'Double Scroll post feed') : 'Looping post feed'}>
+        {shouldRenderVerticalMultiScroll ? (
+          visibleLoopedPosts.map(({ post, cycle }, feedIndex) => {
+            const bonusPost = visibleLoopedPosts[(feedIndex + 5) % visibleLoopedPosts.length]?.post ?? post
+            const extraPost = visibleLoopedPosts[(feedIndex + 11) % visibleLoopedPosts.length]?.post ?? post
+
+            return (
+              <div className="mobile-scroll-stack" key={`mobile-scroll-stack-${feedIndex}-${post.id}-${cycle}`}>
+                {renderPost(post, cycle, feedIndex, 'left')}
+                {renderPost(bonusPost, cycle, feedIndex, 'right')}
+                {scrollMode === 'triple' && renderPost(extraPost, cycle, feedIndex, 'middle')}
+              </div>
+            )
+          })
+        ) : shouldRenderMultiScroll ? (
           <>
             <div className="double-scroll-lane" aria-label="Primary scroll">
               {visibleLoopedPosts.map(({ post, cycle }, feedIndex) => renderPost(post, cycle, feedIndex, 'left'))}

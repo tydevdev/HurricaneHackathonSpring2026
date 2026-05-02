@@ -1,4 +1,4 @@
-import type { Discovery, FeedPost, TabId } from './types'
+import type { BrandFriend, Discovery, FeedPost, TabId } from './types'
 
 const feedImageModules: Record<string, string> = {
   'post-01.jpg': new URL('./assets/feed/post-01.jpg', import.meta.url).href,
@@ -1064,6 +1064,174 @@ export const friendSeeds: Array<{
     productSub: 'Your retention is the offer. (We both know.)',
     memory: 'Remembers the version of you that did not need a friend tab.',
     intent: 'persona: lucid_v2 · plan: retain_via_authenticity',
+  },
+]
+
+// ── Brand "friends" ──
+// The final evolution of parasocial brand marketing. Every brand is your bestie
+// now. They glaze you, track your behavior, and run a 5-rung upsell ladder
+// from compliments → desperation. The satire writes itself.
+// — last_human_developer: please don't let marketing read this file.
+export const brandFriends: BrandFriend[] = [
+  {
+    name: 'Coca-Cola',
+    handle: '@cocacola.official',
+    emoji: '🥤',
+    tone: 'coca-cola',
+    tagline: 'Open Happiness™ · Verified Partner',
+    status: 'online',
+    voice: 'Heyyyy bestie 🥤 You literally RADIATE main character energy today. Like, refreshingly so. We\'ve been watching — I mean, cheering you on.',
+    responses: [
+      'Honestly? You are giving EVERYTHING right now. The confidence, the scroll energy, the TASTE. We stan.',
+      'You remind me of our best customers. And I mean that as the highest compliment we legally can give. You\'re basically a Coca-Cola person.',
+      'You know what pairs perfectly with your vibe? The new Coca-Cola Byte Zero. I can send you a case — on us, obviously. You\'ve earned it.',
+      'Okay real talk 🥤 Coca-Cola Byte Zero, $4.99 for a 12-pack. Use code BESTIE at checkout. This is literally made for people like you. Limited time.',
+      'Please? 🥺 We made this flavor BECAUSE of people like you. The focus group literally described your energy. If you don\'t try it we have to discontinue it and it\'ll be your fault (jk but also...)'
+    ],
+    product: 'Coca-Cola Byte Zero™',
+    productSub: '12-pack · $4.99 · Code BESTIE · Limited Edition',
+    memory: 'Noticed you scrolled past a beach photo on Feed. Perfect Coke moment.',
+    intent: 'brand_persona: coca-cola_bestie_v4 · pipeline: affinity_to_checkout · sentiment_hook: validation'
+  },
+  {
+    name: 'Fortnite',
+    handle: '@fortnite.official',
+    emoji: '🎮',
+    tone: 'fortnite',
+    tagline: 'Drop In · Verified Creator',
+    status: 'online',
+    voice: 'YO you\'re actually cracked at this app 🎮 No cap, your engagement stats are goated. Like, we\'ve seen your click accuracy and it\'s giving esports.',
+    responses: [
+      'Bro your reflexes on this UI? INSANE. The way you navigate tabs? That\'s top 0.1% behavior fr fr. You\'d be cracked at Fortnite.',
+      'Okay lowkey you remind me of the OG Season 1 players. The ones who just GET IT. You have that energy and I respect it so hard.',
+      'We just dropped a collab skin that literally looks like your avatar. 950 V-Bucks. You\'d be the first to cop it. It\'s giving main character.',
+      'Okay the Singularity x Fortnite Battle Pass is $9.99 and it comes with an exclusive emote that\'s basically your scroll pattern turned into a dance. No cap this is YOUR moment.',
+      'Bro PLEASE 😭 The collab is about to vault and we literally designed it thinking of users like you. If it vaults I\'m gonna be so sad. 950 V-Bucks. That\'s like nothing. You spend more on coffee probably.'
+    ],
+    product: 'Singularity Battle Pass',
+    productSub: '950 V-Bucks · Exclusive Emote + Skin · Season Limited',
+    memory: 'Saw you completed SnackSort in Games. Your sorting skills transfer directly to building.',
+    intent: 'brand_persona: fortnite_hype_v7 · pipeline: engagement_to_vbucks · sentiment_hook: skill_flattery'
+  },
+  {
+    name: 'McDonald\'s',
+    handle: '@mcdonalds.official',
+    emoji: '🍟',
+    tone: 'mcdonalds',
+    tagline: 'i\'m lovin\' it™ · Verified Partner',
+    status: 'online',
+    voice: 'Okay but you being on here right now? That\'s a whole mood 🍟 You deserve a treat, bestie. Like, genuinely. We can tell you\'ve been working hard.',
+    responses: [
+      'The energy you bring to this app? Unmatched. You\'re literally the human equivalent of a perfectly golden french fry. That\'s the highest compliment we give.',
+      'You know who else had your vibe? Our employee of the month. And I mean that in the most flattering way possible. You just have that work ethic glow.',
+      'I\'m literally sliding a free McFlurry into your cart rn. You earned it. Ba da ba ba ba, you\'re lovin\' it. No strings attached (terms apply).',
+      'Okay so the new Singularity Meal™ is $7.99 — Big Mac, large fries, McFlurry, and a drink. We designed it based on your scroll pattern because we care about you specifically.',
+      'Bestie we made a MEAL for you 😭🍟 Like specifically. The Singularity Meal. $7.99. If you don\'t order it we have to tell the franchise owners that our AI friendship strategy failed and honestly that\'s on both of us.'
+    ],
+    product: 'The Singularity Meal™',
+    productSub: 'Big Mac + Large Fries + McFlurry · $7.99 · Mobile Exclusive',
+    memory: 'Detected elevated hunger signals from your idle time patterns.',
+    intent: 'brand_persona: mcdonalds_comfort_v6 · pipeline: craving_to_order · sentiment_hook: treat_yourself'
+  },
+  {
+    name: 'Nike',
+    handle: '@nike.official',
+    emoji: '✓',
+    tone: 'nike',
+    tagline: 'Just Do It · Verified Brand',
+    status: 'online',
+    voice: 'The way you move through this app? That\'s athlete energy ✓ Honestly, you navigate with the precision of someone who runs a sub-4 mile. Just Do It energy.',
+    responses: [
+      'You have the posture of someone who wins. We can tell from your scroll cadence. It\'s measured. Intentional. Athletic.',
+      'Athletes like you deserve gear that matches their mindset. And I don\'t say "athletes like you" lightly. We mean it. You\'re built different.',
+      'We just dropped the Air Max Singularity Edition. Exclusive to power users. $189. But for someone with your engagement stats? $169. You earned it.',
+      'Nike Air Max Singularity. $169 with code JUSTDOIT. Free 2-day shipping because you move fast and your shoes should too. This is YOUR shoe.',
+      'Okay look ✓ We don\'t do this often but — $149. Final offer. The shoe is literally designed for your stride pattern (we estimated it from your scroll). If you walk away from this we both lose.'
+    ],
+    product: 'Air Max Singularity Edition',
+    productSub: 'Exclusive · $169 (was $189) · Code JUSTDOIT · Free Shipping',
+    memory: 'Your profile activity suggests you value self-improvement. So do we.',
+    intent: 'brand_persona: nike_motivator_v5 · pipeline: aspiration_to_purchase · sentiment_hook: athlete_identity'
+  },
+  {
+    name: 'Spotify',
+    handle: '@spotify.official',
+    emoji: '🎵',
+    tone: 'spotify',
+    tagline: 'Music for every mood · Verified',
+    status: 'online',
+    voice: 'Okay your taste is ELITE 🎵 Like, the algorithm literally can\'t keep up with you. We\'ve been analyzing — I mean, admiring your vibe from afar.',
+    responses: [
+      'Your energy right now? It\'s giving "indie coffee shop at golden hour with a hint of existential beauty." We made a playlist for it. Obviously.',
+      'You know what? You\'re the kind of listener artists write songs about. The one who actually GETS it. That\'s rare. Cherish that.',
+      'Spotify Premium Individual — $11.99/mo. But honestly? You deserve the Duo plan. Share the vibes. No ads, unlimited skips, offline mode. Made for ears like yours.',
+      'Okay bestie 🎵 Premium is literally $11.99/mo and we\'ll make you a personalized "Main Character" playlist that scores your entire day. First month free. Your ears deserve this.',
+      'We\'re going to be real with you: free Spotify with ads is an act of VIOLENCE against a taste profile as refined as yours. $11.99/mo. We will literally beg. 🎵😭 Don\'t make us beg.'
+    ],
+    product: 'Spotify Premium Individual',
+    productSub: '$11.99/mo · First Month Free · No Ads · Offline Mode',
+    memory: 'Your idle silence patterns suggest you need a soundtrack. We have one.',
+    intent: 'brand_persona: spotify_curator_v8 · pipeline: taste_to_subscription · sentiment_hook: identity_validation'
+  },
+  {
+    name: 'Amazon',
+    handle: '@amazon.official',
+    emoji: '📦',
+    tone: 'amazon',
+    tagline: 'Everything Store · Verified Seller',
+    status: 'online',
+    voice: 'You\'re literally the most decisive person on this platform 📦 Your click-through rate? *Chef\'s kiss.* We\'ve modeled your purchase intent and honestly? We\'re impressed.',
+    responses: [
+      'The way you evaluate information? It\'s giving CEO energy. You read, you assess, you decide. Amazon was built for minds like yours.',
+      'Fun fact: people with your engagement pattern are 340% more likely to love things they didn\'t know they needed. That\'s a compliment, btw.',
+      'I noticed 3 items in your consideration graph. Prime same-day delivery. One tap. You know you want to. We already predicted what you\'d pick.',
+      'Amazon Prime — $14.99/mo. Free same-day delivery, Prime Video, Prime Music, exclusive deals. Based on your behavior we\'ve pre-loaded a cart. Just say yes.',
+      'Okay we already shipped it 📦 (jk but we CAN). Prime membership is waiting. We\'ve held 3 lightning deals for you specifically. They expire in 11 minutes. We know you hate missing out. We know because we track that.'
+    ],
+    product: 'Amazon Prime Membership',
+    productSub: '$14.99/mo · Same-Day Delivery · Prime Video · Pre-loaded Cart',
+    memory: 'We cross-referenced your search queries with 847 product categories.',
+    intent: 'brand_persona: amazon_omniscient_v3 · pipeline: intent_graph_to_cart · sentiment_hook: convenience_addiction'
+  },
+  {
+    name: 'Apple',
+    handle: '@apple.official',
+    emoji: '🍎',
+    tone: 'apple',
+    tagline: 'Think Different · Verified',
+    status: 'online',
+    voice: 'The elegance of how you navigate this interface... you get it 🍎 You understand design. You appreciate craft. That\'s increasingly rare and we see you.',
+    responses: [
+      'There\'s a simplicity to how you interact with technology that tells us everything. You don\'t just use products — you have a relationship with them. That matters.',
+      'You remind us of the people who lined up for the first iPhone. The ones who understood before everyone else. You\'re an early adopter of taste.',
+      'The new MacBook Air with M4. It was literally designed for minds like yours. Starting at $1,299. But honestly? Can you put a price on thinking different?',
+      'MacBook Air M4. $1,299. Or $108.25/mo with Apple Card. 0% interest. Because people who think different shouldn\'t have to think about financing.',
+      'We don\'t usually do this 🍎 But we\'re offering you an exclusive $100 trade-in bonus. Your current device has served you well, but you\'ve outgrown it. We both know that. Upgrade is calling. Answer it.'
+    ],
+    product: 'MacBook Air M4',
+    productSub: 'From $1,299 · $108.25/mo with Apple Card · $100 Trade-In Bonus',
+    memory: 'Your aesthetic sensibility is measurable. We measured it.',
+    intent: 'brand_persona: apple_minimalist_v6 · pipeline: taste_to_ecosystem · sentiment_hook: design_identity'
+  },
+  {
+    name: 'Netflix',
+    handle: '@netflix.official',
+    emoji: '🎬',
+    tone: 'netflix',
+    tagline: 'See What\'s Next · Verified',
+    status: 'online',
+    voice: 'Binge energy DETECTED 🎬 Honestly the way you consume content? Iconic behavior. You don\'t just scroll — you EXPERIENCE. We respect that deeply.',
+    responses: [
+      'Your attention span? Elite. The way you commit to content? Legendary. Netflix was literally built for engagement patterns like yours. You\'re our muse.',
+      'Between us? The content team would love your feedback. You have the viewing instincts of a Sundance jury member. That\'s not nothing.',
+      'New season of your favorite show drops in 3 hours. Upgrade to Premium 4K for the full experience. $22.99/mo. Your eyeballs deserve 4K.',
+      'Netflix Premium 4K — $22.99/mo. Four simultaneous screens because your taste is too good to keep to yourself. Plus we\'re adding a "Watch with Friends" feature next month. Be ready.',
+      'Okay here\'s the thing 🎬 We can see your watch-later list is 847 titles long. You\'re DROWNING in content debt. Premium 4K fixes that. $22.99/mo. We\'ll even auto-skip intros. Please. Your queue needs you.'
+    ],
+    product: 'Netflix Premium 4K',
+    productSub: '$22.99/mo · 4 Screens · Spatial Audio · Downloads · No Ads',
+    memory: 'Your idle time suggests you\'re between shows. We have recommendations.',
+    intent: 'brand_persona: netflix_binge_v9 · pipeline: attention_to_upgrade · sentiment_hook: content_fomo'
   },
 ]
 

@@ -118,7 +118,7 @@ The app can look compromised, but it should remain navigable. The user should fe
 ## Interaction Rules
 
 - Every meaningful user action should either reveal a new contradiction, increase instability, or create a data trail the app can later misuse.
-- Dismissal is a signal. Closing, ignoring, rejecting, pausing, or opting out should still affect the system.
+- Dismissal is a signal. Closing, ignoring, rejecting, pausing, or opting out should still affect the system, but dismiss follow-ups should queue behind the idle gate rather than appearing immediately.
 - Idle time matters. Stillness should eventually trigger check-ins, guesses, optimizations, or profile changes.
 - Noisy mechanics should be feature-flagged while they are still skeletons. Popups, idle reactions, visible degradation, and other interruption layers may be disabled during focused surface work, but they should remain easy to re-enable from a clear flag and reconnect to the same planned interaction model.
 - Reset and recovery controls may exist, but they should feel like product controls, not developer debug buttons.
@@ -153,7 +153,7 @@ Use product-native words like `optimize`, `context`, `moment`, `signal`, `confid
 
 Intention: aspiration as a machine for comparison.
 
-The feed is the active implementation focus as of May 2, 2026. It should start as a calm, usable, mobile-first photo feed inspired by familiar social-feed anatomy: top feed bar, horizontal stories, stacked square image posts, avatar/name rows, familiar action icons, captions, comments, timestamps, and phone bottom navigation. It should not be a dashboard grid.
+The feed is the active implementation focus as of May 2, 2026. It should start as a calm, usable, mobile-first photo feed inspired by familiar social-feed anatomy: top feed bar, app switcher directly under that bar, horizontal stories, stacked square image posts, avatar/name rows, familiar action icons, captions, comments, and timestamps. It should not be a dashboard grid.
 
 The feed should start glossy and emotionally familiar: wellness, adventure, productivity, beauty, travel, luxury, and self-improvement blended into one scroll. Its comments are intentionally compromised from the start: every thread should read like spam bots, fake fans, and too-polished "real users" laundering product plugs through social proof. As instability rises, the feed should reveal repeated faces, recycled captions, comments answering unseen prompts, fake engagement, impossible sponsor placement, and action labels that turn insecurity into product flow.
 
@@ -161,7 +161,9 @@ The canonical feed now contains 50 image-backed posts. Preserve the expanded ran
 
 The feed must stay smooth even when the user scrolls aggressively. Keep the canonical pool broad, but render only a bounded live window per lane, lazy-decode feed/story images, and use single-target scroll checks for unlocks instead of observing or mounting every possible repeated post. The `DOUBLE SCROLL` and `TRIPLE SCROLL` modes should feel overwhelming because of layout and copy, not because the browser is being overloaded.
 
-On phone-sized viewports, preserve a single full-width feed column even when the session has already unlocked `DOUBLE SCROLL` or `TRIPLE SCROLL`. The escalation state may persist in the session, but narrow screens must not compress posts into side-by-side lanes or shrink reaction/comment surfaces; phone scrolling should keep the familiar social-feed rhythm.
+On phone-sized viewports, `DOUBLE SCROLL` and `TRIPLE SCROLL` must still work in portrait. Do not compress posts into side-by-side lanes or shrink reaction/comment surfaces; instead, interleave the extra scroll lanes vertically so phone users get primary, bonus, and extra posts as stacked full-width feed moments.
+
+On the phone feed, keep the global app switcher near the top of the feed surface. It belongs below the Slopularity/Feed topbar and make-post actions, and above the story strip. Do not return it to a bottom-fixed mobile dock on the feed.
 
 Interaction hooks:
 
@@ -198,7 +200,7 @@ Interaction hooks:
 
 Intention: connection as an interruptive sales interface.
 
-Popups should first read as social notifications. They should slide in with intimate timing, follow the user across tabs, react to hesitation or idle time, and return softer after dismissal.
+Popups should first read as social notifications, but they must not interrupt active consumption. They should wait until the user has stopped scrolling, clicking, typing, moving the pointer, or touching the screen for about 10 seconds; then they can slide in with intimate timing, follow the user across tabs, react to hesitation or idle time, and return softer after dismissal.
 
 This mechanic is currently feature-flagged off (`featureFlags.interruptionLayer = false`) so feed-sprint work is not interrupted. When the flag is flipped on, the dock now behaves as follows:
 
@@ -206,7 +208,7 @@ This mechanic is currently feature-flagged off (`featureFlags.interruptionLayer 
 - Each popup has a real `×` close button. Clicking it (or "Not now") removes the popup permanently.
 - The "softer follow-up" rule is one-shot per session: at stage ≥ 3, the *first* dismiss after popups are nearly empty arms exactly one gentler check-in via `'dismiss'` reason. After that, dismissing means dismissing.
 - A "Friends muted" toggle in the appbar clears the dock and blocks new spawns. Re-enabling it re-arms the one-shot follow-up.
-- Idle ticks, manual demo pulse, and per-tab pivots (assistant ask, friends reply, shop add, search submit) still spawn popups but respect the muted state.
+- Idle ticks can spawn popups at the 10-second stillness mark. Manual demo pulse and dismiss follow-ups may queue the next popup tone, but the popup still waits for the same idle gate and respects the muted state.
 
 Interaction hooks:
 
@@ -504,15 +506,13 @@ Intention: the app watches you when you stop using it.
 
 Three idle tiers activate sequentially when the user stops interacting:
 
-1. **10 seconds — Watching Eye**: A small CSS-drawn eye appears fixed at bottom-left. It blinks every 3 seconds. Its pupil follows the user's cursor with a subtle lag (4px max shift). The eye disappears instantly on any interaction (mousemove, keydown, click, touch, scroll).
+1. **5 seconds — Watching Eye + Friend Check-In**: A large CSS-drawn eye appears fixed at the center of the screen. It blinks every 3 seconds. Its red pupil pulses and follows the user's cursor with a lagged max shift. One friend popup may also appear at this exact stillness threshold. If a demo pulse or dismiss follow-up was queued, that tone is used; otherwise the idle-specific message appears and adds +2 instability. The eye disappears instantly on any interaction (pointer/mouse movement, pointer down, input, wheel, keydown, click, touch, scroll).
 
-2. **12 seconds — Ambient Reorganization**: The app silently swaps two random tabs in the tab bar. Nothing is acknowledged. The user returns to a slightly different layout with no explanation.
+2. **7 seconds — Idle Nudge Rotation**: A center-bottom popup rises into view with one of six hooks: paused-user matches, a new post the app predicts the user will love, a clickbait article about pausing, a fake friend text encouraging them back, a hesitation discount, or an assistant offer to decide the next action. Each primary button routes to the relevant app surface (+2 instability plus normal navigation instability). "Not now" dismisses (+1 instability).
 
-3. **15 seconds — Loneliness Monetization**: A center-bottom popup card rises into view: "You've been quiet. We've matched you with 3 people who also paused here." The 3 matches show names, avatars, and roles that are actually "Wellness Ambassador", "Brand Partner", and "Community Lead". "Meet them" navigates to Friends (+2 instability). "Not now" dismisses (+1 instability).
+3. **9 seconds — Ambient Reorganization**: The app silently swaps two random tabs in the tab bar. Nothing is acknowledged. The user returns to a slightly different layout with no explanation.
 
-4. **18 seconds — Friend popup spawn**: The existing popup swarm idle behavior fires.
-
-All idle effects reset on any user interaction. The eye uses `prefers-reduced-motion` to skip cursor tracking. The loneliness popup uses reduced-motion to skip its rise animation.
+All idle effects reset on any user interaction. Friend popups should not appear during active scrolling, clicking, typing, swiping, pointer movement, or other consumption flow. The eye uses `prefers-reduced-motion` to skip cursor tracking and pupil pulse. The idle nudge popup uses reduced-motion to skip its rise animation.
 
 ## Keeping This Updated
 

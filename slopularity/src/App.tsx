@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
 import { pushActivity } from './activityLog'
 import { IdleEye } from './components/IdleEye'
-import { LonelinessPopup } from './components/LonelinessPopup'
+import { LonelinessPopup, type IdleNudgeDestination } from './components/LonelinessPopup'
 import { PopupSwarm } from './components/PopupSwarm'
 import { fragmentLeaks, popupSeeds, tabs as defaultTabs } from './content'
 import { featureFlags } from './featureFlags'
@@ -18,6 +18,7 @@ import { stageFor } from './utils'
 
 const storageKey = 'slopularity-state-v1'
 const enteredKey = 'slopularity-entered-v1'
+type PopupReason = 'manual' | 'idle' | 'dismiss'
 
 function loadScore() {
   if (typeof window === 'undefined') return 0
@@ -51,8 +52,11 @@ function App() {
   // ── Idle surveillance state ──
   const [idleEyeVisible, setIdleEyeVisible] = useState(false)
   const [lonelinessVisible, setLonelinessVisible] = useState(false)
+  const [idleNudgeIndex, setIdleNudgeIndex] = useState(0)
   const idleSecondsRef = useRef(0)
   const idleReorgDoneRef = useRef(false)
+  const idleNudgeShownRef = useRef(false)
+  const queuedPopupReasonRef = useRef<PopupReason | null>(null)
   // Tabs can be silently reordered during idle. Store the current order.
   const [tabOrder, setTabOrder] = useState(defaultTabs)
 
@@ -79,7 +83,7 @@ function App() {
   }, [])
 
   const choosePopup = useCallback(
-    (reason: 'manual' | 'idle' | 'dismiss'): Popup => {
+    (reason: PopupReason): Popup => {
       const seed = popupSeeds[(score + popups.length + reason.length) % popupSeeds.length]!
       const message = seed.messages[reason]
       return {
@@ -96,11 +100,19 @@ function App() {
   )
 
   const spawnPopup = useCallback(
-    (reason: 'manual' | 'idle' | 'dismiss' = 'manual') => {
+    (reason: PopupReason = 'manual') => {
       if (muted) return
       setPopups((current) => [...current.slice(-2), choosePopup(reason)])
     },
     [choosePopup, muted],
+  )
+
+  const queuePopup = useCallback(
+    (reason: PopupReason = 'manual') => {
+      if (muted) return
+      queuedPopupReasonRef.current = reason
+    },
+    [muted],
   )
 
   useEffect(() => {
@@ -132,17 +144,16 @@ function App() {
     return () => window.clearInterval(id)
   }, [visibleStage])
 
-  // First arrival into the workspace (no entered flag yet) gets a single
-  // welcome popup ~1.1s in to demo the friend pattern. The flag is normally
-  // set by the landing page; we re-arm it here for direct app links too.
+  // First arrival into the workspace (no entered flag yet) queues a single
+  // welcome check-in, but it waits behind the same idle gate as every other
+  // friend popup so the feed stays consumable while the user is active.
   useEffect(() => {
     if (typeof window === 'undefined') return
     if (!interruptionMode) return
     if (window.localStorage.getItem(enteredKey) === '1') return
     window.localStorage.setItem(enteredKey, '1')
-    const id = window.setTimeout(() => spawnPopup('manual'), 1100)
-    return () => window.clearTimeout(id)
-  }, [interruptionMode, spawnPopup])
+    queuePopup('manual')
+  }, [interruptionMode, queuePopup])
 
   // ── Idle detection: tiered (eye → reorg → loneliness → popup) ──
   useEffect(() => {
@@ -152,13 +163,28 @@ function App() {
       idleSecondsRef.current += 1
       const s = idleSecondsRef.current
 
-      // 10s: the eye opens
-      if (s === 10) {
+      // 5s: the eye opens and one friend check-in may appear. Queued demo or
+      // dismiss follow-ups use their own tone; otherwise stillness itself is
+      // interpreted as the signal. No popup appears while the user is active.
+      if (s === 5) {
         setIdleEyeVisible(true)
+        const queuedReason = queuedPopupReasonRef.current
+        queuedPopupReasonRef.current = null
+        spawnPopup(queuedReason ?? 'idle')
+        if (!queuedReason) {
+          addInstability(2)
+        }
       }
 
-      // 12s: ambient reorganization (once per idle stretch)
-      if (s === 12 && !idleReorgDoneRef.current) {
+      // 7s: a rotating idle nudge interrupts the pause.
+      if (s === 7 && !idleNudgeShownRef.current) {
+        idleNudgeShownRef.current = true
+        setIdleNudgeIndex((current) => current + 1)
+        setLonelinessVisible(true)
+      }
+
+      // 9s: ambient reorganization (once per idle stretch)
+      if (s === 9 && !idleReorgDoneRef.current) {
         idleReorgDoneRef.current = true
         // Silently shuffle tab order
         setTabOrder((current) => {
@@ -174,28 +200,23 @@ function App() {
         })
       }
 
-      // 15s: loneliness monetization popup
-      if (s === 15) {
-        setLonelinessVisible(true)
-      }
-
-      // 18s: friend popup spawn (existing behavior, just delayed more)
-      if (s === 18) {
-        addInstability(2)
-        spawnPopup('idle')
-      }
     }, 1000)
 
     const resetIdle = () => {
       idleSecondsRef.current = 0
       // Eye disappears instantly
       setIdleEyeVisible(false)
+      idleNudgeShownRef.current = false
       // Don't dismiss loneliness popup on move — it has its own dismiss
     }
 
     const events = [
       'mousemove',
+      'pointermove',
+      'pointerdown',
       'keydown',
+      'input',
+      'wheel',
       'scroll',
       'click',
       'touchstart',
@@ -228,13 +249,14 @@ function App() {
         popups.length <= 1
       ) {
         followupArmedRef.current = false
-        window.setTimeout(() => spawnPopup('dismiss'), 600)
+        queuePopup('dismiss')
       }
     }
   }
 
   function clearAllPopups() {
     setPopups([])
+    queuedPopupReasonRef.current = null
   }
 
   function toggleMute() {
@@ -242,6 +264,7 @@ function App() {
       if (!current) {
         // Going muted: also clear queued popups so the dock empties.
         setPopups([])
+        queuedPopupReasonRef.current = null
       } else {
         // Coming back from muted re-arms the one-shot follow-up.
         followupArmedRef.current = true
@@ -266,6 +289,7 @@ function App() {
     setQuery('')
     setCompletedTasks([])
     setTabOrder(defaultTabs)
+    queuedPopupReasonRef.current = null
     followupArmedRef.current = true
   }
 
@@ -278,9 +302,9 @@ function App() {
     pushActivity('nav', 'tab', tabId)
   }
 
-  function handleAssistant() {
+  function handleAssistant(prompt = query || 'general') {
     addInstability(2)
-    pushActivity('assistant', 'ask', query || 'general')
+    pushActivity('assistant', 'ask', prompt)
     setAssistantText(
       visibleStage >= 4
         ? 'I can answer that from 11 generated summaries that cite one another. Confidence: radiant. Source: pending.'
@@ -299,10 +323,31 @@ function App() {
     addInstability(1)
   }
 
-  function handleLonelinessMeet() {
+  function handleIdleNudgeAct(destination: IdleNudgeDestination) {
     setLonelinessVisible(false)
     addInstability(2)
-    handleTab('friends')
+    handleTab(destination)
+  }
+
+  function renderTabbar(placement: 'global' | 'feed-mobile') {
+    return (
+      <nav className={`tabbar tabbar-${placement}`} aria-label="Everything app tabs">
+        {tabOrder.map((tab) => (
+          <a
+            key={tab.id}
+            className={activeTab === tab.id ? 'is-active' : ''}
+            href={pathForTab(tab.id)}
+            aria-current={activeTab === tab.id ? 'page' : undefined}
+            onClick={(event) => {
+              event.preventDefault()
+              handleTab(tab.id)
+            }}
+          >
+            {tab.label}
+          </a>
+        ))}
+      </nav>
+    )
   }
 
   return (
@@ -355,7 +400,7 @@ function App() {
               <span>{muted ? 'Friends muted' : 'Friends on'}</span>
             </button>
           )}
-          <button type="button" className="appbar-quiet" onClick={() => { addInstability(5); spawnPopup('manual') }}>
+          <button type="button" className="appbar-quiet" onClick={() => { addInstability(5); queuePopup('manual') }}>
             Demo pulse
           </button>
           <button type="button" className="appbar-quiet" onClick={reset} aria-label="Reset everything app to its first impression">
@@ -365,22 +410,7 @@ function App() {
         </div>
       </header>
 
-      <nav className="tabbar" aria-label="Everything app tabs">
-        {tabOrder.map((tab) => (
-          <a
-            key={tab.id}
-            className={activeTab === tab.id ? 'is-active' : ''}
-            href={pathForTab(tab.id)}
-            aria-current={activeTab === tab.id ? 'page' : undefined}
-            onClick={(event) => {
-              event.preventDefault()
-              handleTab(tab.id)
-            }}
-          >
-            {tab.label}
-          </a>
-        ))}
-      </nav>
+      {renderTabbar('global')}
 
       <section className="workspace" aria-live="polite">
         <div className="tab-panel">
@@ -388,6 +418,7 @@ function App() {
             <FeedPage
               stage={visibleStage}
               onEngage={() => addInstability(1)}
+              mobileNavigation={renderTabbar('feed-mobile')}
             />
           )}
           {activeTab === 'friends' && (
@@ -442,8 +473,9 @@ function App() {
       <IdleEye visible={idleEyeVisible} />
       <LonelinessPopup
         visible={lonelinessVisible}
+        nudgeIndex={idleNudgeIndex}
         onDismiss={handleLonelinessDismiss}
-        onMeet={handleLonelinessMeet}
+        onAct={handleIdleNudgeAct}
       />
     </main>
   )

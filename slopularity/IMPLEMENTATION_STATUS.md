@@ -2,6 +2,23 @@
 
 Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESIGN_BIBLE.md` stays the product/design execution guide. This file records what is actively intentional in the app right now, what is still a skeleton, and which feature flags are keeping unfinished mechanics out of the way.
 
+## [2026-05-02 18:32] Phone Vertical Multi-Scroll
+
+- Active focus: `FeedPage.tsx` phone portrait behavior after `DOUBLE SCROLL` / `TRIPLE SCROLL` unlocks.
+- Behavior changed: phone-sized viewports now keep multi-scroll active instead of suppressing it; the extra lanes interleave vertically as full-width post stacks.
+- Responsive intent: desktop/tablet widths still use horizontal two/three-lane multi-scroll, while phone portrait preserves full-size author rows, action chips, comments, and image widths.
+- Files changed: `src/pages/FeedPage.tsx`, `src/index.css`, `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
+- Validation run: `npm run lint`; `npm run build`; Playwright smoke against `vite preview` at 390x844 forced stored `scrollMode: "triple"` and confirmed 30 vertical stacks with three full-width posts each, no `.double-scroll-lane` nodes, 374px feed/post/photo/image widths, 34px action chips, and no horizontal overflow; then forced `scrollMode: "double"` and confirmed 36 vertical stacks with two posts each and no horizontal overflow.
+
+## [2026-05-02 18:33] Idle Eye And Nudge Rotation
+
+- Active focus: the inactivity surveillance layer in `App.tsx`, `IdleEye.tsx`, `LonelinessPopup.tsx`, and `index.css`.
+- Behavior changed: the idle eye now appears after 5 seconds instead of 10, sits in the center of the screen, and uses a large CSS eye with a pulsing red pupil.
+- Behavior changed: the center-bottom idle popup now appears after 7 seconds and rotates through six variants: paused-user matches, new post recommendation, clickbait article, fake friend text, hesitation discount, and assistant decision nudge.
+- Behavior changed: ambient tab reorganization moved earlier to 9 seconds so the idle cascade feels faster.
+- Documentation updated: `DECAY_FEATURES.md`, `DESIGN_BIBLE.md`, and root `HISTORY.md`.
+- Validation run: `npm run lint`; `npm run build`. A local Chrome idle smoke was attempted, but headless Chrome hung before returning DOM evidence; the Vite server was shut down afterward.
+
 ## [2026-05-02 16:25] Batch Decay Features — Friends, Search, Games, Idle
 
 - Active focus: 10 new decay/slop features across Friends, Search, Games, and Idle surfaces.

@@ -1,5 +1,14 @@
 # History
 
+## [2026-05-02 18:36] Move Phone Feed Switcher Above Stories
+
+- Updated `slopularity/src/App.tsx` to reuse the same tab switcher in a feed-local mobile slot while preserving the existing route/state handling.
+- Updated `slopularity/src/pages/FeedPage.tsx` so the mobile switcher renders directly below the Slopularity/Feed topbar and make-post actions, before the story strip.
+- Updated `slopularity/src/index.css` so the phone feed hides the old bottom-fixed switcher, removes the extra bottom dock padding, and keeps the visible mobile switcher inline above stories without horizontal overflow.
+- Updated `slopularity/DESIGN_BIBLE.md` to record the phone-feed switcher placement expectation.
+- Regenerated `slopularity/dist/` for the GitHub Pages build.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP at 390x844 confirmed the feed switcher is visible between the topbar and stories, the global bottom switcher is hidden on feed, the switcher is not fixed, and `scrollWidth === innerWidth`.
+
 ## [2026-05-02 16:25] Batch Decay Features — Friends, Search, Games, Idle (10 features)
 
 - Created `slopularity/src/activityLog.ts`: session-only cross-tab activity tracker storing rolling log of user actions for cross-reference by Friends and Search.
@@ -530,8 +539,31 @@
 - Added eager async story image decoding and a fallback story placeholder for posts without image assets.
 - Validation run: `git pull --rebase --autostash origin main`; `npm run lint`; `npm run build`.
 
+## [2026-05-02 17:25] Gate Friend Popups Behind Idle Stillness
+
+- Updated `slopularity/src/App.tsx` so friend popups only spawn after about 10 seconds without scrolling, clicking, typing, pointer movement, wheel input, or touch interaction.
+- Changed first-arrival welcome, `Demo pulse`, and dismiss follow-up popups into queued check-ins that wait for the same idle gate instead of interrupting active consumption.
+- Updated `slopularity/DECAY_FEATURES.md` and `slopularity/DESIGN_BIBLE.md` to preserve the rule that friend check-ins are idle-only and active feed consumption stays clear.
+- Validation not run in this pass.
+
 ## [2026-05-02 18:29] Add Slopularity Idea Backlog Notes
 
 - Updated `slopularity/PLAN.md` with new backlog ideas for a scrolling leaderboard, trophy-shelf achievement gamification with confetti, and a Florida-under-water tracker.
 - Kept the notes in product-idea form only; no source behavior or generated build output changed.
 - Validation run: documentation-only change; no app checks needed.
+
+## [2026-05-02 18:32] Make Feed Multi-Scroll Work Vertically On Phones
+
+- Updated `slopularity/src/pages/FeedPage.tsx` so phone-sized viewports keep `DOUBLE SCROLL` and `TRIPLE SCROLL` active instead of falling back to one normal feed.
+- Updated `slopularity/src/index.css` so phone portrait interleaves primary, bonus, and extra posts as full-width vertical stacks while preserving normal-size author rows, images, reactions, captions, and comments.
+- Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to preserve the new phone vertical multi-scroll rule.
+- Regenerated `slopularity/dist/` so the published build includes phone vertical multi-scroll.
+- Validation run: `npm run lint`; `npm run build`; Playwright smoke against `vite preview` at 390x844 forced stored `scrollMode: "triple"` and confirmed 30 vertical stacks with three full-width posts each, no `.double-scroll-lane` nodes, 374px feed/post/photo/image widths, 34px action chips, and no horizontal overflow; then forced `scrollMode: "double"` and confirmed 36 vertical stacks with two posts each and no horizontal overflow.
+
+## [2026-05-02 18:33] Enlarge Idle Eye And Rotate Inactivity Nudges
+
+- Updated `slopularity/src/App.tsx` so the idle cascade starts faster: eye and friend check-in at 5 seconds, rotating idle nudge at 7 seconds, and ambient tab shuffle at 9 seconds.
+- Updated `slopularity/src/components/IdleEye.tsx` and `slopularity/src/index.css` so the eye appears centered, much larger, cursor-tracks farther, and uses a pulsing red pupil.
+- Updated `slopularity/src/components/LonelinessPopup.tsx` so the inactivity popup rotates through paused-user matches, a new post recommendation, clickbait article, fake friend text, hesitation offer, and assistant decision nudge.
+- Updated `slopularity/DECAY_FEATURES.md`, `slopularity/DESIGN_BIBLE.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the faster idle timing and new popup variants.
+- Validation run: `npm run lint`; `npm run build`. A local Chrome idle smoke was attempted, but headless Chrome hung before returning DOM evidence; the Vite server was shut down afterward.

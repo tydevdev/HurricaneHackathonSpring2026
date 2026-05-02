@@ -31,8 +31,8 @@ Each entry includes:
 | Bot comment spam | View any post comments | All comments read as spam-bot and fake-human social proof, brand plugs, referral-code energy | 0+ | implemented |
 | Brand-safe reply conversion | Submit a comment on a post | User's comment gets converted into a brand-safe recommendation reply | 0+ | implemented |
 | Reaction language | Engage with post reactions | Reaction buttons are "Jealousy", "Cancel", "This offends me" instead of normal social reactions | 0+ | implemented |
-| Double Scroll unlock | Scroll past 10 posts | Confetti modal offers "Super Scroller" trial, enables two simultaneous feed lanes | 0+ | implemented |
-| Triple Scroll unlock | Scroll past 20 posts (after double) | Same celebration modal, adds a third feed lane | 0+ | implemented |
+| Double Scroll unlock | Scroll past 10 posts | Confetti modal offers "Super Scroller" trial, enables two simultaneous feed lanes on wide screens or interleaved full-width posts on phones | 0+ | implemented |
+| Triple Scroll unlock | Scroll past 20 posts (after double) | Same celebration modal, adds a third lane on wide screens or a third interleaved full-width post on phones | 0+ | implemented |
 | Repeated post loop | Keep scrolling | Canonical 50 posts repeat in rendered cycles, loop instances get unique labels | 0+ | implemented |
 | Post overflow menu | Tap three-dot menu | Menu options include "cancel", "envision as yourself with AI", product-oriented actions | 0+ | implemented |
 
@@ -74,18 +74,18 @@ Each entry includes:
 
 | Feature | Trigger | What Degrades | Stage | Status |
 |---------|---------|---------------|-------|--------|
-| Popup friend check-ins | Idle time / manual demo pulse / tab actions | Chat popups from fake friends slide in with sales-wrapped care | all | implemented |
-| Dismiss follow-up | Dismiss a popup at stage 3+ | One softer follow-up popup spawns after first dismiss (one-shot per session) | 3+ | implemented |
+| Popup friend check-ins | 10 seconds without scrolling, clicking, typing, moving, or touching | Chat popups from fake friends slide in with sales-wrapped care only after the user goes still | all | implemented |
+| Queued demo / dismiss follow-up | Demo pulse or first dismiss at stage 3+ | The next friend popup is queued, then waits for the same 10-second idle gate before appearing | 3+ | implemented |
 | Leaked intent fields | Popup visible at stage 4 | `friendship_intent`, `handoff_to_checkout`, `abandonment_risk` show in popup small text | 4 | implemented |
 
 ## Idle / Stillness
 
 | Feature | Trigger | What Degrades | Stage | Status |
 |---------|---------|---------------|-------|--------|
-| Watching eye | No interaction for 10 seconds | Small eye icon appears bottom-left, blinks every 3s, follows cursor. Disappears instantly on any interaction | all | implemented |
-| Ambient tab reorganization | No interaction for 12 seconds | App silently reorders the tab bar (swaps two random tabs). Nothing is acknowledged when user returns | all | implemented |
-| Loneliness monetization | No interaction for 15 seconds | Popup: "You've been quiet. We've matched you with 3 people who also paused here." Matches are brand ambassadors | all | implemented |
-| Idle popup spawn | No interaction for 18 seconds | Popup friend spawns with idle-specific message, instability +2 | all | implemented |
+| Watching eye | No interaction for 5 seconds | Large centered eye appears, blinks every 3s, tracks the cursor, and pulses a red pupil. Disappears instantly on any interaction | all | implemented |
+| Idle nudge rotation | No interaction for 7 seconds | Center-bottom popup rotates through paused-user matches, a new post, clickbait article, fake friend text, hesitation offer, and assistant decision nudge | all | implemented |
+| Ambient tab reorganization | No interaction for 9 seconds | App silently reorders the tab bar (swaps two random tabs). Nothing is acknowledged when user returns | all | implemented |
+| Idle popup spawn | No interaction for 5 seconds | Popup friend spawns with idle-specific message, instability +2; queued manual/dismiss popups can use the same gate | all | implemented |
 
 ---
 

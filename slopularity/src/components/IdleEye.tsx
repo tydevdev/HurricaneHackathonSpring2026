@@ -11,7 +11,7 @@ export function IdleEye({ visible }: IdleEyeProps) {
   const [blink, setBlink] = useState(false)
   const [pupilOffset, setPupilOffset] = useState({ x: 0, y: 0 })
 
-  // Blink every 3 seconds
+  // Blink every 3 seconds.
   useEffect(() => {
     if (!visible) return
     const id = window.setInterval(() => {
@@ -21,7 +21,7 @@ export function IdleEye({ visible }: IdleEyeProps) {
     return () => window.clearInterval(id)
   }, [visible])
 
-  // Follow cursor with a subtle lag
+  // Follow cursor with a subtle lag.
   useEffect(() => {
     if (!visible) return
 
@@ -36,7 +36,7 @@ export function IdleEye({ visible }: IdleEyeProps) {
       const dx = e.clientX - cx
       const dy = e.clientY - cy
       const dist = Math.sqrt(dx * dx + dy * dy)
-      const maxShift = 4
+      const maxShift = 14
       const scale = Math.min(1, dist / 300)
       setPupilOffset({
         x: (dx / (dist || 1)) * maxShift * scale,

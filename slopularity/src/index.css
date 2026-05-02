@@ -4139,6 +4139,40 @@ p {
 [data-stage="4"] .tabbar a:nth-child(2n) { transform: translateY(-1px); }
 [data-stage="4"] .tabbar a:nth-child(3n) { transform: translateY(1px); }
 
+.bug-scatter-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.bug-scatter-bug {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  font-size: clamp(1.55rem, 2.6vw, 2.65rem);
+  filter: drop-shadow(0 6px 10px rgba(15, 23, 42, 0.16));
+  transform: translate3d(var(--bug-from-x), var(--bug-from-y), 0) rotate(0deg) scale(var(--bug-scale));
+  animation: bug-scatter-diagonal var(--bug-duration) linear forwards;
+}
+
+@keyframes bug-scatter-diagonal {
+  0% {
+    opacity: 0;
+    transform: translate3d(var(--bug-from-x), var(--bug-from-y), 0) rotate(0deg) scale(var(--bug-scale));
+  }
+  8%,
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--bug-to-x), var(--bug-to-y), 0) rotate(var(--bug-spin)) scale(var(--bug-scale));
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   [data-stage="3"] .surface,
   [data-stage="3"] .feature-card,
@@ -4154,8 +4188,13 @@ p {
   [data-stage="4"] .games-stage::after,
   [data-stage="4"] .feature-card::after,
   [data-stage="4"]::before,
-  [data-stage="4"] .phase-pill .phase-dot {
+  [data-stage="4"] .phase-pill .phase-dot,
+  .bug-scatter-bug {
     animation: none !important;
+  }
+
+  .bug-scatter-layer {
+    display: none;
   }
 }
 

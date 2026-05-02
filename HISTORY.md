@@ -1,5 +1,14 @@
 # History
 
+## [2026-05-02 19:00] Stage 4 Ambient Bug Crawl
+
+- Added `slopularity/src/components/BugScatter.tsx` so stage 4 occasionally sends a bug emoji diagonally across the viewport from offscreen to offscreen on a randomized 30-second to 5-minute timer.
+- Updated `slopularity/src/App.tsx` to mount the ambient bug layer alongside the idle surveillance layers, gated by the visible decay stage.
+- Updated `slopularity/src/index.css` with the fixed pointer-events-none bug layer, diagonal animation, and reduced-motion suppression.
+- Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the stage-4 ambient crawl rule.
+- Regenerated `slopularity/dist/` so the published build includes the ambient crawl.
+- Validation run: `npm run lint`; `npm run build`; Playwright smoke forced stage 4, dispatched the hidden QA event `slopularity:force-bug-scatter`, confirmed one `.bug-scatter-bug`, no horizontal overflow, and no console/page errors.
+
 ## [2026-05-02 18:42] Add Click-Driven Tab Shuffle
 
 - Updated `slopularity/src/App.tsx` so clicking a different app tab shuffles the app tab order immediately after navigation while keeping the Landing link fixed before the app tabs.

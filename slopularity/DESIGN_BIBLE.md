@@ -348,6 +348,8 @@ Recommended thresholds:
 - stage 3: internal labels, synthetic sources, task logs
 - stage 4: source leakage, broken controls, final reveal path
 
+At stage 4, the interface may also leak small ambient impossibilities that feel like production debris rather than a modal or explanation. One implemented example is a bug emoji that occasionally crosses diagonally from offscreen to offscreen at a random interval between 30 seconds and 5 minutes. It must stay pointer-events-none, respect reduced motion, and remain rare enough that it feels like the app is rotting at the edge of attention instead of becoming a game mechanic.
+
 Do not scatter one-off state mutations across page files. Keep global phase, popup orchestration, idle handling, and demo controls centralized enough that future agents can reason about the system quickly.
 
 ## Source Narrative

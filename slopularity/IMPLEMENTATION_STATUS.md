@@ -2,6 +2,14 @@
 
 Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESIGN_BIBLE.md` stays the product/design execution guide. This file records what is actively intentional in the app right now, what is still a skeleton, and which feature flags are keeping unfinished mechanics out of the way.
 
+## [2026-05-02 19:00] Stage 4 Ambient Bug Crawl
+
+- Active focus: app-level late-stage ambient decay in `App.tsx`, `src/components/BugScatter.tsx`, and `index.css`.
+- Behavior changed: at stage 4 only, a bug emoji occasionally crosses diagonally from offscreen to offscreen on a randomized 30-second to 5-minute timer.
+- Behavior preserved: the effect is pointer-events-none, hidden when reduced motion is requested, and does not appear in stages 1-3.
+- Files changed: `src/App.tsx`, `src/components/BugScatter.tsx`, `src/index.css`, `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
+- Validation run: `npm run lint`; `npm run build`; Playwright smoke forced stage 4, dispatched the hidden QA event `slopularity:force-bug-scatter`, confirmed one `.bug-scatter-bug`, no horizontal overflow, and no console/page errors.
+
 ## [2026-05-02 18:45] Profile Stats And Trophy Redesign
 
 - Active focus: `ProfilePage.tsx`, app-level scroll telemetry in `App.tsx`, and Profile-specific responsive styling in `index.css`.

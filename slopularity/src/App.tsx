@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
 import { pushActivity } from './activityLog'
+import { BugScatter } from './components/BugScatter'
 import { IdleEye } from './components/IdleEye'
 import { LonelinessPopup, type IdleNudgeDestination } from './components/LonelinessPopup'
 import { PopupSwarm } from './components/PopupSwarm'
@@ -619,6 +620,7 @@ function App() {
       )}
 
       {/* Idle surveillance layer */}
+      <BugScatter stage={visibleStage} />
       <IdleEye visible={idleEyeVisible} />
       <LonelinessPopup
         visible={lonelinessVisible}

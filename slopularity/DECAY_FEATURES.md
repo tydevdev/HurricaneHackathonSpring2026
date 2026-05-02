@@ -92,6 +92,7 @@ Each entry includes:
 | Brand subtitle leak | Reach stage 4 | Appbar subtitle changes from "everything app · 2030" to leaked fragment | 4 | implemented |
 | Phase pill leak | Reach stage 4 | Phase indicator shows leaked internal string | 4 | implemented |
 | Click-driven tab shuffle | Click a different app tab | App tabs reshuffle into a new order immediately after the page switch. The Landing escape link stays fixed before the shuffled app tabs | all | implemented |
+| Ambient bug crawl | Reach stage 4 and stay in the app | A bug emoji occasionally crawls diagonally from off one side of the screen to the other on a random 30-second to 5-minute timer | 4 | implemented |
 
 ## Popups / Chat Swarm
 

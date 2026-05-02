@@ -33,6 +33,7 @@ The earlier projects were built to figure out the direction and now live under `
 - Work inside `slopularity/` by default.
 - Work inside an archived subproject folder only when the user explicitly targets that subproject.
 - Do root-only changes at the repository root.
+- Build every active web app for both full desktop pages and phone-sized screens from the start. Do not treat mobile as a late cleanup pass.
 - For Vite subprojects, use their local scripts from inside that folder:
   - `npm install`
   - `npm run dev`
@@ -78,7 +79,7 @@ The earlier projects were built to figure out the direction and now live under `
 
 - Treat every project as a demo, but never as disposable. Each one should feel polished, well fleshed out, and built with care.
 - Make the core interaction complete enough that a real visitor can understand the idea, use it, and see why it is interesting without reading extra explanation.
-- For websites and browser apps, design and verify both desktop and phone experiences before calling the work done.
+- For websites and browser apps, design, implement, and verify both desktop web pages and phone-sized experiences before calling the work done.
 - Websites must look great on computer and phone: responsive layout, readable text, no awkward overflow, no broken spacing, and no important controls hidden off-screen.
 - Websites must be fully interactable on computer and phone: mouse, keyboard where relevant, touch targets, scrolling, forms, buttons, menus, gestures, and game controls should work in the appropriate viewport.
 - When practical, verify responsive behavior with both a desktop browser viewport and a phone-sized viewport, then record that validation in `HISTORY.md`.
@@ -97,21 +98,28 @@ The earlier projects were built to figure out the direction and now live under `
 - Commit in small, reviewable increments during active work.
 - Use descriptive commit messages tied to behavior changes.
 - Run the relevant checks before pushing.
+- Avoid creating branches by default. Work on the current branch unless the user explicitly asks for a branch or isolation is clearly necessary for risky work.
+- When merging or pulling, be careful and deliberate: inspect incoming changes, preserve unrelated work, resolve straightforward conflicts directly, and keep `main` current without turning branch management into the task.
 - Whenever making repository changes, commit and push them before calling the task done.
 - If pushing requires resolving conflicts, resolve straightforward conflicts directly and continue.
 - If a conflict is not obvious to solve, stop and explain the conflicting files, the competing changes, and the decision needed from the user.
 - Avoid giant end-of-session commits when multiple logical changes occurred.
 
-## Subagent Acceleration
+## Codex Subagent Acceleration
 
-- Treat subagents as a default speed tool, not a last resort.
-- For every actionable task, actively look for parallel work that can be delegated immediately: codebase exploration, independent implementation slices, research, verification, design critique, test review, risk hunting, or cleanup.
-- Keep subagents working constantly whenever there is any useful independent thread of work; prefer one primary local path plus parallel support over a single-agent bottleneck.
-- Use multiple subagents when the task has separable surfaces, such as different subprojects, UI and data logic, implementation and testing, or build debugging and product polish.
-- For image generation work, exclusively delegate generation to subagents. The main agent should write direction, review results, and integrate assets, but must not generate images directly.
-- When directing image-generation subagents, specify `transparent background` when the asset should have no backdrop; the image generator can return transparent-background images when explicitly asked.
-- Give each subagent concrete ownership, clear output expectations, and file boundaries when editing is involved.
-- Integrate subagent results yourself so the final outcome feels cohesive, fast, and finished.
+- This section applies to Codex only. Other agents should follow their own tooling, model, and delegation rules unless the user explicitly tells them to use Codex-style subagents.
+- Codex should treat subagents as a default speed tool, not a last resort.
+- Codex can have 6 subagents running in parallel at a time in this environment; if more are needed, queue the next wave after one finishes or closes.
+- Codex should strongly prefer `gpt-5.3-codex-spark` for easy, well-bounded subagent work. It is super fast, but not especially smart, so give it very explicit instructions, tight file boundaries, and exact output expectations, then have the main Codex agent review, test, and integrate its work before treating it as done.
+- Codex should use `gpt-5.4` with `reasoning_effort: low` for medium-complexity support work when Spark is too weak for the task. It is a little smarter, but still not the brightest and is noticeably slower, so prefer Spark whenever the task can be made explicit enough.
+- For every actionable task, Codex should actively look for parallel work that can be delegated immediately: codebase exploration, independent implementation slices, research, verification, design critique, test review, risk hunting, or cleanup.
+- Codex should keep subagents working constantly whenever there is any useful independent thread of work; prefer one primary local path plus parallel support over a single-agent bottleneck.
+- Codex should use multiple subagents when the task has separable surfaces, such as different subprojects, UI and data logic, implementation and testing, or build debugging and product polish.
+- For image generation work, Codex should exclusively delegate generation to subagents. The main agent should write direction, review results, and integrate assets, but must not generate images directly.
+- Image-generation subagents must use `gpt-5.4` with `reasoning_effort: low`. Do not assign image generation or the `imagegen` skill to `gpt-5.3-codex-spark`; Spark cannot use image generation in this environment.
+- When Codex directs image-generation subagents, specify `transparent background` when the asset should have no backdrop; the image generator can return transparent-background images when explicitly asked.
+- Codex should give each subagent concrete ownership, clear output expectations, and file boundaries when editing is involved.
+- Codex should integrate subagent results itself so the final outcome feels cohesive, fast, and finished.
 
 ## Parallel Agent Stability
 

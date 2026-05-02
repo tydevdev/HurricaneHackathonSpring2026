@@ -1,5 +1,15 @@
 # History
 
+## [2026-05-02 14:31] Focus Feed And Gate Noisy Mechanics
+
+- Rebuilt `slopularity/src/pages/FeedPage.tsx` into a mobile-first social photo feed with a top feed bar, story strip, stacked square posts, author rows, icon actions, captions, comment links, and timestamps.
+- Expanded `slopularity/src/content.ts` with feed story data and richer post metadata for the intentional feed pass.
+- Added `slopularity/src/featureFlags.ts` with `featureFlags.interruptionLayer` and updated `slopularity/src/App.tsx` so popup rendering, idle-triggered popups, follow-up popups, and visible degradation can stay disabled while the feed is being built.
+- Updated `slopularity/src/index.css` so the Feed tab hides the diagnostic rail, centers the feed, uses bottom-style navigation on phone widths, and keeps the feed UI in a calmer Instagram-like structure without copying Instagram branding.
+- Created `slopularity/IMPLEMENTATION_STATUS.md` as the current-build ledger for active focus, skeleton mechanics, feature flags, and validation notes.
+- Updated root `AGENTS.md`, `slopularity/AGENTS.md`, and `slopularity/DESIGN_BIBLE.md` so future agents keep `PLAN.md` as idea canon, use the design bible for execution rules, and record current implementation posture separately.
+- Validation run: generated and inspected an imagegen feed mockup, ran `npm run lint` and `npm run build` in `slopularity/`, refreshed Browser/IAB at `http://127.0.0.1:5173/`, confirmed the feed header precedes stories, confirmed no popup text is present, and confirmed degraded captions are suppressed while `interruptionLayer` is off.
+
 ## [2026-05-02 14:26] Clarify Slopularity Satirical Purpose
 
 - Expanded `slopularity/DESIGN_BIBLE.md` with a clearer `Purpose`, `Satirical Position`, and `Audience Takeaway` so future agents understand the website as an interactive satire of the internet collapsed into one AI-managed everything app.

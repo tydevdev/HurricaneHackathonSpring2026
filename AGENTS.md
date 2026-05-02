@@ -24,6 +24,7 @@ The earlier projects were built to figure out the direction and now live under `
 - Keep the first version understandable without explanatory copy. The app should demonstrate the satire through behavior, not through visible text announcing the premise.
 - Use `slopularity/PLAN.md` for idea tracking and `slopularity/DESIGN_BIBLE.md` for product/design execution rules. Future agents should update the design bible whenever a major section, mechanic, visual language, copy rule, collapse behavior, or responsive expectation changes.
 - For each substantial `slopularity/` section change, record the intention behind the section in `DESIGN_BIBLE.md`: what the user should experience, how interaction changes it, which collapse hooks affect it, and what future agents must preserve.
+- Use `slopularity/IMPLEMENTATION_STATUS.md` for periodic current-state notes: what is actively being implemented with intention, what remains a skeleton, which feature flags are temporarily off for testing, and what was validated. Keep `PLAN.md` focused on product ideas rather than session-by-session status.
 
 ## Development Workflow
 

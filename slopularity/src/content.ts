@@ -10,29 +10,53 @@ export const tabs: Array<{ id: TabId; label: string }> = [
   { id: 'profile', label: 'Profile' },
 ]
 
+export const feedStories = [
+  { name: 'Mira', initials: 'MV', tone: 'sunset' },
+  { name: 'Jules', initials: 'JV', tone: 'pool' },
+  { name: 'Nia', initials: 'NS', tone: 'mint' },
+  { name: 'Lena', initials: 'LN', tone: 'violet' },
+  { name: 'Marco', initials: 'MC', tone: 'gold' },
+  { name: 'You', initials: 'ME', tone: 'quiet' },
+]
+
 export const feedPosts = [
   {
     author: 'Mira Vale',
     handle: '@mira.everywhere',
+    initials: 'MV',
+    location: 'Santorini, sponsored weather',
     title: 'Woke up in Santorini, shipped a company, healed my cortisol.',
     sponsor: 'placed by GlowNest',
     stats: '4.8M saves',
+    altStats: '4.8M saves / 12K envy events',
+    comments: 'View all 18,402 comments',
+    time: '12m',
     image: 'vacation',
   },
   {
     author: 'Jules Voss',
     handle: '@jules.v12',
+    initials: 'JV',
+    location: 'Morning stack, monetized',
     title: 'My 5am routine now owns a small island and has better skin than me.',
     sponsor: 'with AuraBank Select',
     stats: '891K comparisons',
+    altStats: '891K comparisons / 12K envy events',
+    comments: 'View all 6,108 comments',
+    time: '34m',
     image: 'routine',
   },
   {
     author: 'Nia Sol',
     handle: '@nia.unreal',
+    initials: 'NS',
+    location: 'Bathroom mirror beta',
     title: 'No filter, just discipline, lighting, and a partner brand in stealth.',
     sponsor: 'soft launch by FaceMint',
     stats: '2.1M wants',
+    altStats: '2.1M wants / 12K envy events',
+    comments: 'View all 9,774 comments',
+    time: '1h',
     image: 'beauty',
   },
 ]

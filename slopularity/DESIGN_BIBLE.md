@@ -120,6 +120,7 @@ The app can look compromised, but it should remain navigable. The user should fe
 - Every meaningful user action should either reveal a new contradiction, increase instability, or create a data trail the app can later misuse.
 - Dismissal is a signal. Closing, ignoring, rejecting, pausing, or opting out should still affect the system.
 - Idle time matters. Stillness should eventually trigger check-ins, guesses, optimizations, or profile changes.
+- Noisy mechanics should be feature-flagged while they are still skeletons. Popups, idle reactions, visible degradation, and other interruption layers may be disabled during focused surface work, but they should remain easy to re-enable from a clear flag and reconnect to the same planned interaction model.
 - Reset and recovery controls may exist, but they should feel like product controls, not developer debug buttons.
 - Collapse should be deterministic enough for demos. Avoid random-only progression that makes a presentation miss the best beats.
 - Respect reduced motion. If motion is reduced, preserve the narrative through content, layout, state, and labels.
@@ -152,6 +153,8 @@ Use product-native words like `optimize`, `context`, `moment`, `signal`, `confid
 
 Intention: aspiration as a machine for comparison.
 
+The feed is the active implementation focus as of May 2, 2026. It should start as a calm, usable, mobile-first photo feed inspired by familiar social-feed anatomy: top feed bar, horizontal stories, stacked square image posts, avatar/name rows, familiar action icons, captions, comments, timestamps, and phone bottom navigation. It should not be a dashboard grid.
+
 The feed should start glossy and emotionally familiar: wellness, adventure, productivity, beauty, travel, luxury, and self-improvement blended into one scroll. As instability rises, the feed should reveal repeated faces, recycled captions, comments answering unseen prompts, fake engagement, impossible sponsor placement, and action labels that turn insecurity into product flow.
 
 Interaction hooks:
@@ -160,6 +163,13 @@ Interaction hooks:
 - repeated scrolls that mutate captions or counts
 - sponsor disclosures that move, soften, or rename themselves
 - posts that reappear with tiny differences
+
+Current testing posture:
+
+- Keep the feed calm while its base UI is being fleshed out.
+- Keep popup, idle, and visible degradation mechanics disabled unless the work is explicitly about those mechanics.
+- It is acceptable for feed interactions to increment the underlying instability score while visible collapse stays off; this preserves the future plan without interrupting feed design work.
+- Use in-world captions and sponsor texture for satire before reintroducing noisy mechanics.
 
 ### Friends
 
@@ -180,6 +190,8 @@ Intention: connection as an interruptive sales interface.
 
 Popups should first read as social notifications. They should slide in with intimate timing, follow the user across tabs, react to hesitation or idle time, and return softer after dismissal.
 
+This mechanic is currently a skeleton and should stay feature-flagged off during feed-focused work. When it comes back, implement it deliberately from the interaction plan rather than letting placeholder popups interrupt unrelated UI development.
+
 Interaction hooks:
 
 - dismissing creates a gentler follow-up
@@ -192,6 +204,8 @@ Interaction hooks:
 Intention: the app cannot let the user simply exist.
 
 Stillness should be interpreted as loneliness, hesitation, confusion, churn risk, insecurity, or buyer intent. On desktop, use mouse, scroll, keyboard, focus, and click signals. On phone, use touch, scroll, orientation, visibility, and time since last tap.
+
+This mechanic is currently a skeleton and should stay feature-flagged off during feed-focused work. Re-enable it only when the idle behavior itself is being designed, tested, and tuned for desktop and phone.
 
 Interaction hooks:
 
@@ -271,6 +285,8 @@ Interaction hooks:
 Use one shared instability model with named events. Favor explicit events like `feed_compare`, `friend_sales_pivot`, `game_label_submitted`, `search_personal_query`, `assistant_direct_question`, `profile_privacy_toggle`, `popup_dismissed`, `idle_pause_detected`, and `cart_context_added`.
 
 Each event should be easy to trace from UI action to state change. Each threshold should unlock surface changes across more than one tab so the world feels connected.
+
+Testing rule: unfinished collapse effects must be easy to disable without deleting the underlying state model. Keep skeleton interruption and degradation mechanics behind clear feature flags, and record the current flag posture in `IMPLEMENTATION_STATUS.md`.
 
 Recommended thresholds:
 

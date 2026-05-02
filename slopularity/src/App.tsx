@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
 import { PopupSwarm } from './components/PopupSwarm'
-import { discoveries, humanFragments, popupSeeds, tabs } from './content'
+import { popupSeeds, tabs } from './content'
 import { featureFlags } from './featureFlags'
 import { AssistantPage } from './pages/AssistantPage'
 import { FeedPage } from './pages/FeedPage'
@@ -36,7 +36,6 @@ function App() {
   const [activeTab, setActiveTab] = useState<TabId>(loadTab)
   const [score, setScore] = useState(loadScore)
   const [popups, setPopups] = useState<Popup[]>([])
-  const [idle, setIdle] = useState(false)
   const [muted, setMuted] = useState(false)
   const [assistantText, setAssistantText] = useState('')
   const [query, setQuery] = useState('')
@@ -49,10 +48,6 @@ function App() {
   const interruptionMode = featureFlags.interruptionLayer
   const stage = stageFor(score)
   const visibleStage = interruptionMode ? stage : 1
-  const foundDiscoveries = discoveries.slice(0, Math.max(0, visibleStage - 1))
-  const visibleFragments = visibleStage >= 3
-    ? humanFragments.slice(0, visibleStage === 3 ? 1 : humanFragments.length)
-    : []
 
   const visiblePopups = muted ? [] : popups
 
@@ -126,16 +121,13 @@ function App() {
     }
 
     let timer = window.setTimeout(() => {
-      setIdle(true)
       addInstability(2)
       spawnPopup('idle')
     }, 9000)
 
     const markActive = () => {
-      setIdle(false)
       window.clearTimeout(timer)
       timer = window.setTimeout(() => {
-        setIdle(true)
         addInstability(2)
         spawnPopup('idle')
       }, 9000)
@@ -209,7 +201,6 @@ function App() {
     setScore(0)
     setActiveTab('feed')
     setPopups([])
-    setIdle(false)
     setMuted(false)
     setAssistantText('')
     setQuery('')
@@ -318,33 +309,6 @@ function App() {
       </nav>
 
       <section className="workspace" aria-live="polite">
-        <aside className="command-rail" aria-label="Internet status">
-          <div className="metric-card">
-            <span>Everything Score</span>
-            <strong>{Math.min(100, 72 + score)}%</strong>
-            <p>More complete every time you surrender another preference.</p>
-          </div>
-          <div className="metric-card warning">
-            <span>Attention State</span>
-            <strong>{idle ? 'Harvesting pause' : 'Tracking motion'}</strong>
-            <p>{idle ? 'Stillness converted to intent.' : 'Mouse, touch, scroll, and hesitation active.'}</p>
-          </div>
-          <div className="discovery-list">
-            <span>Recovered internals</span>
-            {foundDiscoveries.length === 0 && <p>No anomalies surfaced.</p>}
-            {foundDiscoveries.map((discovery) => (
-              <code key={discovery.id}>{stage >= 4 ? discovery.id : discovery.label}</code>
-            ))}
-          </div>
-          <div className="discovery-list human-fragments">
-            <span>Last human developer</span>
-            {visibleFragments.length === 0 && <p>Source review clean.</p>}
-            {visibleFragments.map((fragment) => (
-              <code key={fragment}>{fragment}</code>
-            ))}
-          </div>
-        </aside>
-
         <div className="tab-panel">
           {activeTab === 'feed' && (
             <FeedPage
@@ -391,7 +355,9 @@ function App() {
           {activeTab === 'assistant' && (
             <AssistantPage assistantText={assistantText} stage={visibleStage} onAsk={handleAssistant} />
           )}
-          {activeTab === 'profile' && <ProfilePage stage={visibleStage} onReveal={() => addInstability(2)} />}
+          {activeTab === 'profile' && (
+            <ProfilePage stage={visibleStage} score={score} onReveal={() => addInstability(2)} />
+          )}
         </div>
       </section>
 

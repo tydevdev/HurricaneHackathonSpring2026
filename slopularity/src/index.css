@@ -380,34 +380,20 @@ p {
 
 .workspace {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 312px;
+  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
   align-items: start;
 }
 
 .tab-panel {
   min-width: 0;
-}
-
-.tab-feed .workspace {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-.tab-feed .command-rail {
-  display: none;
+  width: min(960px, 100%);
+  margin: 0 auto;
 }
 
 .tab-feed .tab-panel {
   display: grid;
   justify-items: center;
-}
-
-.command-rail {
-  position: sticky;
-  top: 120px;
-  display: grid;
-  gap: 12px;
-  order: 2;
 }
 
 .surface {
@@ -2807,16 +2793,6 @@ p {
 }
 
 @media (max-width: 1080px) {
-  .workspace {
-    grid-template-columns: 1fr;
-  }
-
-  .command-rail {
-    position: static;
-    order: initial;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .feed-grid,
   .game-grid,
   .shop-grid,
@@ -2889,7 +2865,6 @@ p {
     transform: none;
   }
 
-  .command-rail,
   .feed-grid,
   .game-grid,
   .shop-grid,
@@ -4025,6 +4000,320 @@ p {
   .g-robot-eye:nth-of-type(2) { left: 34px; }
   .g-robot-mouth { bottom: 10px; width: 18px; height: 7px; }
   .g-cloud { height: 140px; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Profile / Identity surface — fully built. Replaces the old four-tile
+   profile-grid with a header + inferred-bars + discoveries + privacy +
+   source-review structure. The system shows what it has been collecting.
+   ───────────────────────────────────────────────────────────────────── */
+
+.profile-surface {
+  display: grid;
+  gap: 22px;
+}
+
+.profile-hero {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+  padding: 18px 20px;
+  background: linear-gradient(135deg, #0f172a 0%, #1f2937 60%, #312e81 100%);
+  border-radius: 18px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+.profile-hero::after {
+  content: '';
+  position: absolute;
+  inset: -40% auto auto -10%;
+  width: 320px;
+  height: 320px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.32), transparent 60%);
+  pointer-events: none;
+}
+.profile-hero > * { position: relative; z-index: 1; }
+
+.profile-avatar {
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #ec4899, #6366f1);
+  border-radius: 999px;
+  color: #fff;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: 0.04em;
+  box-shadow: 0 10px 26px rgba(236, 72, 153, 0.32);
+}
+
+.profile-id strong {
+  display: block;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 800;
+  font-style: italic;
+  font-size: 1.6rem;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.profile-id p {
+  margin: 4px 0 0;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  letter-spacing: 0.04em;
+}
+
+.profile-scores {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.profile-scores > div {
+  display: grid;
+  gap: 1px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  text-align: right;
+  min-width: 80px;
+}
+.profile-scores span {
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+.profile-scores strong {
+  font-family: 'Fraunces', Georgia, serif;
+  font-style: italic;
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+.profile-scores em {
+  font-style: normal;
+  font-size: 0.62em;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.profile-section {
+  display: grid;
+  gap: 12px;
+}
+.profile-section > header {
+  display: grid;
+  gap: 2px;
+}
+.profile-section h3 {
+  margin: 0;
+  font-family: 'Fraunces', Georgia, serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.profile-section header small {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.profile-bars {
+  display: grid;
+  gap: 8px;
+}
+.profile-bar {
+  --tone: #6366f1;
+  --tone-soft: #eef2ff;
+  --tone-deep: #312e81;
+  appearance: none;
+  border: 1px solid var(--line);
+  background: #fff;
+  display: grid;
+  grid-template-columns: minmax(120px, 0.9fr) minmax(0, 1.6fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.18s ease, transform 0.15s ease, background 0.18s ease;
+  text-align: left;
+}
+.profile-bar:hover {
+  border-color: var(--tone);
+  background: linear-gradient(180deg, #fff, var(--tone-soft));
+}
+.profile-bar.tone-hype      { --tone: #ec4899; --tone-soft: #fdf2f8; --tone-deep: #831843; }
+.profile-bar.tone-wellness  { --tone: #10b981; --tone-soft: #ecfdf5; --tone-deep: #064e3b; }
+.profile-bar.tone-finance   { --tone: #1f2937; --tone-soft: #f1f5f9; --tone-deep: #0f172a; }
+.profile-bar.tone-dating    { --tone: #f97316; --tone-soft: #fff7ed; --tone-deep: #7c2d12; }
+.profile-bar.tone-nostalgia { --tone: #a855f7; --tone-soft: #faf5ff; --tone-deep: #581c87; }
+
+.profile-bar-label {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+.profile-bar-track {
+  position: relative;
+  height: 8px;
+  background: var(--tone-soft);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.profile-bar-track em {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: linear-gradient(90deg, var(--tone), var(--tone-deep));
+  border-radius: 999px;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.profile-bar-value {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.84rem;
+  color: var(--tone-deep);
+  font-weight: 600;
+}
+
+.profile-discoveries {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.profile-discoveries li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  background: #fff7f7;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+}
+.profile-discoveries code {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.78rem;
+  color: #b91c1c;
+  word-break: break-word;
+}
+.profile-discoveries button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: #b91c1c;
+  font-size: 0.74rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 999px;
+  transition: background 0.15s ease;
+}
+.profile-discoveries button:hover { background: #fee2e2; }
+
+.profile-empty {
+  margin: 0;
+  padding: 14px 16px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-size: 0.88rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.profile-privacy ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.profile-privacy li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 16px;
+  border-top: 1px solid var(--line);
+  background: #fff;
+}
+.profile-privacy li:first-child { border-top: 0; }
+.profile-privacy li > div { display: grid; gap: 1px; min-width: 0; }
+.profile-privacy li strong {
+  font-size: 0.92rem;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.profile-privacy li small { font-size: 0.78rem; color: var(--muted); }
+
+.profile-toggle {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 22px;
+  background: linear-gradient(135deg, #6366f1, #ec4899);
+  border-radius: 999px;
+  transition: background 0.2s ease;
+}
+.profile-toggle em {
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 999px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.profile-toggle.is-on em { transform: translateX(16px); }
+.profile-privacy-note {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.profile-fragments ul {
+  list-style: none;
+  margin: 0;
+  padding: 14px 16px;
+  background: #fff7f7;
+  border: 1px solid #fecaca;
+  border-radius: 14px;
+  display: grid;
+  gap: 6px;
+}
+.profile-fragments code {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.76rem;
+  color: #b91c1c;
+  word-break: break-word;
+  line-height: 1.45;
+}
+
+@media (max-width: 720px) {
+  .profile-hero { grid-template-columns: auto minmax(0, 1fr); }
+  .profile-scores { grid-column: 1 / 3; justify-content: flex-start; }
+  .profile-bar { grid-template-columns: 1fr; gap: 6px; }
+  .profile-bar-track { width: 100%; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────

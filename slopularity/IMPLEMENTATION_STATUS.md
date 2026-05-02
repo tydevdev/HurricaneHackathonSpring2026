@@ -2,6 +2,32 @@
 
 Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESIGN_BIBLE.md` stays the product/design execution guide. This file records what is actively intentional in the app right now, what is still a skeleton, and which feature flags are keeping unfinished mechanics out of the way.
 
+## [2026-05-02 16:00] Onboarding Gate Sequence
+
+- Active focus: landing page rebuilt as a single-screen onboarding gate with 3-click degradation.
+- Behavior changed: the full marketing manifesto (pillars, marquee, stats, preview window, manifesto quote, second CTA, footer links) has been stripped. The landing is now one focused screen with the brand bar, headline, subtitle, and one "Enter the Singularity" button.
+- Behavior changed: click 1 shuffles UI element order and repositions the button (fake page navigation with blink). Click 2 garbles the tagline to "Everything you before. Need you need you know it." and makes the button visibly crooked. Click 3 triggers a hinge-fall animation where the entire page swings off screen, then Helpy appears in the bottom-right with a rescue link to `/app/`.
+- New documentation: `DECAY_FEATURES.md` created as a living tracker of all implemented decay/slop features. `AGENTS.md` (both root and slopularity) updated to require periodic updates to this doc.
+- Files changed: `src/pages/LandingPage.tsx` (rewritten), `src/index.css` (gate layout, hinge-fall keyframe, Helpy rescue styles added), `DESIGN_BIBLE.md` (Onboarding Gate section added), `DECAY_FEATURES.md` (new), `AGENTS.md` (updated), root `AGENTS.md` (updated), root `HISTORY.md` (appended).
+- Validation run: `npm run lint` clean; `npm run build` clean.
+
+## [2026-05-02 16:05] Search Surface Overhaul
+
+- Active focus: `SearchPage.tsx` and Search-specific responsive styling in `index.css`.
+- Search direction: a focused universal-command surface, not a generic result pile. The page now centers one big command hero, a synthesized answer, scope lenses, a ranking signal rail, a source chain, and four ranked rows that blur friends, products, sources, and memory.
+- Behavior changed: submitting the search, using prompt chips, changing scopes, refreshing the answer, showing sources, or choosing a result all route through the shared `onSearch` instability event.
+- Stage behavior: phase 1 reads clean and powerful; phase 2 blends personal context; phase 3 exposes sponsored ranking and circular source hints; phase 4 leaks `/internal/generated/sources-that-cite-themselves.md`.
+- Files changed: `src/pages/SearchPage.tsx`, `src/index.css`, `DESIGN_BIBLE.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
+- Validation run: `npm run lint`; `npm run build`; Chrome DevTools Protocol checked the built `/app/search/` route at 390px mobile emulation with no document horizontal overflow.
+
+## [2026-05-02 15:58] Feed Story Viewer Render Fix
+
+- Active focus: feed story viewer rendering and modal dismissal.
+- Bug fixed: the three-slide story track now translates by one slide width instead of the full 300% track width, so the active story image stays in the visible frame.
+- Behavior changed: clicking the dark backdrop outside the story viewer closes stories; close and Escape share the same cleanup path.
+- Files changed: `src/pages/FeedPage.tsx`, `src/index.css`, `DESIGN_BIBLE.md`, root `HISTORY.md`, and regenerated `dist/`.
+- Validation run: `npm run lint`; `npm run build`; temporary Playwright smoke at 390x844 opened `/app/`, opened Mira's story, confirmed the active story image rendered with real dimensions, clicked the backdrop, confirmed `.story-viewer` closed, and checked no horizontal overflow or console/page errors.
+
 ## [2026-05-02 15:47] Feed Deep-Scroll Performance
 
 - Active focus: `FeedPage.tsx` deep-scroll responsiveness and feed unlock stability.

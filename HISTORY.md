@@ -1,10 +1,38 @@
 # History
 
+## [2026-05-02 16:00] Onboarding Gate Sequence + Decay Feature Tracker
+
+- Rebuilt `slopularity/src/pages/LandingPage.tsx` from the multi-section marketing manifesto into a single focused onboarding gate with one "Enter the Singularity" button and a 3-click degradation sequence.
+- Click 1: fake page navigation (blink animation), UI elements shuffle via CSS flexbox ordering, button repositions.
+- Click 2: more aggressive shuffle, button rotates crooked (3.5°), headline garbles to "Everything you before. Need you need you know it."
+- Click 3: entire landing page swings on a hinge (CSS transform-origin top center) and falls off screen; Helpy appears in bottom-right with a rescue link to `/app/`.
+- Added onboarding gate layout, hinge-fall keyframe, transition blink, Helpy rescue bubble, and responsive/reduced-motion styles to `slopularity/src/index.css`.
+- Created `slopularity/DECAY_FEATURES.md` as a living tracker of all implemented decay/slop features across Onboarding, Feed, Games, App Shell, Popups, and Idle surfaces.
+- Updated `slopularity/AGENTS.md` and root `AGENTS.md` to require periodic updates to `DECAY_FEATURES.md` when decay behaviors change.
+- Updated `slopularity/DESIGN_BIBLE.md` with the new Onboarding Gate section documenting intention, behavior, collapse hooks, copy rules, and verification notes.
+- Updated `slopularity/IMPLEMENTATION_STATUS.md` with the onboarding gate implementation entry.
+- Validation run: `npm run lint` clean; `npm run build` clean.
+
+## [2026-05-02 16:05] Overhaul Search Surface
+
+- Rebuilt `slopularity/src/pages/SearchPage.tsx` from the old one-box stub into a focused universal-search surface with a command hero, query prompts, scope lenses, synthesized top answer, ranking signal rail, source chain, and ranked results.
+- Updated `slopularity/src/index.css` with the new Search visual system, desktop/phone responsive constraints, stage-driven sponsored/source leakage styling, and a wider Search tab workspace.
+- Updated `slopularity/DESIGN_BIBLE.md` and `slopularity/IMPLEMENTATION_STATUS.md` with the Search intention, behavior impact, and validation record; regenerated `slopularity/dist/` so published `/app/search/` routes point at the current bundle.
+- Validation run: `npm run lint`; `npm run build`; Chrome DevTools Protocol checked the built `/app/search/` route at 390px mobile emulation with `documentElement.scrollWidth === innerWidth`.
+
 ## [2026-05-02 16:02] Fix Main Feed Image Clipping
 
 - Updated `slopularity/src/index.css` so the single-column feed grid explicitly uses one constrained column and feed posts cannot size wider than the visible feed shell.
 - Changed the post `content-visibility` intrinsic size hint so it estimates scroll height without forcing an 820px intrinsic width that clipped images inside the 500px feed.
 - Validation run: browser measurement confirmed shell, post, photo, and image widths now match; `npm run build`.
+
+## [2026-05-02 15:58] Fix Feed Story Viewer Rendering
+
+- Updated `slopularity/src/pages/FeedPage.tsx` so the three-slide story carousel translates by one slide width instead of the full track width, restoring visible story images.
+- Added backdrop-click dismissal for the story viewer and shared cleanup for Close, Escape, and outside clicks.
+- Updated `slopularity/src/index.css` with explicit full-frame story slide/image sizing and an image fallback layer.
+- Updated `slopularity/DESIGN_BIBLE.md` and `slopularity/IMPLEMENTATION_STATUS.md`; rebuilt `slopularity/dist/`.
+- Validation run: `npm run lint`; `npm run build`; temporary Playwright smoke at 390x844 confirmed a story image rendered with real dimensions, backdrop click closed the viewer, no horizontal overflow, and no console/page errors.
 
 ## [2026-05-02 15:54] Fix Landing Enter Route
 

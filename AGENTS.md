@@ -25,6 +25,7 @@ The earlier projects were built to figure out the direction and now live under `
 - Use `slopularity/PLAN.md` for idea tracking and `slopularity/DESIGN_BIBLE.md` for product/design execution rules. Future agents should update the design bible whenever a major section, mechanic, visual language, copy rule, collapse behavior, or responsive expectation changes.
 - For each substantial `slopularity/` section change, record the intention behind the section in `DESIGN_BIBLE.md`: what the user should experience, how interaction changes it, which collapse hooks affect it, and what future agents must preserve.
 - Use `slopularity/IMPLEMENTATION_STATUS.md` for periodic current-state notes: what is actively being implemented with intention, what remains a skeleton, which feature flags are temporarily off for testing, and what was validated. Keep `PLAN.md` focused on product ideas rather than session-by-session status.
+- Use `slopularity/DECAY_FEATURES.md` as the living catalog of every implemented, skeleton, or planned decay and slop behavior. Update it whenever a decay feature is added, changed, or removed so future agents can scan all degradation mechanics in one place.
 
 ## Development Workflow
 

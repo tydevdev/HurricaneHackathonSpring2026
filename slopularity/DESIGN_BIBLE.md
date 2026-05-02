@@ -164,7 +164,7 @@ The feed must stay smooth even when the user scrolls aggressively. Keep the cano
 Interaction hooks:
 
 - compare, envy, cancel, offended reactions
-- stories that behave like a familiar phone-native carousel: the top line fills over three seconds, auto-advances, accepts left/right image taps, and lets dragging the image move between posts
+- stories that behave like a familiar phone-native carousel: the top line fills over three seconds, auto-advances, accepts left/right image taps, lets dragging the image move between posts, and closes when the user clicks outside the viewer
 - repeated scrolls that mutate captions or counts
 - after the user has seen at least ten posts, a forced celebratory subscription modal may unlock `DOUBLE SCROLL`: two simultaneous feed lanes that make the feed feel like a feature and a threat at the same time. After another ten-post-equivalent scroll depth, the same celebration can unlock `TRIPLE SCROLL`, adding a third lane and making the upsell escalation feel earned by the user's own momentum.
 - comments that preview inline but open into a focused modal/bottom sheet with post context, sorting controls, quick replies, per-comment trust actions, and human input converted into brand-safe testimonial replies
@@ -269,6 +269,13 @@ Interaction hooks:
 Intention: universal search contaminated by incentives.
 
 Search should initially feel powerful: one box for posts, products, people, files, games, memories, answers, and settings. It should later expose sponsored ranking, synthetic citations, generated summaries citing generated summaries, internal routes, prompt fragments, and duplicate pages.
+
+Current implementation:
+
+- Search is now a focused command surface instead of a generic result list. Preserve the one-dominant-action shape: dark command hero, one synthesized answer, one small signal rail, one source chain, and a short ranked result stack.
+- Scope lenses (`All`, `People`, `Products`, `Sources`, `Memory`) filter the ranked rows without adding separate mini-pages. Keep the lenses compact and operational.
+- Stage changes should reveal contamination through ranking and provenance, not through extra explanation. Phase 2 blends personal context, phase 3 exposes sponsored ranking and circular source hints, and phase 4 leaks `/internal/generated/sources-that-cite-themselves.md`.
+- The page should stay responsive as a single-column command room on phones. Do not let prompt chips, source rows, or long generated paths create horizontal overflow.
 
 Interaction hooks:
 
@@ -394,6 +401,41 @@ The app surfaces are separate pages, not only local tab state.
 - GitHub Pages builds should include nested `dist/app/<route>/index.html` files so shared links do not depend on a server fallback
 
 Preserve the satire as behavior across routes: moving between pages can still increase instability, but URLs must remain readable, shareable, and resilient on refresh.
+
+### Onboarding Gate
+
+Intention: the first taste of collapse before the user enters the app.
+
+The landing page is a single focused screen with one button: "Enter the Singularity." The page looks polished and confident on first arrival — the tagline, brand bar, and CTA all suggest a premium product ready to welcome you.
+
+The button does not enter the app immediately. Instead, clicking it triggers a three-stage degradation sequence:
+
+1. **Click 1 — Shuffle**: The page briefly blinks (fake page navigation), then returns with UI elements rearranged: the meta eyebrow, headline, subtitle, and CTA shift their visual order via CSS flexbox ordering. The button moves to a different position. Everything looks like the same page, but shuffled, as if the product looped the user back without noticing.
+
+2. **Click 2 — Garble**: The same shuffle happens again, more aggressively wrong. The button is now visibly crooked (rotated ~3.5°). The headline text garbles from "Everything you need. Before you know you need it." to "Everything you before. Need you need you know it." The subtitle also garbles.
+
+3. **Click 3 — Hinge fall**: Instead of a page transition, the entire landing page swings on a hinge (CSS `transform-origin: top center`) and falls off the bottom of the screen like a door coming off its frame (~1.2s animation). After the fall completes, Helpy appears in the bottom-right corner with a rescue bubble: "Looks like you need some help! Click **HERE** to open the app" — and "HERE" actually navigates to `/app/`.
+
+The previous multi-section marketing manifesto (pillars, marquee, stats, preview window, second CTA, full footer) has been stripped in favor of this single focused gate. The CSS for those sections remains inert in the stylesheet.
+
+Collapse hooks:
+
+- This sequence is pre-app and does not interact with the instability score.
+- State is local to the `LandingPage` component (`clicks` counter 0–3).
+- The `onEnter` callback (real app navigation) is only triggered by Helpy's "HERE" link after the hinge fall completes.
+
+Copy rules:
+
+- The tagline variants must sound like a real product whose text got rearranged by automation, not random nonsense.
+- Helpy's message should sound like a genuine helpful assistant, not a joke about the page falling.
+- No visible text should explain that the page is broken or satirical.
+
+Verification notes:
+
+- The hinge-fall animation must not break scrolling or leave invisible interactive elements.
+- Helpy must be keyboard-accessible and visible on phone widths (full-width at small screens).
+- Reduced-motion users skip the hinge-fall animation (page simply fades out) and the Helpy pop-in animation.
+
 
 ## Keeping This Updated
 

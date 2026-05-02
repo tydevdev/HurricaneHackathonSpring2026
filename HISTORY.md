@@ -1,5 +1,10 @@
 # History
 
+## [2026-05-02 14:13] Add Claude Instruction Pointer
+
+- Created `CLAUDE.md` as a short pointer telling Claude to refer to `AGENTS.md`.
+- Validation run: confirmed the file content and reviewed the staged diff before committing.
+
 ## [2026-05-02 14:12] Require Commit And Push After Changes
 
 - Updated `AGENTS.md` commit policy so repository changes must be committed and pushed before work is considered done.

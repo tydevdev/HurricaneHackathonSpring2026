@@ -1,5 +1,12 @@
 # History
 
+## [2026-05-02 14:24] Add Slopularity Design Bible
+
+- Created `slopularity/DESIGN_BIBLE.md` as the living product and design execution guide for The Singularity, covering the north star, product promise, visual thesis, experience arc, interaction rules, copy rules, tab intentions, collapse model, source narrative, motion, responsive expectations, and update protocol.
+- Updated root `AGENTS.md` so future agents use `slopularity/PLAN.md` for idea tracking and `slopularity/DESIGN_BIBLE.md` for section intentions, visual/copy rules, collapse behavior, and responsive expectations.
+- Updated `slopularity/AGENTS.md` so agents read and maintain `DESIGN_BIBLE.md` alongside `PLAN.md`, including updating it after substantial section, mechanic, visual-system, or narrative changes.
+- Validation run: inspected `slopularity/PLAN.md`, root `AGENTS.md`, `slopularity/AGENTS.md`, and existing `HISTORY.md`; applied docs-only edits and reviewed the markdown diff.
+
 ## [2026-05-02 14:22] Strengthen Frontend Skill Defaults
 
 - Updated root `AGENTS.md` so future frontend, app, prototype, demo, game UI, landing page, and visually important web work always starts from `frontend-skill`.

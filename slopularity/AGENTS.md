@@ -15,11 +15,15 @@ Assume future product work in this repository belongs in `slopularity/`. The oth
 
 - This folder now contains the first Vite/React implementation skeleton for The Singularity.
 - Continue building from the existing app structure instead of starting over.
-- Keep `README.md`, `PLAN.md`, and this file synchronized with major product-direction decisions.
+- Keep `README.md`, `PLAN.md`, `DESIGN_BIBLE.md`, and this file synchronized with major product-direction decisions.
 - Use `PLAN.md` as the living idea tracker for tabs, mechanics, commentary targets, collapse stages, and first-build priorities.
+- Use `DESIGN_BIBLE.md` as the living product/design execution guide: surface intentions, visual language, copy rules, collapse behavior, motion, responsive expectations, and source-narrative rules.
 
 ## Future Build Rules
 
+- Before implementing or substantially changing a tab, mechanic, visual system, or narrative beat, read the relevant `DESIGN_BIBLE.md` section as well as `PLAN.md`.
+- After implementing or substantially changing a section, update `DESIGN_BIBLE.md` with the intention behind the choice, how it behaves through interaction, what collapse hooks affect it, and any copy or verification notes future agents need.
+- If a decision changes the project idea, update both `PLAN.md` and `DESIGN_BIBLE.md`; if it only changes execution details, update `DESIGN_BIBLE.md`.
 - Keep each tab surface in its own file under `src/pages/` so parallel work stays clean: `FeedPage.tsx`, `FriendsPage.tsx`, `GamesPage.tsx`, `ShopPage.tsx`, `SearchPage.tsx`, `AssistantPage.tsx`, and `ProfilePage.tsx`.
 - Keep shared app state, phase progression, idle handling, and popup orchestration in `src/App.tsx`; keep shared seeded copy/data in `src/content.ts`.
 - Build the actual usable experience first, not a marketing landing page.

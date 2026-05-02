@@ -22,6 +22,8 @@ The earlier projects were built to figure out the direction and now live under `
 - Use `quiet-collapse/` as a reference for gradual degradation, stateful discoveries, and trust failure. This project should feel broader and more like a super app: search, social, productivity, commerce, identity, assistant, files, feeds, and automation all collapsing into one overconfident surface.
 - Future implementation should make degradation interactive and earned: user actions should trigger contradictions, duplicate panels, fake integrations, generated artifacts, confident wrongness, layout drift, memory leaks, and recovery paths.
 - Keep the first version understandable without explanatory copy. The app should demonstrate the satire through behavior, not through visible text announcing the premise.
+- Use `slopularity/PLAN.md` for idea tracking and `slopularity/DESIGN_BIBLE.md` for product/design execution rules. Future agents should update the design bible whenever a major section, mechanic, visual language, copy rule, collapse behavior, or responsive expectation changes.
+- For each substantial `slopularity/` section change, record the intention behind the section in `DESIGN_BIBLE.md`: what the user should experience, how interaction changes it, which collapse hooks affect it, and what future agents must preserve.
 
 ## Development Workflow
 

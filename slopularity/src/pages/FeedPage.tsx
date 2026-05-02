@@ -42,6 +42,8 @@ const botCommenters = [
 const replyProducts = ['GlowNest', 'AuraBank Select', 'SelfOS Beauty', 'MealHalo', 'FormCloud', 'CalmCan']
 const scrollConfetti = Array.from({ length: 36 }, (_, index) => index)
 const scrollUnlockInterval = 10
+const feedScrollSessionKey = 'slopularity:feed-scroll-state'
+let hasInitializedFeedScrollMode = false
 
 type ScrollMode = 'single' | 'double' | 'triple'
 type ScrollPrompt = Exclude<ScrollMode, 'single'>
@@ -60,21 +62,74 @@ type LocalComment = {
 }
 
 type ConfettiStyle = CSSProperties & {
-  '--confetti-left': string
   '--confetti-hue': string
   '--confetti-x': string
+  '--confetti-y': string
   '--confetti-spin': string
   '--confetti-delay': string
 }
 
 function getConfettiStyle(piece: number): ConfettiStyle {
   const seed = piece + 1
+  const angle = ((seed * 53.13) % 360) * (Math.PI / 180)
+  const radiusX = (seed % 7) * 4 + 22
+  const radiusY = (seed % 9) * 3 + 18
+
   return {
-    '--confetti-left': `${4 + ((seed * 37) % 92)}%`,
     '--confetti-hue': `${(seed * 47) % 360}`,
-    '--confetti-x': `${((seed * 29) % 96) - 48}px`,
+    '--confetti-x': `${Math.cos(angle) * radiusX}vw`,
+    '--confetti-y': `${Math.sin(angle) * radiusY}vh`,
     '--confetti-spin': `${220 + seed * 33}deg`,
     '--confetti-delay': `${(seed % 15) * 32}ms`,
+  }
+}
+
+function isReloadNavigation(): boolean {
+  if (typeof window === 'undefined') {
+    return false
+  }
+
+  const navEntries = window.performance.getEntriesByType('navigation')
+  const navEntry = navEntries[0] as PerformanceNavigationTiming | undefined
+  if (navEntry?.type === 'reload') {
+    return true
+  }
+
+  // Safari compatibility fallback for older engines still surfacing legacy values.
+  return (window.performance as Performance & { navigation?: { type?: number } }).navigation?.type === 1
+}
+
+function getSavedScrollMode(): ScrollMode {
+  if (typeof window === 'undefined') {
+    return 'single'
+  }
+
+  try {
+    const rawState = window.sessionStorage.getItem(feedScrollSessionKey)
+    if (!rawState) {
+      return 'single'
+    }
+
+    const parsed = JSON.parse(rawState) as { scrollMode?: ScrollMode }
+    return parsed.scrollMode === 'double' || parsed.scrollMode === 'triple' ? parsed.scrollMode : 'single'
+  } catch {
+    return 'single'
+  }
+}
+
+function initScrollMode(): ScrollMode {
+  try {
+    if (!hasInitializedFeedScrollMode && isReloadNavigation()) {
+      window.sessionStorage.removeItem(feedScrollSessionKey)
+      hasInitializedFeedScrollMode = true
+      return 'single'
+    }
+
+    hasInitializedFeedScrollMode = true
+    return getSavedScrollMode()
+  } catch {
+    hasInitializedFeedScrollMode = true
+    return 'single'
   }
 }
 
@@ -142,7 +197,7 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
   const [openComments, setOpenComments] = useState<string | null>(null)
   const [openMenu, setOpenMenu] = useState<string | null>(null)
   const [storyIndex, setStoryIndex] = useState<number | null>(null)
-  const [storyDirection, setStoryDirection] = useState<1 | -1>(1)
+  const [isStoryDragging, setIsStoryDragging] = useState(false)
   const [storyDragX, setStoryDragX] = useState(0)
   const [commentDrafts, setCommentDrafts] = useState<Record<string, string>>({})
   const [localComments, setLocalComments] = useState<Record<string, LocalComment[]>>({})
@@ -152,14 +207,15 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
   const [helpyCaption, setHelpyCaption] = useState('Trying the future self filter before it tries me.')
   const [helpyBaseId, setHelpyBaseId] = useState(feedPosts[0]?.id ?? '')
   const [helpyOptions, setHelpyOptions] = useState<string[]>(['face confidence'])
-  const [scrollMode, setScrollMode] = useState<ScrollMode>('single')
+  const wasReloaded = isReloadNavigation()
+  const [scrollMode, setScrollMode] = useState<ScrollMode>(initScrollMode)
   const [scrollPrompt, setScrollPrompt] = useState<ScrollPrompt | null>(null)
-  const superScrollerUnlocked = useRef(false)
-  const tripleScrollerUnlocked = useRef(false)
+  const superScrollerUnlocked = useRef(scrollMode !== 'single')
+  const tripleScrollerUnlocked = useRef(scrollMode === 'triple')
+  const didResetScrollPosition = useRef(false)
   const storyDragStartX = useRef<number | null>(null)
   const storyTapDirection = useRef<1 | -1 | null>(null)
   const storyPointerId = useRef<number | null>(null)
-  const storyClickWasDrag = useRef(false)
 
   const allPosts = useMemo(() => [...localPosts, ...feedPosts], [localPosts])
   const loopedPosts = useMemo(
@@ -168,6 +224,12 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
   )
   const storyPosts = allPosts.slice(0, 14)
   const storyPost = storyIndex === null ? null : storyPosts[storyIndex]
+  const storyCarouselPosts = storyIndex === null || storyPosts.length === 0
+    ? []
+    : ([-1, 0, 1] as const).map((offset) => ({
+        offset,
+        post: storyPosts[(storyIndex + offset + storyPosts.length) % storyPosts.length],
+      }))
   const isDegrading = stage >= 4
   const isMultiScroll = scrollMode !== 'single'
   const feedReactions: FeedReaction[] = [
@@ -175,6 +237,20 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
     { id: 'cancel', label: 'Cancel', icon: 'x', baseCountOffset: 19 },
     { id: 'offended', label: 'This offends me', icon: 'spark', baseCountOffset: 43 },
   ]
+
+  useEffect(() => {
+    if (wasReloaded && !didResetScrollPosition.current) {
+      window.scrollTo({ top: 0, left: 0 })
+      didResetScrollPosition.current = true
+    }
+
+    try {
+      window.sessionStorage.setItem(feedScrollSessionKey, JSON.stringify({ scrollMode }))
+    } catch {
+      // Keep the app functional in constrained browser storage environments.
+    }
+  }, [scrollMode, wasReloaded])
+
 
   useEffect(() => {
     const growLoop = () => {
@@ -229,12 +305,12 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
   }, [loopedPosts.length, onEngage, scrollMode, scrollPrompt])
 
   useEffect(() => {
-    if (storyIndex === null || storyPosts.length === 0) {
+    if (storyIndex === null || storyPosts.length === 0 || isStoryDragging) {
       return undefined
     }
 
     const advanceTimer = window.setTimeout(() => {
-      setStoryDirection(1)
+      setStoryDragX(0)
       setStoryIndex((current) => {
         if (current === null) {
           return null
@@ -245,7 +321,7 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
     }, 3000)
 
     return () => window.clearTimeout(advanceTimer)
-  }, [storyIndex, storyPosts.length])
+  }, [isStoryDragging, storyIndex, storyPosts.length])
 
   function toggleReaction(postId: string, reactionId: FeedReaction['id']) {
     setPostReactions((current) => {
@@ -339,7 +415,7 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
   }
 
   function nextStory(direction: 1 | -1) {
-    setStoryDirection(direction)
+    setIsStoryDragging(false)
     setStoryDragX(0)
     setStoryIndex((current) => {
       if (current === null) {
@@ -357,7 +433,7 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
     storyDragStartX.current = event.clientX
     storyTapDirection.current = relativeX < frameRect.width / 3 ? -1 : relativeX > (frameRect.width * 2) / 3 ? 1 : null
     storyPointerId.current = event.pointerId
-    storyClickWasDrag.current = false
+    setIsStoryDragging(true)
     event.currentTarget.setPointerCapture(event.pointerId)
   }
 
@@ -367,10 +443,8 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
     }
 
     const nextDragX = event.clientX - storyDragStartX.current
-    if (Math.abs(nextDragX) > 5) {
-      storyClickWasDrag.current = true
-    }
-    setStoryDragX(Math.max(-110, Math.min(110, nextDragX)))
+    const maxDrag = event.currentTarget.getBoundingClientRect().width * 0.92
+    setStoryDragX(Math.max(-maxDrag, Math.min(maxDrag, nextDragX)))
   }
 
   function finishStoryDrag(event: PointerEvent<HTMLDivElement>) {
@@ -379,17 +453,20 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
     }
 
     const finalDragX = event.clientX - storyDragStartX.current
+    const frameWidth = event.currentTarget.getBoundingClientRect().width
     const tapDirection = storyTapDirection.current
+    const didDrag = Math.abs(finalDragX) > 8
     storyDragStartX.current = null
     storyTapDirection.current = null
     storyPointerId.current = null
+    setIsStoryDragging(false)
     setStoryDragX(0)
 
-    if (finalDragX <= -54) {
+    if (finalDragX <= -frameWidth * 0.18) {
       nextStory(1)
-    } else if (finalDragX >= 54) {
+    } else if (finalDragX >= frameWidth * 0.18) {
       nextStory(-1)
-    } else if (!storyClickWasDrag.current && tapDirection !== null) {
+    } else if (!didDrag && tapDirection !== null) {
       nextStory(tapDirection)
     }
   }
@@ -398,6 +475,7 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
     storyDragStartX.current = null
     storyTapDirection.current = null
     storyPointerId.current = null
+    setIsStoryDragging(false)
     setStoryDragX(0)
   }
 
@@ -541,17 +619,10 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
   }
 
   return (
-    <section className={`ig-feed-shell ${isMultiScroll ? 'has-multi-scroll' : ''} ${scrollMode === 'triple' ? 'has-triple-scroll' : ''}`} aria-labelledby="feed-title">
-      <header className="ig-feed-topbar">
-        <div>
-          <p>Slopularity</p>
-          <h2 id="feed-title">Feed</h2>
-        </div>
-        <div className="ig-top-actions" aria-label="Feed actions">
-          <button type="button" aria-label="Create post with Helpy" onClick={() => setIsHelpyOpen(true)}>+</button>
-          <button type="button" aria-label="Messages">inbox</button>
-        </div>
-      </header>
+    <section
+      className={`ig-feed-shell ${isMultiScroll ? 'has-multi-scroll' : ''} ${scrollMode === 'triple' ? 'has-triple-scroll' : ''}`}
+      aria-label="Feed"
+    >
 
       <div className="story-strip" aria-label="Stories">
         {storyPosts.map((post, index) => (
@@ -608,7 +679,7 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
             }
           }}
         >
-          <div className="story-viewer">
+          <div className={`story-viewer ${isStoryDragging ? 'is-dragging' : ''}`}>
             <div className="story-progress" role="progressbar" aria-label="Story auto-advance" aria-valuemin={0} aria-valuemax={100}>
               <span key={storyPost.id} />
             </div>
@@ -625,13 +696,15 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
               onPointerCancel={cancelStoryDrag}
             >
               <div
-                className={`story-frame-window ${storyDragX !== 0 ? 'is-dragging' : ''}`}
-                data-direction={storyDirection}
-                key={storyPost.id}
-                style={{ transform: `translate3d(${storyDragX}px, 0, 0)` }}
+                className="story-frame-track"
+                style={{ transform: `translate3d(calc(-100% + ${storyDragX}px), 0, 0)` }}
               >
-                {storyPost.imageSrc && <img src={storyPost.imageSrc} alt="" draggable={false} />}
-                <p>{storyPost.title}</p>
+                {storyCarouselPosts.map(({ offset, post }) => (
+                  <div className="story-frame-slide" aria-hidden={offset !== 0} key={`${post.id}-${offset}`}>
+                    {post.imageSrc && <img src={post.imageSrc} alt="" draggable={false} />}
+                    <p>{post.title}</p>
+                  </div>
+                ))}
               </div>
               <span className="story-tap-zone story-tap-zone-previous" aria-hidden="true" />
               <span className="story-tap-zone story-tap-zone-next" aria-hidden="true" />
@@ -642,10 +715,10 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
 
       {scrollPrompt && (
         <div className="modal-backdrop double-scroll-backdrop" role="dialog" aria-modal="true" aria-labelledby="scroll-unlock-title">
+          <div className="confetti-field" aria-hidden="true">
+            {scrollConfetti.map((piece) => <span key={piece} style={getConfettiStyle(piece)} />)}
+          </div>
           <div className="double-scroll-modal">
-            <div className="confetti-field" aria-hidden="true">
-              {scrollConfetti.map((piece) => <span key={piece} style={getConfettiStyle(piece)} />)}
-            </div>
             <p className="double-scroll-kicker">Congratulations, Super Scroller</p>
             <h3 id="scroll-unlock-title">You have unlocked the {scrollPrompt.toUpperCase()} SCROLL feature trial *</h3>
             <button type="button" onClick={unlockScrollMode}>Hooray! I love {scrollPrompt} scroll</button>

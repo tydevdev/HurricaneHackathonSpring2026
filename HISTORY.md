@@ -1,5 +1,18 @@
 # History
 
+## [2026-05-02 15:39] Tighten Multi-Lane Feed Alignment
+
+- Updated `slopularity/src/index.css` so double/triple lane posts stretch to each grid row and use a shared vertical layout behavior, reducing row-by-row offset drift between lanes.
+- No behavior code or feed data changes were made, only presentation-level alignment.
+- Validation run: not run in this pass.
+
+## [2026-05-02 15:23] Widen Default Web Feed
+
+- Updated `slopularity/src/index.css` so the single-lane feed shell scales on desktop instead of staying capped at the old phone-like `430px` width.
+- Kept the mobile feed rule unchanged at `100%` width under the existing phone breakpoint.
+- Scaled double-scroll and triple-scroll shell widths from the same feed-post width variable so escalation modes remain proportional to the default feed.
+- Validation run: not run in this pass.
+
 ## [2026-05-02 15:15] Fix Feed Confetti And Add Triple Scroll
 
 - Updated `slopularity/src/pages/FeedPage.tsx` so feed scrolling now progresses through `single`, `double`, and `triple` modes with one scroll-depth observer.
@@ -8,6 +21,13 @@
 - Updated `slopularity/src/index.css` for triple-lane feed sizing, active reaction colors, and reliable confetti animation values.
 - Updated `slopularity/DESIGN_BIBLE.md` and `slopularity/IMPLEMENTATION_STATUS.md` with the triple-scroll behavior and validation record.
 - Validation run: `npm run lint`; `npm run build`; local Playwright script at 1280x900 and 390x844 confirmed DOUBLE SCROLL unlock, TRIPLE SCROLL unlock, three lanes, no horizontal overflow, real computed confetti positions/colors, and zero page errors.
+
+## [2026-05-02 15:31] Reset Feed Scroll State On Reload
+
+- Updated `slopularity/src/pages/FeedPage.tsx` to make scroll mode persistence session-based, so refresh starts from `single` feed mode with no replayed unlock dialogs while same-tab returns preserve the unlocked mode.
+- Added a first-load reload guard so confetti still displays behind the unlock modal from a centered origin in `slopularity/src/index.css` without being nested as modal content.
+- Kept the "unlock DOUBLE, then another ten-post-equivalent span unlocks TRIPLE" progression intact while preventing accidental reset when the user returns to the tab in the same session.
+- Validation run: `npm run lint`; `npm run build`.
 
 ## [2026-05-02 15:03] Make Feed Actions Real Reactions
 
@@ -51,7 +71,7 @@
 - Updated `slopularity/src/pages/FeedPage.tsx` so the loop note reflects the live canonical post count and Helpy can remix any feed image.
 - Added generated feed imagery under `slopularity/src/assets/feed/post-21.jpg` through `post-50.jpg`.
 - Updated `slopularity/DESIGN_BIBLE.md` and `slopularity/IMPLEMENTATION_STATUS.md` with the expanded feed intention and current testing posture.
-- Validation run: pending final lint, build, and browser checks after image assets finish generating.
+- Validation run: `npm run lint`; `npm run build`; verified `post-21.jpg` through `post-50.jpg` are real JPEGs with zero duplicate hashes; Chrome headless DOM proof showed `50 canonical posts` and late-feed images including `post-48.jpg`, `post-49.jpg`, and `post-50.jpg`.
 
 ## [2026-05-02 14:52] Discourage Branch-First Workflow
 
@@ -377,3 +397,11 @@
 - Updated `slopularity/src/index.css` with animated story progress, slide-in motion, invisible tap zones, drag affordances, and story touch-action behavior.
 - Updated `slopularity/DESIGN_BIBLE.md` and `slopularity/IMPLEMENTATION_STATUS.md` to record the phone-native story carousel behavior.
 - Validation run: `npm run lint`; `npm run build`; headless Chrome DevTools checks at desktop and 390px confirmed no visible Previous/Next controls, the 3s progress animation, auto-advance, left/right third taps, drag-to-next, no horizontal overflow, and zero captured runtime errors.
+
+## [2026-05-02 15:27] Smooth Feed Story Dragging
+
+- Updated `slopularity/src/pages/FeedPage.tsx` so the story viewer renders previous, current, and next stories as a real three-slide track during drag.
+- Updated `slopularity/src/index.css` so the track snaps with a short transition, follows the pointer without transition while dragging, and pauses story progress during drag.
+- Preserved left/right third tap navigation, 3-second auto-advance, keyboard controls, and no visible Previous/Next buttons.
+- Regenerated `slopularity/dist/` so the published build includes the smoother carousel.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome DevTools checks at desktop and 390px confirmed three rendered story slides, changing transform during drag, drag-to-next, left/right third taps, 3s progress, no visible Previous/Next controls, no horizontal overflow, and zero captured runtime errors.

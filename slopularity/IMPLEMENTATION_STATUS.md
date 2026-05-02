@@ -2,6 +2,13 @@
 
 Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESIGN_BIBLE.md` stays the product/design execution guide. This file records what is actively intentional in the app right now, what is still a skeleton, and which feature flags are keeping unfinished mechanics out of the way.
 
+## [2026-05-02 15:27] Feed Story Drag Smoothing
+
+- Active focus: story carousel drag behavior in `FeedPage.tsx` and `index.css`.
+- Behavior changed: the story viewer now renders previous, current, and next slides in one horizontal track, so dragging reveals the neighboring story instead of moving a single image against empty space.
+- Behavior changed: the auto-advance timer pauses while the user is dragging, then resumes after release; short left/right third taps still navigate without visible Previous/Next controls.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome DevTools checks at desktop and 390px confirmed three rendered story slides, changing transform during drag, drag-to-next, left/right third taps, 3s progress, no visible Previous/Next controls, no horizontal overflow, and zero captured runtime errors.
+
 ## [2026-05-02 15:03] Feed Reactions And Comments Pass
 
 - Active focus: `FeedPage.tsx` reaction language and per-post comment behavior.
@@ -62,7 +69,7 @@ Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESI
 - Files changed: `src/content.ts`, `src/pages/FeedPage.tsx`, `src/assets/feed/post-21.jpg` through `post-50.jpg`, `DESIGN_BIBLE.md`, `IMPLEMENTATION_STATUS.md`, and root `HISTORY.md`.
 - Intentional behavior: the feed now has a wider image-backed lifestyle loop across wellness, travel, productivity, home automation, beauty, grocery, fitness, sleep, and social proximity.
 - Still calm: visible collapse remains feature-flagged off; new posts use in-world sponsor texture and comments rather than noisy breakdown mechanics.
-- Validation run: pending final lint, build, and browser checks after image assets finish generating.
+- Validation run: `npm run lint`; `npm run build`; verified `post-21.jpg` through `post-50.jpg` are real JPEGs with zero duplicate hashes; Chrome headless DOM proof showed `50 canonical posts` and late-feed images including `post-48.jpg`, `post-49.jpg`, and `post-50.jpg`.
 
 ## [2026-05-02 14:50] Feed Comment Bot Pass
 

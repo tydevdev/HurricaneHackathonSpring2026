@@ -508,7 +508,8 @@ p {
 }
 
 .ig-feed-shell {
-  width: min(100%, 430px);
+  --feed-post-width: clamp(500px, 25vw, 640px);
+  width: min(100%, var(--feed-post-width));
   overflow: hidden;
   color: #050505;
   background: #fff;
@@ -519,11 +520,11 @@ p {
 
 .ig-feed-shell.has-double-scroll,
 .ig-feed-shell.has-multi-scroll {
-  width: min(100%, 860px);
+  width: min(100%, calc(var(--feed-post-width) * 2));
 }
 
 .ig-feed-shell.has-triple-scroll {
-  width: min(100%, 1100px);
+  width: min(100%, calc(var(--feed-post-width) * 3));
 }
 
 .ig-feed-topbar {
@@ -657,9 +658,26 @@ p {
 .ig-feed-list.is-double-scroll,
 .ig-feed-list.is-multi-scroll {
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-items: start;
+  align-items: stretch;
   background: #efefef;
   border-top: 1px solid #efefef;
+}
+
+.ig-feed-list.is-double-scroll > .ig-post,
+.ig-feed-list.is-multi-scroll > .ig-post,
+.ig-feed-list.is-triple-scroll > .ig-post {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 100%;
+}
+
+.ig-feed-list.is-double-scroll > .ig-post .ig-post-body,
+.ig-feed-list.is-multi-scroll > .ig-post .ig-post-body,
+.ig-feed-list.is-triple-scroll > .ig-post .ig-post-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .ig-feed-list.is-triple-scroll {
@@ -1199,6 +1217,7 @@ p {
 
 .double-scroll-modal {
   position: relative;
+  z-index: 2;
   display: grid;
   width: min(100%, 440px);
   gap: 14px;
@@ -1259,21 +1278,22 @@ p {
 .confetti-field {
   position: absolute;
   inset: 0;
+  z-index: 0;
   overflow: hidden;
   pointer-events: none;
 }
 
 .confetti-field span {
   position: absolute;
-  top: -18px;
-  left: var(--confetti-left);
+  top: 50%;
+  left: 50%;
   width: 8px;
   height: 15px;
   background: hsl(var(--confetti-hue), 82%, 58%);
   border-radius: 3px;
   opacity: 0.86;
-  transform: rotate(var(--confetti-spin));
-  animation: confetti-drop 1100ms cubic-bezier(0.16, 0.9, 0.24, 1) both;
+  transform: translate(-50%, -50%) rotate(var(--confetti-spin));
+  animation: confetti-explode 1300ms cubic-bezier(0.16, 0.9, 0.24, 1) both;
   animation-delay: var(--confetti-delay);
 }
 
@@ -1288,10 +1308,10 @@ p {
   height: 18px;
 }
 
-@keyframes confetti-drop {
+@keyframes confetti-explode {
   0% {
     opacity: 0;
-    transform: translate3d(0, -24px, 0) rotate(0deg);
+    transform: translate(-50%, -50%) rotate(var(--confetti-spin));
   }
 
   12% {
@@ -1300,7 +1320,7 @@ p {
 
   100% {
     opacity: 0.92;
-    transform: translate3d(var(--confetti-x), 242px, 0) rotate(var(--confetti-spin));
+    transform: translate3d(calc(-50% + var(--confetti-x)), calc(-50% + var(--confetti-y)), 0) rotate(var(--confetti-spin));
   }
 }
 
@@ -1360,6 +1380,10 @@ p {
   animation: story-progress-fill 3000ms linear forwards;
 }
 
+.story-viewer.is-dragging .story-progress span {
+  animation-play-state: paused;
+}
+
 @keyframes story-progress-fill {
   to {
     transform: scaleX(1);
@@ -1381,20 +1405,24 @@ p {
   cursor: grabbing;
 }
 
-.story-frame-window {
+.story-frame-track {
   position: absolute;
   inset: 0;
-  animation: story-slide-in 260ms cubic-bezier(0.2, 0.78, 0.22, 1) both;
+  display: grid;
+  width: 300%;
+  grid-template-columns: repeat(3, 1fr);
+  transition: transform 240ms cubic-bezier(0.2, 0.78, 0.22, 1);
   will-change: transform;
 }
 
-.story-frame-window[data-direction='-1'] {
-  animation-name: story-slide-in-reverse;
+.story-viewer.is-dragging .story-frame-track {
+  transition: none;
 }
 
-.story-frame-window.is-dragging {
-  animation: none;
-  transition: none;
+.story-frame-slide {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .story-frame img {
@@ -1433,6 +1461,7 @@ p {
   background: transparent;
   border: 0;
   border-radius: 0;
+  pointer-events: none;
   touch-action: manipulation;
 }
 
@@ -1466,34 +1495,10 @@ p {
   right: 12px;
 }
 
-.story-tap-zone:hover::after,
-.story-tap-zone:focus-visible::after {
+.story-frame:hover .story-tap-zone::after,
+.story-frame:focus-within .story-tap-zone::after {
   opacity: 1;
   transform: translateY(-50%) scale(1);
-}
-
-@keyframes story-slide-in {
-  from {
-    opacity: 0.84;
-    transform: translate3d(42px, 0, 0);
-  }
-
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-@keyframes story-slide-in-reverse {
-  from {
-    opacity: 0.84;
-    transform: translate3d(-42px, 0, 0);
-  }
-
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
 }
 
 .helpy-modal {

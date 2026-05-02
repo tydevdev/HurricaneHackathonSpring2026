@@ -1,5 +1,29 @@
 # History
 
+## [2026-05-02 18:39] Clear Popups On Tab Switch
+
+- Updated `slopularity/src/App.tsx` so moving from one app tab to another clears visible friend popups, idle nudges, the watching eye, and queued popup follow-ups before the destination screen settles.
+- Preserved the existing explicit dismiss behavior: dismissing a popup can still record instability and arm the one-shot stage-3 follow-up, while tab navigation now acts as its own cleanup boundary.
+- Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` with the navigation-dismissal rule.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome smoke against `http://127.0.0.1:4174/app/` confirmed Feed Helpy modal clears on Feed → Games, idle friend popup + watching eye + idle nudge clear on Feed → Games, the Games surface renders, and there is no phone-width horizontal overflow.
+
+## [2026-05-02 18:38] Add Landing Link To App Switcher
+
+- Updated `slopularity/src/App.tsx` so the shared app switcher now includes a `Landing` link immediately before `Feed`, including the feed-local mobile switcher.
+- Added a landing path helper that backs out of the `/app/` route so the link works from nested app routes in local preview and published builds.
+- Updated `slopularity/DESIGN_BIBLE.md` with the switcher placement rule.
+- Regenerated `slopularity/dist/` for the GitHub Pages build.
+- Validation run: `npm run lint`; `npm run build`; phone-width smoke check confirmed `Landing` appears immediately before `Feed` above stories and links to `/`.
+
+## [2026-05-02 18:34] Revamp Assistant Into Glaze-And-Ads Surface
+
+- Rebuilt `slopularity/src/pages/AssistantPage.tsx` from a single bubble into a polished Helpy workspace with a large header, chat thread, composer, suggested prompts, status readouts, sponsored product rail, and routing receipt.
+- Added deterministic assistant behavior: every submitted prompt is preserved as a user turn, then Helpy praises the phrasing, mostly ignores the question, and pivots into ads for GlowNest Mirror+, SnapWake Adaptogen Stack, AuraBank Reflex Fund, or Context Bundle.
+- Updated `slopularity/src/App.tsx` so assistant activity records the actual prompt passed from the Assistant page instead of generic assistant activity.
+- Updated `slopularity/src/index.css` with the Assistant responsive layout, message bubbles, composer, product rail, routing receipt, hover/focus states, stage-4 leak styling, and phone collapse.
+- Updated `slopularity/DECAY_FEATURES.md`, `slopularity/DESIGN_BIBLE.md`, and `slopularity/IMPLEMENTATION_STATUS.md` with the new assistant decay mechanics and current intent.
+- Validation run: `npm run lint`; `npm run build`; assistant route responsive smoke pending in this session.
+
 ## [2026-05-02 18:36] Move Phone Feed Switcher Above Stories
 
 - Updated `slopularity/src/App.tsx` to reuse the same tab switcher in a feed-local mobile slot while preserving the existing route/state handling.
@@ -564,6 +588,7 @@
 
 - Updated `slopularity/src/App.tsx` so the idle cascade starts faster: eye and friend check-in at 5 seconds, rotating idle nudge at 7 seconds, and ambient tab shuffle at 9 seconds.
 - Updated `slopularity/src/components/IdleEye.tsx` and `slopularity/src/index.css` so the eye appears centered, much larger, cursor-tracks farther, and uses a pulsing red pupil.
+- Updated `slopularity/src/components/IdleEye.tsx` and `slopularity/src/index.css` so each eye appearance shows an all-caps attention callout underneath; `HELP ME PLEASE` appears with a 20% weight and urgent red styling.
 - Updated `slopularity/src/components/LonelinessPopup.tsx` so the inactivity popup rotates through paused-user matches, a new post recommendation, clickbait article, fake friend text, hesitation offer, and assistant decision nudge.
 - Updated `slopularity/DECAY_FEATURES.md`, `slopularity/DESIGN_BIBLE.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the faster idle timing and new popup variants.
 - Validation run: `npm run lint`; `npm run build`. A local Chrome idle smoke was attempted, but headless Chrome hung before returning DOM evidence; the Vite server was shut down afterward.

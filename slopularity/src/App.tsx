@@ -10,15 +10,23 @@ import { FeedPage } from './pages/FeedPage'
 import { FriendsPage } from './pages/FriendsPage'
 import { GamesPage } from './pages/GamesPage'
 import { ProfilePage } from './pages/ProfilePage'
-import { pathForTab, tabFromLocation } from './routes'
+import { appBasePath, pathForTab, tabFromLocation } from './routes'
 import { SearchPage } from './pages/SearchPage'
 import { ShopPage } from './pages/ShopPage'
-import type { Popup, TabId } from './types'
+import type { Popup, ScrollStats, TabId } from './types'
 import { stageFor } from './utils'
 
 const storageKey = 'slopularity-state-v1'
 const enteredKey = 'slopularity-entered-v1'
+const scrollStatsKey = 'slopularity-scroll-stats-v1'
 type PopupReason = 'manual' | 'idle' | 'dismiss'
+
+const emptyScrollStats: ScrollStats = {
+  activeSeconds: 0,
+  eventCount: 0,
+  distancePx: 0,
+  bestBurstSeconds: 0,
+}
 
 function loadScore() {
   if (typeof window === 'undefined') return 0
@@ -31,9 +39,35 @@ function loadScore() {
   return Number.isFinite(value) ? value : 0
 }
 
+function loadScrollStats(): ScrollStats {
+  if (typeof window === 'undefined') return emptyScrollStats
+
+  try {
+    const raw = window.localStorage.getItem(scrollStatsKey)
+    if (!raw) {
+      return emptyScrollStats
+    }
+
+    const parsed = JSON.parse(raw) as Partial<ScrollStats>
+    return {
+      activeSeconds: Math.max(0, Number(parsed.activeSeconds) || 0),
+      eventCount: Math.max(0, Number(parsed.eventCount) || 0),
+      distancePx: Math.max(0, Number(parsed.distancePx) || 0),
+      bestBurstSeconds: Math.max(0, Number(parsed.bestBurstSeconds) || 0),
+    }
+  } catch {
+    return emptyScrollStats
+  }
+}
+
 function loadTab(): TabId {
   if (typeof window === 'undefined') return 'feed'
   return tabFromLocation() ?? 'feed'
+}
+
+function pathForLanding(location: Location = window.location) {
+  const appRoot = appBasePath(location)
+  return appRoot.replace(/\/app\/?$/, '/') || '/'
 }
 
 function App() {
@@ -44,10 +78,14 @@ function App() {
   const [assistantText, setAssistantText] = useState('')
   const [query, setQuery] = useState('')
   const [completedTasks, setCompletedTasks] = useState<string[]>([])
+  const [scrollStats, setScrollStats] = useState<ScrollStats>(loadScrollStats)
   // We allow at most one "softer follow-up" after a dismiss, and only when
   // the user has been around long enough to read it as escalation rather than
   // a respawn loop. Tracked here so dismissals don't endlessly chain.
   const followupArmedRef = useRef(true)
+  const lastScrollYRef = useRef(0)
+  const scrollBurstRef = useRef({ lastAt: 0, startedAt: 0 })
+  const previousTabRef = useRef(activeTab)
 
   // ── Idle surveillance state ──
   const [idleEyeVisible, setIdleEyeVisible] = useState(false)
@@ -115,10 +153,70 @@ function App() {
     [muted],
   )
 
+  const dismissScreenPopups = useCallback(() => {
+    setPopups([])
+    setLonelinessVisible(false)
+    setIdleEyeVisible(false)
+    queuedPopupReasonRef.current = null
+    idleSecondsRef.current = 0
+    idleNudgeShownRef.current = false
+  }, [])
+
+  useEffect(() => {
+    if (previousTabRef.current === activeTab) {
+      return
+    }
+
+    previousTabRef.current = activeTab
+    dismissScreenPopups()
+  }, [activeTab, dismissScreenPopups])
+
   useEffect(() => {
     if (typeof window === 'undefined') return
     window.localStorage.setItem(storageKey, String(score))
   }, [score])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    window.localStorage.setItem(scrollStatsKey, JSON.stringify(scrollStats))
+  }, [scrollStats])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined
+
+    lastScrollYRef.current = window.scrollY
+
+    const recordScroll = () => {
+      const currentY = window.scrollY
+      const distance = Math.abs(currentY - lastScrollYRef.current)
+      lastScrollYRef.current = currentY
+
+      if (distance < 2) {
+        return
+      }
+
+      const now = Date.now()
+      const burst = scrollBurstRef.current
+      const isNewBurst = burst.lastAt === 0 || now - burst.lastAt > 2500
+      if (isNewBurst) {
+        burst.startedAt = now
+      }
+
+      const activeDelta = isNewBurst ? 1 : Math.min(2, Math.max(0.25, (now - burst.lastAt) / 1000))
+      burst.lastAt = now
+      const burstSeconds = Math.max(activeDelta, (now - burst.startedAt) / 1000)
+
+      setScrollStats((current) => ({
+        activeSeconds: Math.min(99999, current.activeSeconds + activeDelta),
+        eventCount: Math.min(99999, current.eventCount + 1),
+        distancePx: Math.min(9999999, current.distancePx + distance),
+        bestBurstSeconds: Math.max(current.bestBurstSeconds, burstSeconds),
+      }))
+    }
+
+    window.addEventListener('scroll', recordScroll, { passive: true })
+    return () => window.removeEventListener('scroll', recordScroll)
+  }, [])
 
   useEffect(() => {
     document.documentElement.dataset.stage = String(visibleStage)
@@ -277,6 +375,7 @@ function App() {
     if (typeof window !== 'undefined') {
       window.localStorage.removeItem(storageKey)
       window.localStorage.removeItem(enteredKey)
+      window.localStorage.removeItem(scrollStatsKey)
       // Real navigation back to the landing entry page.
       window.location.href = '../'
       return
@@ -288,12 +387,18 @@ function App() {
     setAssistantText('')
     setQuery('')
     setCompletedTasks([])
+    setScrollStats(emptyScrollStats)
     setTabOrder(defaultTabs)
     queuedPopupReasonRef.current = null
     followupArmedRef.current = true
   }
 
   function handleTab(tabId: TabId) {
+    const isNewScreen = tabId !== activeTab
+    if (isNewScreen) {
+      dismissScreenPopups()
+    }
+
     if (typeof window !== 'undefined' && tabFromLocation() !== tabId) {
       window.history.pushState(null, '', pathForTab(tabId))
     }
@@ -332,6 +437,9 @@ function App() {
   function renderTabbar(placement: 'global' | 'feed-mobile') {
     return (
       <nav className={`tabbar tabbar-${placement}`} aria-label="Everything app tabs">
+        <a className="tabbar-landing-link" href={pathForLanding()}>
+          Landing
+        </a>
         {tabOrder.map((tab) => (
           <a
             key={tab.id}
@@ -452,7 +560,13 @@ function App() {
             <AssistantPage assistantText={assistantText} stage={visibleStage} onAsk={handleAssistant} />
           )}
           {activeTab === 'profile' && (
-            <ProfilePage stage={visibleStage} score={score} onReveal={() => addInstability(2)} />
+            <ProfilePage
+              completedTaskCount={completedTasks.length}
+              scrollStats={scrollStats}
+              stage={visibleStage}
+              score={score}
+              onReveal={() => addInstability(2)}
+            />
           )}
         </div>
       </section>

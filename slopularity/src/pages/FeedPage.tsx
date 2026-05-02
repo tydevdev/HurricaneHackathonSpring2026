@@ -49,9 +49,7 @@ const renderLimitByScrollMode: Record<ScrollMode, number> = {
   double: 36,
   triple: 30,
 }
-const feedScrollSessionKey = 'slopularity:feed-scroll-state'
-const localPostStorageKey = 'slopularity:feed-local-posts-v1'
-let hasInitializedFeedScrollMode = false
+const initializedScrollModes = new Set<string>()
 const helpyCaptionLimit = 180
 const helpyTouchUps = ['face confidence', 'vacation proof', 'wealth lighting', '$9.99 aura trial']
 const helpyPresets = [
@@ -134,13 +132,13 @@ function isReloadNavigation(): boolean {
   return (window.performance as Performance & { navigation?: { type?: number } }).navigation?.type === 1
 }
 
-function getSavedScrollMode(): ScrollMode {
+function getSavedScrollMode(storageKey: string): ScrollMode {
   if (typeof window === 'undefined') {
     return 'single'
   }
 
   try {
-    const rawState = window.sessionStorage.getItem(feedScrollSessionKey)
+    const rawState = window.sessionStorage.getItem(storageKey)
     if (!rawState) {
       return 'single'
     }
@@ -152,18 +150,18 @@ function getSavedScrollMode(): ScrollMode {
   }
 }
 
-function initScrollMode(): ScrollMode {
+function initScrollMode(storageKey: string): ScrollMode {
   try {
-    if (!hasInitializedFeedScrollMode && isReloadNavigation()) {
-      window.sessionStorage.removeItem(feedScrollSessionKey)
-      hasInitializedFeedScrollMode = true
+    if (!initializedScrollModes.has(storageKey) && isReloadNavigation()) {
+      window.sessionStorage.removeItem(storageKey)
+      initializedScrollModes.add(storageKey)
       return 'single'
     }
 
-    hasInitializedFeedScrollMode = true
-    return getSavedScrollMode()
+    initializedScrollModes.add(storageKey)
+    return getSavedScrollMode(storageKey)
   } catch {
-    hasInitializedFeedScrollMode = true
+    initializedScrollModes.add(storageKey)
     return 'single'
   }
 }
@@ -256,13 +254,13 @@ function makeHelpyPost(basePost: FeedPost, savedPost: SavedLocalPost): FeedPost 
   }
 }
 
-function readSavedLocalPosts(): SavedLocalPost[] {
+function readSavedLocalPosts(storageKey: string): SavedLocalPost[] {
   if (typeof window === 'undefined') {
     return []
   }
 
   try {
-    const rawState = window.localStorage.getItem(localPostStorageKey)
+    const rawState = window.localStorage.getItem(storageKey)
     if (!rawState) {
       return []
     }
@@ -283,26 +281,40 @@ function readSavedLocalPosts(): SavedLocalPost[] {
   }
 }
 
-function canonicalPostFor(post: FeedPost): FeedPost {
-  return feedPosts.find((feedPost) => feedPost.id === post.id)
-    ?? feedPosts.find((feedPost) => feedPost.imageSrc === post.imageSrc)
+function canonicalPostFor(post: FeedPost, postPool: FeedPost[]): FeedPost {
+  return postPool.find((feedPost) => feedPost.id === post.id)
+    ?? postPool.find((feedPost) => feedPost.imageSrc === post.imageSrc)
+    ?? postPool[0]
     ?? feedPosts[0]
 }
 
-function pickEnhancedReenactment(file: File): FeedPost {
+function pickEnhancedReenactment(file: File, postPool: FeedPost[]): FeedPost {
   const seed = Array.from(file.name).reduce((total, character) => total + character.charCodeAt(0), file.size)
-  return feedPosts[seed % 20] ?? feedPosts[0]
+  return postPool[seed % Math.min(20, postPool.length)] ?? postPool[0] ?? feedPosts[0]
 }
 
 type FeedPageProps = {
   stage: number
   onEngage: () => void
   mobileNavigation?: ReactNode
+  posts?: FeedPost[]
+  sectionLabel?: string
+  storageNamespace?: string
 }
 
-export function FeedPage({ stage, onEngage, mobileNavigation }: FeedPageProps) {
+export function FeedPage({
+  stage,
+  onEngage,
+  mobileNavigation,
+  posts = feedPosts,
+  sectionLabel = 'Feed',
+  storageNamespace = 'feed',
+}: FeedPageProps) {
+  const canonicalPosts = posts.length > 0 ? posts : feedPosts
+  const scrollStorageKey = `slopularity:${storageNamespace}-scroll-state`
+  const localPostStorageKey = `slopularity:${storageNamespace}-local-posts-v1`
   const [postReactions, setPostReactions] = useState<Record<string, Set<FeedReaction['id']>>>({
-    'glass-ledger': new Set(['jealousy']),
+    [canonicalPosts[0]?.id ?? 'glass-ledger']: new Set(['jealousy']),
   })
   const [activeCommentPostId, setActiveCommentPostId] = useState<string | null>(null)
   const [expandedPhotoPostId, setExpandedPhotoPostId] = useState<string | null>(null)
@@ -314,16 +326,16 @@ export function FeedPage({ stage, onEngage, mobileNavigation }: FeedPageProps) {
   const [commentSort, setCommentSort] = useState<CommentSort>('trusted')
   const [commentFlags, setCommentFlags] = useState<Record<string, string>>({})
   const [localComments, setLocalComments] = useState<Record<string, LocalComment[]>>({})
-  const [localPosts, setLocalPosts] = useState<SavedLocalPost[]>(readSavedLocalPosts)
+  const [localPosts, setLocalPosts] = useState<SavedLocalPost[]>(() => readSavedLocalPosts(localPostStorageKey))
   const [cycleCount, setCycleCount] = useState(initialFeedCycles)
   const [isHelpyOpen, setIsHelpyOpen] = useState(false)
   const [helpyCaption, setHelpyCaption] = useState('Trying the future self filter before it tries me.')
-  const [helpyBaseId, setHelpyBaseId] = useState(feedPosts[0]?.id ?? '')
+  const [helpyBaseId, setHelpyBaseId] = useState(canonicalPosts[0]?.id ?? '')
   const [helpyOptions, setHelpyOptions] = useState<string[]>(['face confidence'])
   const [helpySource, setHelpySource] = useState<HelpySource>('reenactment')
   const [uploadMessage, setUploadMessage] = useState('')
   const wasReloaded = isReloadNavigation()
-  const [scrollMode, setScrollMode] = useState<ScrollMode>(initScrollMode)
+  const [scrollMode, setScrollMode] = useState<ScrollMode>(() => initScrollMode(scrollStorageKey))
   const [scrollPrompt, setScrollPrompt] = useState<ScrollPrompt | null>(null)
   const superScrollerUnlocked = useRef(scrollMode !== 'single')
   const tripleScrollerUnlocked = useRef(scrollMode === 'triple')
@@ -335,11 +347,11 @@ export function FeedPage({ stage, onEngage, mobileNavigation }: FeedPageProps) {
 
   const renderedLocalPosts = useMemo(() => (
     localPosts.map((post) => {
-      const basePost = feedPosts.find((feedPost) => feedPost.id === post.basePostId) ?? feedPosts[0]
+      const basePost = canonicalPosts.find((feedPost) => feedPost.id === post.basePostId) ?? canonicalPosts[0] ?? feedPosts[0]
       return makeHelpyPost(basePost, post)
     })
-  ), [localPosts])
-  const allPosts = useMemo(() => [...renderedLocalPosts, ...feedPosts], [renderedLocalPosts])
+  ), [canonicalPosts, localPosts])
+  const allPosts = useMemo(() => [...renderedLocalPosts, ...canonicalPosts], [canonicalPosts, renderedLocalPosts])
   const renderLimit = renderLimitByScrollMode[scrollMode]
   const effectiveMaxFeedCycles = Math.min(
     maxFeedCycles,
@@ -358,10 +370,10 @@ export function FeedPage({ stage, onEngage, mobileNavigation }: FeedPageProps) {
         offset,
         post: storyPosts[(storyIndex + offset + storyPosts.length) % storyPosts.length],
       }))
-  const helpyBasePost = allPosts.find((post) => post.id === helpyBaseId) ?? feedPosts[0]
+  const helpyBasePost = allPosts.find((post) => post.id === helpyBaseId) ?? canonicalPosts[0] ?? feedPosts[0]
   const helpyCaptionLength = helpyCaption.trim().length
   const isHelpyReady = helpyCaptionLength > 0
-  const reenactmentPosts = feedPosts.slice(0, 20)
+  const reenactmentPosts = canonicalPosts.slice(0, 20)
   const isDegrading = stage >= 4
   const isMultiScroll = scrollMode !== 'single'
   const isPhoneFeedViewport = usePhoneFeedViewport()
@@ -384,11 +396,11 @@ export function FeedPage({ stage, onEngage, mobileNavigation }: FeedPageProps) {
     }
 
     try {
-      window.sessionStorage.setItem(feedScrollSessionKey, JSON.stringify({ scrollMode }))
+      window.sessionStorage.setItem(scrollStorageKey, JSON.stringify({ scrollMode }))
     } catch {
       // Keep the app functional in constrained browser storage environments.
     }
-  }, [scrollMode, wasReloaded])
+  }, [scrollMode, scrollStorageKey, wasReloaded])
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -400,7 +412,7 @@ export function FeedPage({ stage, onEngage, mobileNavigation }: FeedPageProps) {
     } catch {
       // Local-only posting should still work for the session if storage is full.
     }
-  }, [localPosts])
+  }, [localPostStorageKey, localPosts])
 
   useEffect(() => {
     const loadTarget = loadMoreRef.current
@@ -538,7 +550,7 @@ export function FeedPage({ stage, onEngage, mobileNavigation }: FeedPageProps) {
   }
 
   function envisionAsSelf(post: FeedPost) {
-    const canonicalPost = canonicalPostFor(post)
+    const canonicalPost = canonicalPostFor(post, canonicalPosts)
     setHelpyBaseId(canonicalPost.id)
     setHelpyCaption(`Me, but with ${post.sponsor.replace(/^.+? by /, '').replace(/^.+? with /, '')} confidence.`)
     setHelpyOptions(['face confidence', 'wealth lighting'])
@@ -660,7 +672,7 @@ export function FeedPage({ stage, onEngage, mobileNavigation }: FeedPageProps) {
       return
     }
 
-    const replacementPost = pickEnhancedReenactment(file)
+    const replacementPost = pickEnhancedReenactment(file, canonicalPosts)
     setHelpyBaseId(replacementPost.id)
     setHelpySource('upload-enhanced')
     setUploadMessage(`AI enhancement complete: ${file.name} became ${replacementPost.storyName}'s reenactment.`)
@@ -677,7 +689,7 @@ export function FeedPage({ stage, onEngage, mobileNavigation }: FeedPageProps) {
 
     const savedPost: SavedLocalPost = {
       id: `helpy-${Date.now()}`,
-      basePostId: (feedPosts.find((post) => post.id === helpyBaseId) ?? feedPosts[0]).id,
+      basePostId: (canonicalPosts.find((post) => post.id === helpyBaseId) ?? canonicalPosts[0] ?? feedPosts[0]).id,
       caption: cleanCaption,
       options: helpyOptions,
       source: helpySource,
@@ -1021,14 +1033,14 @@ export function FeedPage({ stage, onEngage, mobileNavigation }: FeedPageProps) {
   return (
     <section
       className={`ig-feed-shell no-seamfeed ${shouldRenderMultiScroll ? 'has-multi-scroll' : ''} ${shouldRenderMultiScroll && scrollMode === 'triple' ? 'has-triple-scroll' : ''} ${shouldRenderVerticalMultiScroll ? 'has-vertical-multi-scroll' : ''}`}
-      aria-label="Feed"
+      aria-label={sectionLabel}
     >
       <header className="ig-feed-topbar">
         <div>
           <p>Slopularity</p>
-          <h2 id="feed-title">Feed</h2>
+          <h2 id={`${storageNamespace}-title`}>{sectionLabel}</h2>
         </div>
-        <div className="ig-top-actions" aria-label="Feed actions">
+        <div className="ig-top-actions" aria-label={`${sectionLabel} actions`}>
           <button className="make-post-button" type="button" onClick={openHelpyComposer}>
             <span aria-hidden="true">+</span>
             Make post
@@ -1054,7 +1066,7 @@ export function FeedPage({ stage, onEngage, mobileNavigation }: FeedPageProps) {
         ))}
       </div>
 
-      <div className={`ig-feed-list ${shouldRenderMultiScroll ? 'is-multi-scroll' : ''} ${shouldRenderMultiScroll && scrollMode === 'triple' ? 'is-triple-scroll' : ''} ${shouldRenderVerticalMultiScroll ? 'is-vertical-multi-scroll' : ''}`} aria-label={shouldRenderMultiScroll ? (scrollMode === 'triple' ? 'Triple Scroll post feed' : 'Double Scroll post feed') : 'Looping post feed'}>
+      <div className={`ig-feed-list ${shouldRenderMultiScroll ? 'is-multi-scroll' : ''} ${shouldRenderMultiScroll && scrollMode === 'triple' ? 'is-triple-scroll' : ''} ${shouldRenderVerticalMultiScroll ? 'is-vertical-multi-scroll' : ''}`} aria-label={shouldRenderMultiScroll ? (scrollMode === 'triple' ? `Triple Scroll ${sectionLabel.toLowerCase()} feed` : `Double Scroll ${sectionLabel.toLowerCase()} feed`) : `Looping ${sectionLabel.toLowerCase()} feed`}>
         {shouldRenderVerticalMultiScroll ? (
           visibleLoopedPosts.map(({ post, cycle }, feedIndex) => {
             const bonusPost = visibleLoopedPosts[(feedIndex + 5) % visibleLoopedPosts.length]?.post ?? post
@@ -1095,7 +1107,7 @@ export function FeedPage({ stage, onEngage, mobileNavigation }: FeedPageProps) {
 
       <div className="feed-load-sentinel" ref={loadMoreRef} aria-hidden="true" />
       <p className="loop-note" aria-live="polite">
-        Looping demo feed: {renderedCycleCount} cycles loaded from {feedPosts.length} canonical posts · {visibleLoopedPosts.length} live cards per lane{hasLoadedAllDemoCycles ? ' · feed cache warm' : ''}.
+        Looping demo feed: {renderedCycleCount} cycles loaded from {canonicalPosts.length} canonical posts · {visibleLoopedPosts.length} live cards per lane{hasLoadedAllDemoCycles ? ' · feed cache warm' : ''}.
       </p>
 
       {activeCommentPost && renderCommentSheet(activeCommentPost)}

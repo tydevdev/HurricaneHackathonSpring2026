@@ -2,6 +2,24 @@
 
 Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESIGN_BIBLE.md` stays the product/design execution guide. This file records what is actively intentional in the app right now, what is still a skeleton, and which feature flags are keeping unfinished mechanics out of the way.
 
+## [2026-05-02 18:38] Popup Navigation Dismissal
+
+- Active focus: app-level transient popup ownership in `App.tsx`.
+- Behavior changed: switching from one tab to another now clears visible friend popups, the idle nudge popup, the watching eye, and any queued popup follow-up before the new screen settles.
+- Behavior preserved: direct popup dismissal still records instability and can arm the one-shot follow-up at stage 3+, but tab navigation itself is treated as a real cleanup boundary.
+- Files changed: `src/App.tsx`, `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome smoke against `http://127.0.0.1:4174/app/` confirmed Feed Helpy modal clears on Feed → Games, idle friend popup + watching eye + idle nudge clear on Feed → Games, the Games surface renders, and there is no phone-width horizontal overflow.
+
+## [2026-05-02 18:34] Assistant Glaze-And-Ads Revamp
+
+- Active focus: `AssistantPage.tsx` visual and interaction overhaul.
+- Behavior changed: Assistant is no longer a single bubble. It is now a polished workspace with a large Helpy header, direct-answer/compliment/offer-fit readouts, conversation thread, composer, prompt chips, sponsored product rail, and routing receipt.
+- Behavior changed: submitting any prompt records the user's text, then Helpy praises the phrasing, mostly ignores the actual question, and pivots into an ad for GlowNest Mirror+, SnapWake Adaptogen Stack, AuraBank Reflex Fund, or Context Bundle.
+- Behavior changed: Assistant actions now pass the prompt back to `App.tsx` so cross-tab activity records the actual thing asked instead of generic assistant activity.
+- Stage behavior: stage 4 replies admit recursive sponsored retrieval and expose intent labels on assistant messages.
+- Files changed: `src/pages/AssistantPage.tsx`, `src/App.tsx`, `src/index.css`, `DECAY_FEATURES.md`, `DESIGN_BIBLE.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
+- Validation run: `npm run lint`; `npm run build`; assistant route responsive smoke pending in this session.
+
 ## [2026-05-02 18:32] Phone Vertical Multi-Scroll
 
 - Active focus: `FeedPage.tsx` phone portrait behavior after `DOUBLE SCROLL` / `TRIPLE SCROLL` unlocks.
@@ -14,6 +32,7 @@ Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESI
 
 - Active focus: the inactivity surveillance layer in `App.tsx`, `IdleEye.tsx`, `LonelinessPopup.tsx`, and `index.css`.
 - Behavior changed: the idle eye now appears after 5 seconds instead of 10, sits in the center of the screen, and uses a large CSS eye with a pulsing red pupil.
+- Behavior changed: each eye appearance now picks an all-caps callout below the eye; `HELP ME PLEASE` is weighted at 20% and gets the urgent red treatment.
 - Behavior changed: the center-bottom idle popup now appears after 7 seconds and rotates through six variants: paused-user matches, new post recommendation, clickbait article, fake friend text, hesitation discount, and assistant decision nudge.
 - Behavior changed: ambient tab reorganization moved earlier to 9 seconds so the idle cascade feels faster.
 - Documentation updated: `DECAY_FEATURES.md`, `DESIGN_BIBLE.md`, and root `HISTORY.md`.

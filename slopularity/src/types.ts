@@ -79,3 +79,10 @@ export type FeedPost = {
   baseLikes: number
   sampleComments: string[]
 }
+
+export type ScrollStats = {
+  activeSeconds: number
+  eventCount: number
+  distancePx: number
+  bestBurstSeconds: number
+}

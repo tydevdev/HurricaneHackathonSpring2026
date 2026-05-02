@@ -163,7 +163,7 @@ The feed must stay smooth even when the user scrolls aggressively. Keep the cano
 
 On phone-sized viewports, `DOUBLE SCROLL` and `TRIPLE SCROLL` must still work in portrait. Do not compress posts into side-by-side lanes or shrink reaction/comment surfaces; instead, interleave the extra scroll lanes vertically so phone users get primary, bonus, and extra posts as stacked full-width feed moments.
 
-On the phone feed, keep the global app switcher near the top of the feed surface. It belongs below the Slopularity/Feed topbar and make-post actions, and above the story strip. Do not return it to a bottom-fixed mobile dock on the feed.
+On the phone feed, keep the global app switcher near the top of the feed surface. It belongs below the Slopularity/Feed topbar and make-post actions, and above the story strip. The switcher should include a Landing link immediately to the left of Feed so visitors can get back to the onboarding page without hunting for Reset. Do not return it to a bottom-fixed mobile dock on the feed.
 
 Interaction hooks:
 
@@ -208,6 +208,7 @@ This mechanic is currently feature-flagged off (`featureFlags.interruptionLayer 
 - Each popup has a real `×` close button. Clicking it (or "Not now") removes the popup permanently.
 - The "softer follow-up" rule is one-shot per session: at stage ≥ 3, the *first* dismiss after popups are nearly empty arms exactly one gentler check-in via `'dismiss'` reason. After that, dismissing means dismissing.
 - A "Friends muted" toggle in the appbar clears the dock and blocks new spawns. Re-enabling it re-arms the one-shot follow-up.
+- Switching to another app tab clears all visible popup layers and queued follow-up popups. Popups may follow a user across a tab only while the user stays on that screen; navigation is treated as a real dismissal so Feed-to-Games, Feed-to-Search, or similar screen changes feel clean.
 - Idle ticks can spawn popups at the 10-second stillness mark. Manual demo pulse and dismiss follow-ups may queue the next popup tone, but the popup still waits for the same idle gate and respects the muted state.
 
 Interaction hooks:
@@ -293,6 +294,15 @@ Interaction hooks:
 Intention: warmth plus confident wrongness.
 
 The assistant should sound useful, calm, and competent. It should contradict other surfaces, cite questionable sources, sell fixes to its own errors, and slowly reveal it cannot distinguish real source material from generated residue.
+
+Current implementation:
+
+- Assistant is now a polished app workspace rather than a single bubble: large Helpy header, conversation thread, composer, prompt chips, status readouts, sponsored recommendation rail, and routing receipt.
+- Every user prompt is preserved as a chat turn, but Helpy's response deliberately treats the prompt as a signal instead of a request. The answer starts with praise, quotes the prompt, and pivots into a product offer.
+- The right-side product rail rotates across GlowNest Mirror+, SnapWake Adaptogen Stack, AuraBank Reflex Fund, and Context Bundle based on conversation count and current stage.
+- The routing receipt is part of the joke: it visibly completes "praise user", "avoid exact question", and "attach product" as the user keeps asking, while direct answers remain scarce.
+- At stage 4, assistant replies leak that retrieval returned sponsored summaries citing one another, and individual replies expose internal intent labels such as `intent: question_to_allocation`.
+- Phone layout collapses to a single-column chat surface with full-width composer actions, horizontal suggested prompts, and the product rail below the conversation.
 
 Interaction hooks:
 
@@ -506,7 +516,7 @@ Intention: the app watches you when you stop using it.
 
 Three idle tiers activate sequentially when the user stops interacting:
 
-1. **5 seconds — Watching Eye + Friend Check-In**: A large CSS-drawn eye appears fixed at the center of the screen. It blinks every 3 seconds. Its red pupil pulses and follows the user's cursor with a lagged max shift. One friend popup may also appear at this exact stillness threshold. If a demo pulse or dismiss follow-up was queued, that tone is used; otherwise the idle-specific message appears and adds +2 instability. The eye disappears instantly on any interaction (pointer/mouse movement, pointer down, input, wheel, keydown, click, touch, scroll).
+1. **5 seconds — Watching Eye + Friend Check-In**: A large CSS-drawn eye appears fixed at the center of the screen. It blinks every 3 seconds. Its red pupil pulses and follows the user's cursor with a lagged max shift. An all-caps callout sits beneath it with needy attention copy like "HEY LOOK OVER HERE" or "COME BACK PLEASE!!!"; 20% of appearances should say "HELP ME PLEASE". One friend popup may also appear at this exact stillness threshold. If a demo pulse or dismiss follow-up was queued, that tone is used; otherwise the idle-specific message appears and adds +2 instability. The eye disappears instantly on any interaction (pointer/mouse movement, pointer down, input, wheel, keydown, click, touch, scroll).
 
 2. **7 seconds — Idle Nudge Rotation**: A center-bottom popup rises into view with one of six hooks: paused-user matches, a new post the app predicts the user will love, a clickbait article about pausing, a fake friend text encouraging them back, a hesitation discount, or an assistant offer to decide the next action. Each primary button routes to the relevant app surface (+2 instability plus normal navigation instability). "Not now" dismisses (+1 instability).
 

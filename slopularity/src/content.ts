@@ -53,12 +53,50 @@ const feedImageModules: Record<string, string> = {
   'post-50.jpg': new URL('./assets/feed/post-50.jpg', import.meta.url).href,
 }
 
+const newsImageModules: Record<string, string> = {
+  'news-01.jpg': new URL('./assets/news/news-01.jpg', import.meta.url).href,
+  'news-02.jpg': new URL('./assets/news/news-02.jpg', import.meta.url).href,
+  'news-03.jpg': new URL('./assets/news/news-03.jpg', import.meta.url).href,
+  'news-04.jpg': new URL('./assets/news/news-04.jpg', import.meta.url).href,
+  'news-05.jpg': new URL('./assets/news/news-05.jpg', import.meta.url).href,
+  'news-06.jpg': new URL('./assets/news/news-06.jpg', import.meta.url).href,
+  'news-07.jpg': new URL('./assets/news/news-07.jpg', import.meta.url).href,
+  'news-08.jpg': new URL('./assets/news/news-08.jpg', import.meta.url).href,
+  'news-09.jpg': new URL('./assets/news/news-09.jpg', import.meta.url).href,
+  'news-10.jpg': new URL('./assets/news/news-10.jpg', import.meta.url).href,
+  'news-11.jpg': new URL('./assets/news/news-11.jpg', import.meta.url).href,
+  'news-12.jpg': new URL('./assets/news/news-12.jpg', import.meta.url).href,
+  'news-13.jpg': new URL('./assets/news/news-13.jpg', import.meta.url).href,
+  'news-14.jpg': new URL('./assets/news/news-14.jpg', import.meta.url).href,
+  'news-15.jpg': new URL('./assets/news/news-15.jpg', import.meta.url).href,
+  'news-16.jpg': new URL('./assets/news/news-16.jpg', import.meta.url).href,
+  'news-17.jpg': new URL('./assets/news/news-17.jpg', import.meta.url).href,
+  'news-18.jpg': new URL('./assets/news/news-18.jpg', import.meta.url).href,
+  'news-19.jpg': new URL('./assets/news/news-19.jpg', import.meta.url).href,
+  'news-20.jpg': new URL('./assets/news/news-20.jpg', import.meta.url).href,
+  'news-21.jpg': new URL('./assets/news/news-21.jpg', import.meta.url).href,
+  'news-22.jpg': new URL('./assets/news/news-22.jpg', import.meta.url).href,
+  'news-23.jpg': new URL('./assets/news/news-23.jpg', import.meta.url).href,
+  'news-24.jpg': new URL('./assets/news/news-24.jpg', import.meta.url).href,
+  'news-25.jpg': new URL('./assets/news/news-25.jpg', import.meta.url).href,
+  'news-26.jpg': new URL('./assets/news/news-26.jpg', import.meta.url).href,
+  'news-27.jpg': new URL('./assets/news/news-27.jpg', import.meta.url).href,
+  'news-28.jpg': new URL('./assets/news/news-28.jpg', import.meta.url).href,
+  'news-29.jpg': new URL('./assets/news/news-29.jpg', import.meta.url).href,
+  'news-30.jpg': new URL('./assets/news/news-30.jpg', import.meta.url).href,
+}
+
 function feedImage(fileName: string) {
   return feedImageModules[fileName] ?? ''
 }
 
+function newsImage(fileName: string) {
+  return newsImageModules[fileName] ?? ''
+}
+
 export const tabs: Array<{ id: TabId; label: string }> = [
   { id: 'feed', label: 'Feed' },
+  { id: 'news', label: 'News' },
   { id: 'friends', label: 'Friends' },
   { id: 'games', label: 'Games' },
   { id: 'shop', label: 'Shop' },

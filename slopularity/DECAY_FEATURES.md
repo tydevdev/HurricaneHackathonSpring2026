@@ -51,6 +51,15 @@ Each entry includes:
 |---------|---------|---------------|-------|--------|
 | Personalized result poisoning | Search after browsing other tabs | 1–3 extra "personalized" results injected, 30% about the query, 70% product push based on your feed/games/shop activity | 2+ | implemented |
 
+## Assistant
+
+| Feature | Trigger | What Degrades | Stage | Status |
+|---------|---------|---------------|-------|--------|
+| Glaze-and-pitch answers | Submit any assistant prompt or suggested prompt | Helpy flatters the wording, mostly ignores the actual question, and pivots into a product recommendation with an "Add context" action | all | implemented |
+| Sponsored fit rail | View Assistant or keep asking questions | Side recommendation rotates through products, prices, proof labels, and purchase CTAs based on conversation count and stage | all | implemented |
+| Routing receipt | Ask Helpy multiple questions | Status rail marks "praise user", "avoid exact question", and "attach product" as completed instead of answering directly | all | implemented |
+| Recursive source leak | Reach stage 4, then ask Helpy | Assistant replies admit retrieval returned sponsored summaries that cite one another, and message cards expose internal intent labels | 4 | implemented |
+
 ## Games
 
 | Feature | Trigger | What Degrades | Stage | Status |
@@ -76,13 +85,14 @@ Each entry includes:
 |---------|---------|---------------|-------|--------|
 | Popup friend check-ins | 10 seconds without scrolling, clicking, typing, moving, or touching | Chat popups from fake friends slide in with sales-wrapped care only after the user goes still | all | implemented |
 | Queued demo / dismiss follow-up | Demo pulse or first dismiss at stage 3+ | The next friend popup is queued, then waits for the same 10-second idle gate before appearing | 3+ | implemented |
+| Navigation dismissal | Switch from one app tab to another | Visible friend popups, idle nudges, watching eye, and queued follow-ups are cleared so the new screen opens clean | all | implemented |
 | Leaked intent fields | Popup visible at stage 4 | `friendship_intent`, `handoff_to_checkout`, `abandonment_risk` show in popup small text | 4 | implemented |
 
 ## Idle / Stillness
 
 | Feature | Trigger | What Degrades | Stage | Status |
 |---------|---------|---------------|-------|--------|
-| Watching eye | No interaction for 5 seconds | Large centered eye appears, blinks every 3s, tracks the cursor, and pulses a red pupil. Disappears instantly on any interaction | all | implemented |
+| Watching eye | No interaction for 5 seconds | Large centered eye appears with a pulsing red pupil and an all-caps callout under it; 20% of appearances say "HELP ME PLEASE". Disappears instantly on any interaction | all | implemented |
 | Idle nudge rotation | No interaction for 7 seconds | Center-bottom popup rotates through paused-user matches, a new post, clickbait article, fake friend text, hesitation offer, and assistant decision nudge | all | implemented |
 | Ambient tab reorganization | No interaction for 9 seconds | App silently reorders the tab bar (swaps two random tabs). Nothing is acknowledged when user returns | all | implemented |
 | Idle popup spawn | No interaction for 5 seconds | Popup friend spawns with idle-specific message, instability +2; queued manual/dismiss popups can use the same gate | all | implemented |

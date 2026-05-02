@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 // The eye watches. It does not explain itself.
 
@@ -6,10 +6,34 @@ type IdleEyeProps = {
   visible: boolean
 }
 
+const EYE_CALLOUTS = [
+  'HEY LOOK OVER HERE',
+  'COME BACK PLEASE!!!',
+  'YOU LEFT A FEELING OPEN',
+  'I FOUND SOMETHING FOR YOU',
+  'JUST ONE MORE THING',
+  'YOUR PAUSE IS LOUD',
+]
+
+function chooseEyeCallout() {
+  if (Math.random() < 0.2) {
+    return { text: 'HELP ME PLEASE', urgent: true }
+  }
+
+  return {
+    text: EYE_CALLOUTS[Math.floor(Math.random() * EYE_CALLOUTS.length)]!,
+    urgent: false,
+  }
+}
+
 export function IdleEye({ visible }: IdleEyeProps) {
   const eyeRef = useRef<HTMLDivElement | null>(null)
   const [blink, setBlink] = useState(false)
   const [pupilOffset, setPupilOffset] = useState({ x: 0, y: 0 })
+  const callout = useMemo(
+    () => (visible ? chooseEyeCallout() : { text: '', urgent: false }),
+    [visible],
+  )
 
   // Blink every 3 seconds.
   useEffect(() => {
@@ -63,6 +87,9 @@ export function IdleEye({ visible }: IdleEyeProps) {
             transform: `translate(${pupilOffset.x}px, ${pupilOffset.y}px)`,
           }}
         />
+      </div>
+      <div className={`idle-eye-callout ${callout.urgent ? 'is-urgent' : ''}`}>
+        {callout.text}
       </div>
     </div>
   )

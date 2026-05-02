@@ -3,7 +3,7 @@ import { pushActivity } from './activityLog'
 import { IdleEye } from './components/IdleEye'
 import { LonelinessPopup, type IdleNudgeDestination } from './components/LonelinessPopup'
 import { PopupSwarm } from './components/PopupSwarm'
-import { fragmentLeaks, popupSeeds, tabs as defaultTabs } from './content'
+import { fragmentLeaks, newsPosts, popupSeeds, tabs as defaultTabs } from './content'
 import { featureFlags } from './featureFlags'
 import { AssistantPage } from './pages/AssistantPage'
 import { FeedPage } from './pages/FeedPage'
@@ -68,6 +68,30 @@ function loadTab(): TabId {
 function pathForLanding(location: Location = window.location) {
   const appRoot = appBasePath(location)
   return appRoot.replace(/\/app\/?$/, '/') || '/'
+}
+
+function shuffleTabs<T>(tabs: T[]) {
+  if (tabs.length < 2) {
+    return tabs
+  }
+
+  const shuffled = [...tabs]
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1))
+    const current = shuffled[index]!
+    shuffled[index] = shuffled[swapIndex]!
+    shuffled[swapIndex] = current
+  }
+
+  const unchanged = tabs.every((tab, index) => tab === shuffled[index])
+  if (unchanged) {
+    const first = shuffled.shift()
+    if (first) {
+      shuffled.push(first)
+    }
+  }
+
+  return shuffled
 }
 
 function App() {
@@ -377,7 +401,7 @@ function App() {
       window.localStorage.removeItem(enteredKey)
       window.localStorage.removeItem(scrollStatsKey)
       // Real navigation back to the landing entry page.
-      window.location.href = '../'
+      window.location.href = pathForLanding(window.location)
       return
     }
     setScore(0)
@@ -397,6 +421,7 @@ function App() {
     const isNewScreen = tabId !== activeTab
     if (isNewScreen) {
       dismissScreenPopups()
+      setTabOrder((current) => shuffleTabs(current))
     }
 
     if (typeof window !== 'undefined' && tabFromLocation() !== tabId) {
@@ -527,6 +552,16 @@ function App() {
               stage={visibleStage}
               onEngage={() => addInstability(1)}
               mobileNavigation={renderTabbar('feed-mobile')}
+            />
+          )}
+          {activeTab === 'news' && (
+            <FeedPage
+              stage={visibleStage}
+              onEngage={() => addInstability(1)}
+              mobileNavigation={renderTabbar('feed-mobile')}
+              posts={newsPosts}
+              sectionLabel="News"
+              storageNamespace="news"
             />
           )}
           {activeTab === 'friends' && (

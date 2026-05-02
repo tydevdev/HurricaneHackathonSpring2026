@@ -1,0 +1,622 @@
+/* ─────────────────────────────────────────────────────────────────────
+   Friends / DM Messaging — full iMessage-style split-pane layout with
+   brand friends, verification badges, typing indicators, product cards,
+   and stage-aware decay. Replaces the old friends-thread list.
+   ───────────────────────────────────────────────────────────────────── */
+
+.dm-layout {
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr);
+  gap: 0;
+  padding: 0 !important;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: #fff;
+  min-height: 72vh;
+  max-height: 82vh;
+}
+
+/* ── Brand tone system ── */
+.brand-tone-coca-cola  { --brand: #e61a27; --brand-soft: #fef2f2; --brand-deep: #7f1d1d; }
+.brand-tone-fortnite   { --brand: #9d4dbb; --brand-soft: #faf5ff; --brand-deep: #581c87; }
+.brand-tone-mcdonalds   { --brand: #ffc836; --brand-soft: #fffbeb; --brand-deep: #92400e; }
+.brand-tone-nike        { --brand: #111; --brand-soft: #f5f5f5; --brand-deep: #000; }
+.brand-tone-spotify     { --brand: #1db954; --brand-soft: #ecfdf5; --brand-deep: #064e3b; }
+.brand-tone-amazon      { --brand: #ff9900; --brand-soft: #fff7ed; --brand-deep: #7c2d12; }
+.brand-tone-apple       { --brand: #555; --brand-soft: #f9fafb; --brand-deep: #1f2937; }
+.brand-tone-netflix     { --brand: #e50914; --brand-soft: #fef2f2; --brand-deep: #991b1b; }
+
+/* ── Sidebar ── */
+.dm-sidebar {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--line);
+  background: linear-gradient(180deg, #fafbfc, #fff);
+  overflow: hidden;
+}
+
+.dm-sidebar-header {
+  padding: 18px 16px 12px;
+  border-bottom: 1px solid var(--line);
+}
+.dm-sidebar-header h2 {
+  margin: 0;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 800;
+  font-size: 1.4rem;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.dm-sidebar-header small {
+  display: block;
+  margin-top: 3px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.72rem;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+.dm-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 7px 14px;
+  background: #f4f5f8;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+.dm-search > span { color: var(--quiet); font-size: 0.95rem; }
+.dm-search input {
+  appearance: none;
+  border: 0;
+  outline: none;
+  background: transparent;
+  flex: 1;
+  font-family: inherit;
+  font-size: 0.84rem;
+  color: var(--ink);
+  padding: 2px 0;
+}
+.dm-search input::placeholder { color: var(--muted); }
+
+/* ── Filter tabs ── */
+.dm-filter-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 10px 16px 8px;
+  border-bottom: 1px solid var(--line);
+}
+.dm-filter-tab {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: #fff;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.dm-filter-tab.is-active {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--ink);
+}
+.dm-filter-tab:not(.is-active):hover {
+  background: var(--wash);
+  color: var(--ink);
+}
+
+/* ── Conversation list ── */
+.dm-convo-list {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.dm-convo-row {
+  appearance: none;
+  border: 0;
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 16px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s ease;
+  border-left: 3px solid transparent;
+}
+.dm-convo-row:hover { background: #f8f9fb; }
+.dm-convo-row.is-active {
+  background: linear-gradient(90deg, #f0f4ff, #fff);
+  border-left-color: var(--brand, var(--tone, var(--blue)));
+}
+
+/* ── Avatars ── */
+.dm-avatar {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+.dm-convo-row:hover .dm-avatar { transform: scale(1.04); }
+
+.dm-brand-avatar {
+  background: linear-gradient(140deg, var(--brand), var(--brand-deep));
+  color: #fff;
+  font-size: 1.35rem;
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--brand) 28%, transparent);
+}
+.dm-brand-avatar.brand-tone-mcdonalds { color: #7c2d12; }
+.dm-brand-avatar.brand-tone-nike { font-size: 1rem; font-family: 'Arial', sans-serif; }
+
+.dm-person-avatar {
+  --tone: #6366f1;
+  --tone-deep: #312e81;
+  background: linear-gradient(140deg, var(--tone, #6366f1), var(--tone-deep, #312e81));
+  color: #fff;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.1rem;
+}
+.dm-person-avatar.tone-hype      { --tone: #ec4899; --tone-deep: #831843; }
+.dm-person-avatar.tone-wellness  { --tone: #10b981; --tone-deep: #064e3b; }
+.dm-person-avatar.tone-finance   { --tone: #1f2937; --tone-deep: #0f172a; }
+.dm-person-avatar.tone-dating    { --tone: #f97316; --tone-deep: #7c2d12; }
+.dm-person-avatar.tone-nostalgia { --tone: #a855f7; --tone-deep: #581c87; }
+.dm-person-avatar.tone-lucid     { --tone: #0ea5e9; --tone-deep: #0c4a6e; }
+
+/* ── Verified badge ── */
+.dm-verified-badge {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  background: #1d9bf0;
+  color: #fff;
+  border-radius: 999px;
+  font-size: 0.6rem;
+  font-weight: 800;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+/* ── Conversation row text ── */
+.dm-convo-text { min-width: 0; }
+.dm-convo-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.dm-convo-name-row strong {
+  font-size: 0.92rem;
+  color: var(--ink);
+  letter-spacing: -0.005em;
+}
+.dm-convo-time {
+  margin-left: auto;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.68rem;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.dm-convo-preview {
+  margin: 2px 0 1px;
+  font-size: 0.82rem;
+  color: var(--quiet);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dm-convo-tagline {
+  font-size: 0.68rem;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  letter-spacing: 0.03em;
+}
+
+.dm-unread {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  background: var(--brand, var(--blue));
+  color: #fff;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ── Chat pane ── */
+.dm-chat {
+  display: flex;
+  flex-direction: column;
+  background: #fafbfc;
+  min-height: 0;
+}
+
+.dm-chat-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+.dm-chat-header .dm-avatar { width: 40px; height: 40px; font-size: 1rem; }
+.dm-chat-header-text { min-width: 0; flex: 1; }
+.dm-chat-header-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.dm-chat-header-name strong {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+.dm-chat-header small {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 1px;
+}
+.dm-sponsored-tag {
+  padding: 4px 10px;
+  background: color-mix(in srgb, var(--brand, var(--blue)) 12%, #fff);
+  color: var(--brand-deep, var(--muted));
+  border: 1px solid color-mix(in srgb, var(--brand, var(--blue)) 22%, transparent);
+  border-radius: 999px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.dm-back-btn {
+  display: none;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  font-size: 1.2rem;
+  padding: 6px;
+  cursor: pointer;
+  color: var(--ink);
+}
+
+/* ── Chat messages area ── */
+.dm-chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dm-msg { display: flex; flex-direction: column; max-width: 100%; }
+.dm-msg-friend { align-items: flex-start; }
+.dm-msg-user { align-items: flex-end; }
+
+.dm-msg-bubble {
+  max-width: 78%;
+  padding: 11px 16px;
+  font-size: 0.9rem;
+  line-height: 1.48;
+  word-break: break-word;
+}
+.dm-person-bubble {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 18px 18px 18px 6px;
+  color: var(--ink);
+  font-family: 'Fraunces', Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+}
+.dm-brand-bubble {
+  background: linear-gradient(160deg, color-mix(in srgb, var(--brand) 10%, #fff), color-mix(in srgb, var(--brand) 5%, #fff));
+  border: 1px solid color-mix(in srgb, var(--brand) 22%, transparent);
+  border-radius: 18px 18px 18px 6px;
+  color: var(--brand-deep, var(--ink));
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+}
+.dm-user-bubble {
+  background: linear-gradient(135deg, var(--brand, var(--tone, var(--blue))), var(--brand-deep, var(--tone-deep, #1565c0)));
+  color: #fff;
+  border-radius: 18px 18px 6px 18px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+}
+.dm-user-bubble.brand-tone-mcdonalds { color: #fff; }
+
+.dm-msg-time {
+  font-size: 0.66rem;
+  color: var(--muted);
+  margin-top: 3px;
+  padding: 0 4px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* ── Memory reference ── */
+.dm-msg-memory {
+  align-items: flex-start;
+}
+.dm-msg-memory > span {
+  display: inline-flex;
+  gap: 8px;
+  align-items: flex-start;
+  max-width: 88%;
+  padding: 9px 14px;
+  background: linear-gradient(135deg, #fff8e1, #fff3cd);
+  color: #92400e;
+  font-size: 0.78rem;
+  border-radius: 12px;
+  border: 1px dashed #fbbf24;
+}
+.dm-msg-memory em {
+  font-style: normal;
+  color: #f59e0b;
+  font-weight: 700;
+}
+
+/* ── Intent leak ── */
+.dm-intent-leak {
+  display: block;
+  margin-top: 4px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.64rem;
+  color: #b91c1c;
+  background: #fff7f7;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 5px 10px;
+  word-break: break-all;
+  max-width: 78%;
+}
+.dm-msg-leak > code {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.68rem;
+  color: #b91c1c;
+  background: #fff7f7;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+
+/* ── Typing indicator ── */
+.dm-typing-indicator {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  padding: 12px 18px;
+  background: color-mix(in srgb, var(--brand, #e5e7eb) 10%, #fff);
+  border: 1px solid color-mix(in srgb, var(--brand, #e5e7eb) 22%, transparent);
+  border-radius: 18px 18px 18px 6px;
+}
+.dm-typing-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--brand, var(--muted));
+  opacity: 0.5;
+  animation: dm-typing-bounce 1.2s ease-in-out infinite;
+}
+.dm-typing-dot:nth-child(2) { animation-delay: 0.15s; }
+.dm-typing-dot:nth-child(3) { animation-delay: 0.3s; }
+@keyframes dm-typing-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-6px); opacity: 1; }
+}
+
+/* ── Product card ── */
+.dm-product-card {
+  display: grid;
+  gap: 6px;
+  max-width: 78%;
+  padding: 14px 18px;
+  background: linear-gradient(160deg, var(--brand-soft, #f0f4ff), #fff);
+  border: 1px solid color-mix(in srgb, var(--brand, var(--tone, var(--blue))) 24%, transparent);
+  border-radius: 16px;
+}
+.dm-product-card.tone-hype      { --tone: #ec4899; --tone-soft: #fdf2f8; }
+.dm-product-card.tone-wellness  { --tone: #10b981; --tone-soft: #ecfdf5; }
+.dm-product-card.tone-finance   { --tone: #1f2937; --tone-soft: #f1f5f9; }
+.dm-product-card.tone-dating    { --tone: #f97316; --tone-soft: #fff7ed; }
+.dm-product-card.tone-nostalgia { --tone: #a855f7; --tone-soft: #faf5ff; }
+.dm-product-card.tone-lucid     { --tone: #0ea5e9; --tone-soft: #f0f9ff; }
+
+.dm-product-badge {
+  display: inline-block;
+  width: fit-content;
+  padding: 3px 10px;
+  background: var(--brand, var(--tone, var(--blue)));
+  color: #fff;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 700;
+  border-radius: 999px;
+}
+.dm-product-card strong {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1rem;
+  color: var(--brand-deep, var(--tone-deep, var(--ink)));
+}
+.dm-product-card small {
+  font-size: 0.76rem;
+  color: var(--quiet);
+}
+.dm-product-buy {
+  appearance: none;
+  border: 0;
+  padding: 9px 18px;
+  background: linear-gradient(135deg, var(--brand, var(--tone, var(--blue))), var(--brand-deep, var(--tone-deep, #1565c0)));
+  color: #fff;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  width: fit-content;
+}
+.dm-product-buy:hover { transform: translateY(-1px); }
+
+/* ── Quick replies ── */
+.dm-quick-replies {
+  display: flex;
+  gap: 6px;
+  padding: 8px 18px;
+  overflow-x: auto;
+  flex-shrink: 0;
+  border-top: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+}
+.dm-quick-chip {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: #fff;
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+.dm-quick-chip:hover {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--ink);
+  transform: translateY(-1px);
+}
+
+/* ── Input bar ── */
+.dm-input-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px 14px;
+  background: #fff;
+  border-top: 1px solid var(--line);
+  flex-shrink: 0;
+}
+.dm-input-bar input {
+  appearance: none;
+  border: 1px solid var(--line);
+  outline: none;
+  background: #f8f9fb;
+  flex: 1;
+  font-family: inherit;
+  font-size: 0.88rem;
+  color: var(--ink);
+  padding: 10px 16px;
+  border-radius: 999px;
+  transition: border-color 0.15s ease;
+}
+.dm-input-bar input:focus { border-color: var(--blue); }
+.dm-input-bar input::placeholder { color: var(--muted); }
+
+.dm-input-emoji {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+  border-radius: 999px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.dm-input-emoji:hover { background: var(--wash); }
+
+.dm-input-send {
+  appearance: none;
+  border: 0;
+  padding: 9px 20px;
+  background: linear-gradient(135deg, var(--blue), #1565c0);
+  color: #fff;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  flex-shrink: 0;
+}
+.dm-input-send:disabled { opacity: 0.35; cursor: not-allowed; }
+.dm-input-send:not(:disabled):hover { transform: translateY(-1px); }
+
+/* ── Mobile responsive ── */
+@media (max-width: 720px) {
+  .dm-layout {
+    grid-template-columns: 1fr;
+    min-height: 80vh;
+    max-height: 90vh;
+    border-radius: 16px;
+  }
+
+  .dm-sidebar { min-height: 0; }
+  .dm-sidebar.is-hidden-mobile { display: none; }
+
+  .dm-chat { display: none; }
+  .dm-chat.is-visible-mobile { display: flex; }
+
+  .dm-back-btn { display: block; }
+
+  .dm-msg-bubble { max-width: 88%; }
+  .dm-product-card { max-width: 88%; }
+
+  .dm-chat-header { padding: 10px 14px; }
+  .dm-chat-messages { padding: 14px; }
+  .dm-input-bar { padding: 8px 12px 12px; }
+  .dm-quick-replies { padding: 6px 12px; }
+}
+
+/* ── Presence dot (reused from old friends) ── */
+.friend-presence {
+  position: absolute;
+  bottom: 1px;
+  right: 1px;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  border: 2px solid #fff;
+}
+.friend-presence.is-online  { background: #22c55e; }
+.friend-presence.is-typing  { background: #22c55e; animation: dm-pulse 1.4s ease infinite; }
+.friend-presence.is-reading { background: #facc15; }
+.friend-presence.is-sponsored { background: #f97316; }
+
+@keyframes dm-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}

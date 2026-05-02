@@ -13,11 +13,25 @@ export type GameProps = {
   onComplete: (title: string) => void
 }
 
+export type GameArt = {
+  cover: string
+  icon: string
+  accent: string
+  pattern: string
+  heroAlt: string
+  iconAlt: string
+  accentAlt: string
+}
+
 export type GameMeta = {
   id: string
   title: string
   cute: string
+  playLabel: string
+  collectLabel: string
   receipt: LabelReceipt
-  // Inline pictogram for the picker grid; pure CSS / emoji.
+  art: GameArt
+  tone: 'picnic' | 'cottage' | 'robot' | 'cloud' | 'pebble'
+  // Small fallback pictogram for compact status rows.
   emoji: string
 }

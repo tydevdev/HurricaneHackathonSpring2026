@@ -1,5 +1,13 @@
 # History
 
+## [2026-05-02 18:42] Add Click-Driven Tab Shuffle
+
+- Updated `slopularity/src/App.tsx` so clicking a different app tab shuffles the app tab order immediately after navigation while keeping the Landing link fixed before the app tabs.
+- Added a Fisher-Yates shuffle helper that guarantees a changed order when possible, and reused existing tab state so desktop and phone-feed switchers stay synchronized.
+- Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` with the new navigation decay rule.
+- Regenerated `slopularity/dist/` for the GitHub Pages build.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP smoke confirmed Feed -> Games navigates to `/app/games/`, makes Games active, and changes the tab order.
+
 ## [2026-05-02 18:39] Clear Popups On Tab Switch
 
 - Updated `slopularity/src/App.tsx` so moving from one app tab to another clears visible friend popups, idle nudges, the watching eye, and queued popup follow-ups before the destination screen settles.
@@ -21,8 +29,9 @@
 - Added deterministic assistant behavior: every submitted prompt is preserved as a user turn, then Helpy praises the phrasing, mostly ignores the question, and pivots into ads for GlowNest Mirror+, SnapWake Adaptogen Stack, AuraBank Reflex Fund, or Context Bundle.
 - Updated `slopularity/src/App.tsx` so assistant activity records the actual prompt passed from the Assistant page instead of generic assistant activity.
 - Updated `slopularity/src/index.css` with the Assistant responsive layout, message bubbles, composer, product rail, routing receipt, hover/focus states, stage-4 leak styling, and phone collapse.
+- Fixed current lint/build blockers in `slopularity/src/pages/FriendsPage.tsx` and `slopularity/src/components/IdleEye.tsx` without changing the assistant product behavior.
 - Updated `slopularity/DECAY_FEATURES.md`, `slopularity/DESIGN_BIBLE.md`, and `slopularity/IMPLEMENTATION_STATUS.md` with the new assistant decay mechanics and current intent.
-- Validation run: `npm run lint`; `npm run build`; assistant route responsive smoke pending in this session.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` at 1280x900 and 390x844 confirmed the Assistant route renders the header/composer/product rail/routing receipt, prompt submission creates 3 chat turns with ad copy and offer buttons, desktop and mobile have zero horizontal overflow, and the phone layout stacks the product rail below the chat.
 
 ## [2026-05-02 18:36] Move Phone Feed Switcher Above Stories
 
@@ -592,3 +601,19 @@
 - Updated `slopularity/src/components/LonelinessPopup.tsx` so the inactivity popup rotates through paused-user matches, a new post recommendation, clickbait article, fake friend text, hesitation offer, and assistant decision nudge.
 - Updated `slopularity/DECAY_FEATURES.md`, `slopularity/DESIGN_BIBLE.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the faster idle timing and new popup variants.
 - Validation run: `npm run lint`; `npm run build`. A local Chrome idle smoke was attempted, but headless Chrome hung before returning DOM evidence; the Vite server was shut down afterward.
+
+## [2026-05-02 18:45] Profile Stats And Trophy Redesign
+
+- Redesigned `slopularity/src/pages/ProfilePage.tsx` into a polished scorecard with a profile cover, scrolling leaderboard, persisted scroll stats, inferred metrics, privacy controls, trophy shelf, Florida waterline tracker, known signals, and late-stage source review.
+- Updated `slopularity/src/App.tsx` and `slopularity/src/types.ts` so scroll time, scroll events, distance, and best burst persist in localStorage and drive Profile ranking/achievement state.
+- Updated `slopularity/src/index.css` with the responsive Profile layout, trophy shelf, Big Button confetti, leaderboard styling, Florida waterline graphic, and mobile-safe single-column behavior.
+- Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the implemented Profile mechanics and intent.
+- Regenerated `slopularity/dist/` so the published build includes the Profile redesign.
+- Validation run: `npm run lint`; `npm run build`; Playwright smoke against `vite preview` at 1280x900 and 390x844 scrolled Feed, opened Profile, clicked Big Button, refreshed Florida, tapped privacy controls, confirmed leaderboard/trophy/Florida/Big Button presence, persisted scroll stats, no console/page errors, no horizontal overflow, and screenshots at `/tmp/slopularity-profile-desktop-clean.png` and `/tmp/slopularity-profile-mobile-clean.png`.
+## [2026-05-02 23:48] Implement Brand Friends & DM Messaging System
+- Replaced the Friends tab UI with a full split-pane DM messaging layout (`FriendsPage.tsx` and `index.css`).
+- Added 8 brand friends (Coca-Cola, Fortnite, McDonald's, Nike, Spotify, Amazon, Apple, Netflix) to `content.ts` and type definitions in `types.ts`.
+- Implemented a 5-rung emotional upsell ladder for each brand.
+- Added cross-tab memory references where brands dynamically reference recent activities in Feed, Shop, Games, Search, and Assistant.
+- Added product cards embedded directly in chat and typing indicators.
+- Verified changes via `npm run lint` and `npm run build`.

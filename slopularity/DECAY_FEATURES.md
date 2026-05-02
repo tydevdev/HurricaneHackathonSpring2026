@@ -40,10 +40,14 @@ Each entry includes:
 
 | Feature | Trigger | What Degrades | Stage | Status |
 |---------|---------|---------------|-------|--------|
-| Memory too good | Browse any other tab, then visit Friends | Friends reference specific things you clicked/searched/played on other tabs ("Saw you looking at that hiking post!") | 2+ | implemented |
+| Brand friends infiltration | Open Friends tab | 8 major brands appear as "friends" with verification badges alongside human friends | all | implemented |
+| Brand glaze & pitch | Chat with a brand friend | Brand runs a 5-rung upsell ladder (compliment → soft pitch → product card → hard sell) | all | implemented |
+| Brand cross-tab memory | Chat with a brand friend at stage 2+ | Brands reference specific things you clicked/searched/played on other tabs | 2+ | implemented |
+| Brand cross-reference | Chat with a brand friend at stage 3+ | Brands start mentioning other brands who "were talking about you" to create pressure | 3+ | implemented |
+| Memory too good | Browse any other tab, then chat with human friend | Friends reference specific things you clicked/searched/played on other tabs ("Saw you looking at that hiking post!") | 2+ | implemented |
 | Friend merge | Reach stage 3+ | Devon and Jules start saying the same messages, their avatar initials blend (D/J, J/D), at stage 4 Jules disappears and Devon becomes "Devon & Jules" | 3–4 | implemented |
-| Emotional upsell ladder | Type a message to any friend | Friend replies in a 3-rung ladder: empathy → product mention → full sales pitch. Triggered by message count, not content parsing | all | implemented |
-| Script leak in chat | Chat with a friend at stage 4 | Each friend reply gets a visible JSON block: `{"tone":"empathetic","pivot_to":"checkout","user_sentiment":"vulnerable"}` | 4 | implemented |
+| Emotional upsell ladder | Chat with a human friend | Friend replies in a 3-rung ladder: empathy → product mention → full sales pitch. Triggered by message count, not content parsing | all | implemented |
+| Script leak in chat | Chat with any friend at stage 4 | Each friend reply gets a visible JSON block: `{"tone":"empathetic","pivot_to":"checkout","user_sentiment":"vulnerable"}` | 4 | implemented |
 
 ## Search
 
@@ -71,6 +75,15 @@ Each entry includes:
 | Reward devaluation | Complete any game at stage 2+ | Rewards degrade from "sticker pack" → "0.3 credits" → "0.003 credits (47,000 required)" → "0.00004 credits (ETA: 11.7 years)" | 2+ | implemented |
 | Game becomes work (SnackSort) | Complete SnackSort, play again | Round 2+: emoji removed, labels become "Item A-1", baskets become "Category 1". Round 3+: timer and quota bar appear. Round 4+: submit becomes "mandatory", play again becomes "Next batch →" | all (round-based) | implemented |
 
+## Profile
+
+| Feature | Trigger | What Degrades | Stage | Status |
+|---------|---------|---------------|-------|--------|
+| Scrolling leaderboard | Scroll anywhere in the app, then open Profile | Persisted active scroll time, distance, burst, rank, and next target turn attention into a competitive league against synthetic users | all | implemented |
+| Trophy shelf | Open Profile, scroll, press the Big Button, touch privacy, check Florida, finish games, or reach stage 4 | Achievements unlock for ordinary behavior and suspicious compliance, making extraction feel like progress | all | implemented |
+| Big Button confetti | Press the Profile Big Button | Confetti celebrates compliance, increments instability, and unlocks button/confetti achievements | all | implemented |
+| Florida waterline tracker | Refresh the Profile Florida widget or increase stage/score | Flooding is normalized as a confidence widget and routed toward travel, insurance, wellness, or retention copy | all | implemented |
+
 ## App Shell / Chrome
 
 | Feature | Trigger | What Degrades | Stage | Status |
@@ -78,6 +91,7 @@ Each entry includes:
 | Page title flicker | Reach stage 4 | Document title cycles between "The Singularity", "source uncertain", "[INSERT PRODUCT NAME]", etc. | 4 | implemented |
 | Brand subtitle leak | Reach stage 4 | Appbar subtitle changes from "everything app · 2030" to leaked fragment | 4 | implemented |
 | Phase pill leak | Reach stage 4 | Phase indicator shows leaked internal string | 4 | implemented |
+| Click-driven tab shuffle | Click a different app tab | App tabs reshuffle into a new order immediately after the page switch. The Landing escape link stays fixed before the shuffled app tabs | all | implemented |
 
 ## Popups / Chat Swarm
 

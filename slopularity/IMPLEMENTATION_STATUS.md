@@ -2,6 +2,23 @@
 
 Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESIGN_BIBLE.md` stays the product/design execution guide. This file records what is actively intentional in the app right now, what is still a skeleton, and which feature flags are keeping unfinished mechanics out of the way.
 
+## [2026-05-02 18:45] Profile Stats And Trophy Redesign
+
+- Active focus: `ProfilePage.tsx`, app-level scroll telemetry in `App.tsx`, and Profile-specific responsive styling in `index.css`.
+- Behavior changed: Profile is now a polished scorecard surface with a clean topbar, identity cover, scroll leaderboard, inferred metric rails, privacy controls, trophy shelf, Florida waterline tracker, known-signal list, and late-stage source review.
+- Behavior changed: scroll telemetry is persisted in `localStorage` and feeds Profile's active scroll time, distance, burst, leaderboard rank, and Super Scroller achievement state.
+- Behavior changed: the Big Button increments Profile progress, fires confetti, unlocks trophies, and routes through the shared instability reveal path; privacy taps and Florida refreshes also unlock their own trophy states.
+- Files changed: `src/App.tsx`, `src/pages/ProfilePage.tsx`, `src/types.ts`, `src/index.css`, `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
+- Validation run: `npm run lint`; `npm run build`; Playwright smoke against `vite preview` at 1280x900 and 390x844 scrolled the feed, opened Profile, clicked Big Button, refreshed Florida, toggled privacy, confirmed leaderboard/trophy/Florida/Big Button presence, 8 trophy buttons, persisted scroll event counts, no console/page errors, no horizontal overflow, and Profile cover positioned below the Profile topbar.
+
+## [2026-05-02 18:42] Click-Driven Tab Shuffle
+
+- Active focus: app switcher decay in `App.tsx`.
+- Behavior changed: clicking a different app tab now shuffles the app tab order immediately after navigation, so the destination opens but the switcher map changes underneath the user.
+- Behavior preserved: the Landing link stays fixed before the shuffled app tabs, reset restores the default order, and the idle tab reorganization still exists as a separate stillness behavior.
+- Files changed: `src/App.tsx`, `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP smoke against the built feed route confirmed Feed -> Games navigates to `/app/games/`, the active tab becomes Games, and the tab order changes from its original sequence.
+
 ## [2026-05-02 18:38] Popup Navigation Dismissal
 
 - Active focus: app-level transient popup ownership in `App.tsx`.
@@ -17,8 +34,9 @@ Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESI
 - Behavior changed: submitting any prompt records the user's text, then Helpy praises the phrasing, mostly ignores the actual question, and pivots into an ad for GlowNest Mirror+, SnapWake Adaptogen Stack, AuraBank Reflex Fund, or Context Bundle.
 - Behavior changed: Assistant actions now pass the prompt back to `App.tsx` so cross-tab activity records the actual thing asked instead of generic assistant activity.
 - Stage behavior: stage 4 replies admit recursive sponsored retrieval and expose intent labels on assistant messages.
-- Files changed: `src/pages/AssistantPage.tsx`, `src/App.tsx`, `src/index.css`, `DECAY_FEATURES.md`, `DESIGN_BIBLE.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
-- Validation run: `npm run lint`; `npm run build`; assistant route responsive smoke pending in this session.
+- Build/lint blockers fixed: `FriendsPage.tsx` no longer uses render-time `Math.random()`/`Date.now()` or unused variables, and `IdleEye.tsx` no longer sets state synchronously inside a visibility effect.
+- Files changed: `src/pages/AssistantPage.tsx`, `src/App.tsx`, `src/index.css`, `src/pages/FriendsPage.tsx`, `src/components/IdleEye.tsx`, `DECAY_FEATURES.md`, `DESIGN_BIBLE.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` at 1280x900 and 390x844 confirmed the Assistant route renders the header/composer/product rail/routing receipt, prompt submission creates 3 chat turns with ad copy and offer buttons, desktop and mobile have zero horizontal overflow, and the phone layout stacks the product rail below the chat.
 
 ## [2026-05-02 18:32] Phone Vertical Multi-Scroll
 

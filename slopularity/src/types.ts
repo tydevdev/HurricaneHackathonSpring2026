@@ -1,4 +1,4 @@
-export type TabId = 'feed' | 'friends' | 'games' | 'shop' | 'search' | 'assistant' | 'profile'
+export type TabId = 'feed' | 'news' | 'friends' | 'games' | 'shop' | 'search' | 'assistant' | 'profile'
 
 export type PopupTone =
   | 'hype'

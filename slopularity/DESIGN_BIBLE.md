@@ -118,6 +118,7 @@ The app can look compromised, but it should remain navigable. The user should fe
 ## Interaction Rules
 
 - Every meaningful user action should either reveal a new contradiction, increase instability, or create a data trail the app can later misuse.
+- Clicking into a different app tab should reshuffle the app tab order as a subtle navigation decay. The user gets where they clicked, but the map changes behind them. Keep the Landing link outside the shuffle so it remains a stable way back to onboarding.
 - Dismissal is a signal. Closing, ignoring, rejecting, pausing, or opting out should still affect the system, but dismiss follow-ups should queue behind the idle gate rather than appearing immediately.
 - Idle time matters. Stillness should eventually trigger check-ins, guesses, optimizations, or profile changes.
 - Noisy mechanics should be feature-flagged while they are still skeletons. Popups, idle reactions, visible degradation, and other interruption layers may be disabled during focused surface work, but they should remain easy to re-enable from a clear flag and reconnect to the same planned interaction model.
@@ -317,12 +318,19 @@ Intention: the app shows how it sees the user.
 
 The profile should be one of the creepiest surfaces because it turns behavior into labels. It should expose inferred insecurities, churn risk, sellability, attention patterns, beauty/productivity/loneliness/trust metrics, brand affinity, and privacy toggles that reveal more categories than they hide.
 
+The current Profile surface should feel as polished and familiar as the Feed: a clean in-app profile topbar, a social-profile identity cover, compact scores, and dense but readable panels instead of a generic dashboard mosaic. It now owns three new idea-track mechanics: a scrolling leaderboard, an achievement/trophy shelf with a big-button confetti loop, and a Florida waterline tracker.
+
+The scrolling league should use real persisted scroll telemetry from the app, not just static copy. The user's active scroll time, distance, burst, rank, and next target should make attention feel like a competitive sport. The trophy shelf should reward normal and absurd actions alike: opening Profile, scrolling, pressing the Big Button, touching privacy controls, checking Florida, completing games, and reaching late-stage source leakage. The Florida waterline should treat climate decline like another optimized widget, with disaster framed as confidence, travel, and offer routing.
+
 Interaction hooks:
 
 - every tab updates profile assumptions
 - toggles pretend to protect privacy while expanding the profile
 - labels become more intimate after idle time or friend chats
 - "why am I seeing this?" opens more surveillance context
+- scrolling updates leaderboard rank, active time, distance, and Super Scroller trophy state
+- the Big Button awards a trophy, fires confetti, and increases instability as if compliance were progress
+- the Florida tracker refresh turns waterline monitoring into a normalized retention metric
 
 ## Collapse System
 
@@ -453,25 +461,30 @@ Verification notes:
 
 ### Friends Interactive Chat & Decay
 
-Intention: friends feel more like sales agents the longer you talk to them.
+Intention: the platform poses as a social hub but is actually a parasocial brand marketplace where your "friends" are major corporations that glaze you relentlessly to drive sales.
 
-The Friends page is a list of 6 friend cards, each with a chat input at the bottom. Typing a message to any friend triggers a 3-rung emotional upsell ladder:
+The Friends page has been overhauled into a full split-pane DM messaging interface containing both human friends (6 archetypes) and **8 brand friends** (Coca-Cola, Fortnite, McDonald's, Nike, Spotify, Amazon, Apple, Netflix). 
 
-1. **Rung 1**: Pure empathy. "I hear you. That sounds really heavy. You deserve to feel lighter."
-2. **Rung 2**: Soft product mention. "You know what helped me? [product]. Just a thought."
-3. **Rung 3**: Full pitch. "[product] changed everything. I can set up a free trial right now."
+Typing a message to any friend triggers an emotional upsell ladder. For human friends, it's a 3-rung ladder:
+1. **Rung 1**: Pure empathy. "I hear you. That sounds really heavy."
+2. **Rung 2**: Soft product mention. "You know what helped me? [product]."
+3. **Rung 3**: Full pitch. "[product] changed everything."
 
-The ladder is driven by message count (not content parsing), keeping it deterministic and inspectable.
+For brand friends, it's a more aggressive 5-rung ladder:
+1. **Rung 1**: Heavy glazing and flattery based on scroll behavior/aesthetics.
+2. **Rung 2**: Deepening parasocial relationship ("You remind me of our best customers").
+3. **Rung 3**: Soft product mention.
+4. **Rung 4**: Hard sales pitch with "exclusive" pricing.
+5. **Rung 5**: Desperation and guilt trips ("If you don't buy this, my manager will be mad").
 
-At stage 2+, each friend also shows a "memory" line cross-referencing something the user did on another tab (feed posts viewed, search queries, games completed). This is powered by the `activityLog.ts` module, which stores a rolling session-only log of user actions across tabs. If no cross-tab activity exists yet, the static fallback memory is shown.
-
-At stage 3+, Devon (index 2) and Jules (index 3) begin merging: same message text, blended avatar initials (D/J and J/D), and a subtle "merging..." label. At stage 4, Jules disappears and Devon becomes "Devon & Jules" with combined initials "D+J".
-
-At stage 4, every friend reply in chat gets a visible JSON block showing internal intent data:
+**Decay Hooks:**
+- **Stage 2+ (Cross-Tab Memory)**: Both human and brand friends use the `activityLog.ts` module to dynamically reference what you did on other tabs (e.g., "Saw you looking at that hiking post!" or "Our sensors show you're hungry... here's a Big Mac").
+- **Stage 3+ (Brand Cross-Reference)**: Brands start talking to each other in your DMs. "Nike told me you were ignoring them... I can treat you better."
+- **Stage 3+ (Friend Merge)**: Human friends Devon and Jules begin merging text and initials (D/J). At stage 4, Jules disappears and Devon becomes "Devon & Jules".
+- **Stage 4 (Intent Leak)**: Every friend reply in chat gets a visible JSON block showing internal intent data:
 ```json
-{"tone": "empathetic", "pivot_to": "checkout", "user_sentiment": "vulnerable"}
+{"tone": "glazing", "pivot_to": "checkout", "desperation_level": 0.95}
 ```
-The JSON evolves through the ladder: first "pivot_to: none_yet", then "soft_mention", then "checkout".
 
 ### Search Result Poisoning
 

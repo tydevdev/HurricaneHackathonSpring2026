@@ -1,5 +1,11 @@
 # History
 
+## [2026-05-02 15:49] Restore Full Feed Photo Framing
+
+- Updated `slopularity/src/index.css` so feed post images no longer force a square `aspect-ratio` with `object-fit: cover`; post photos now render at full width with their natural height instead of showing only the center crop.
+- Kept story avatars, story frames, comment thumbnails, and other feed-adjacent image treatments unchanged so the fix stays scoped to the main feed post image surface.
+- Validation run: `npm run lint`; `npm run build`.
+
 ## [2026-05-02 15:39] Tighten Multi-Lane Feed Alignment
 
 - Updated `slopularity/src/index.css` so double/triple lane posts stretch to each grid row and use a shared vertical layout behavior, reducing row-by-row offset drift between lanes.

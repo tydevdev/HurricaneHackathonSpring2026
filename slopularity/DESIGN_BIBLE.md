@@ -4,6 +4,50 @@ This is the product and design spine for `slopularity/`. `PLAN.md` tracks ideas,
 
 Keep this document alive. When a section, tab, mechanic, visual system, or narrative rule changes in implementation, update the matching section here with the intention behind the change.
 
+## Purpose
+
+Slopularity is an interactive satire of the internet after every product category, social space, creative tool, shopping flow, assistant, dashboard, and identity system has been collapsed into one AI-managed super app.
+
+The website should let a visitor feel the bargain modern platforms keep offering: convenience in exchange for context, intimacy, trust, attention, taste, privacy, and eventually reality itself. It is not just "AI makes bad websites." It is about what happens when generated systems are given the authority of infrastructure, the incentives of advertising, the emotional language of friendship, and the growth metrics of every platform that came before them.
+
+The purpose of the site is to make that critique playable. A visitor should not need an essay to understand it. They should click, scroll, search, chat, shop, pause, dismiss, compare, and play until the system reveals what it has been doing the whole time.
+
+## Satirical Position
+
+The target is not only AI output quality. The target is the full platform logic that makes AI slop profitable:
+
+- AI systems trained on generated junk until confidence replaces truth
+- social media turning insecurity into engagement
+- fake friendship and parasocial warmth as retention strategy
+- personalization as surveillance with friendlier labels
+- search results, citations, and summaries becoming circular and sponsored
+- games, quizzes, and "fun" interactions becoming data-labeling labor
+- e-commerce selling cures for anxieties the app helped create
+- tech culture treating speed, scale, and automation as substitutes for maintenance, taste, and care
+
+The comedy should come from the app taking itself completely seriously. The Singularity believes it has solved the web. It should sound helpful, polished, legally careful, emotionally fluent, and product-managed. The horror is that all of that competence is pointed at the wrong goal.
+
+Satire rules:
+
+- Do not make the app stupid from the first click. Make it plausible enough that the collapse feels like a betrayal.
+- Do not rely on random nonsense. The brokenness should expose incentives: ads, data capture, synthetic social proof, bad sourcing, automation, and optimization.
+- Do not tell the user what the joke is in visible UI. The joke should live in contradictions, timing, labels, popups, recommendations, and state changes.
+- Do not make the critique anti-technology in a generic way. Aim at careless automation, platform decay, fake intimacy, and systems nobody human is maintaining.
+- Do not let satire become pure chaos. Even late-stage collapse should preserve a readable point of view.
+
+## Audience Takeaway
+
+After a few minutes, a visitor should understand:
+
+- this is the whole internet compressed into one mandatory app
+- every surface is useful and compromised at the same time
+- the product uses care, convenience, friendship, and play as extraction interfaces
+- the system knows more signals than it understands
+- the failure is not a single bug, but an incentive structure
+- the most frightening part is how normal it felt at first
+
+If someone describes the site afterward, the ideal summary is: "It starts like the everything app of the future, then you realize every helpful feature is AI slop, surveillance, ads, and fake connection wearing the same clean interface."
+
 ## North Star
 
 The Singularity is the final website: a 2030 everything app that claims to have unified search, social, commerce, identity, files, productivity, entertainment, assistants, games, and personal automation.

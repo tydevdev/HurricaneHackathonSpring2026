@@ -1,5 +1,12 @@
 # History
 
+## [2026-05-02 14:26] Clarify Slopularity Satirical Purpose
+
+- Expanded `slopularity/DESIGN_BIBLE.md` with a clearer `Purpose`, `Satirical Position`, and `Audience Takeaway` so future agents understand the website as an interactive satire of the internet collapsed into one AI-managed everything app.
+- Clarified that the satire targets profitable AI slop, platform incentives, fake intimacy, surveillance-as-personalization, circular sourcing, hidden data labor, e-commerce anxiety loops, and tech culture replacing maintenance and taste with automation.
+- Added rules for making the satire land through plausible product behavior, contradictions, labels, popups, recommendations, and state changes rather than visible explanatory parody copy.
+- Validation run: inspected the design bible opening, applied a docs-only update, and reviewed the resulting markdown diff.
+
 ## [2026-05-02 14:26] Require Fresh Pulls Before Feature Work
 
 - Updated root `AGENTS.md` development workflow guidance so future agents pull latest remote changes before implementing new features when practical.

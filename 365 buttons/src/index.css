@@ -1,0 +1,57 @@
+:root {
+  --paper: #f7f4ee;
+  --paper-2: #ebe5d9;
+  --ink: #171512;
+  --muted: #756f64;
+  --rule: rgba(23, 21, 18, 0.14);
+  --amber: #c7852b;
+  --amber-soft: #efc46e;
+  --green: #7e8b67;
+  --cool: #8e99a5;
+  --deep: #38342d;
+  --white: #fffdf8;
+  --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  color: var(--ink);
+  background: var(--paper);
+  font-family: var(--sans);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background:
+    linear-gradient(90deg, rgba(23, 21, 18, 0.045) 1px, transparent 1px),
+    linear-gradient(rgba(23, 21, 18, 0.035) 1px, transparent 1px),
+    var(--paper);
+  background-size: 72px 72px;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 4px;
+}
+
+#root {
+  min-height: 100svh;
+}

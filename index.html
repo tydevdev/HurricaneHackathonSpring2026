@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="A root launch board for Hurricane Hackathon Spring 2026 experiments."
+    >
+    <title>Hurricane Hackathon Spring 2026</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#projects">Skip to projects</a>
+
+    <main class="page-shell">
+      <section class="hero" aria-labelledby="page-title">
+        <img
+          class="hero-image"
+          src="./assets/hackathon-desk.png"
+          alt=""
+          aria-hidden="true"
+        >
+        <div class="sky" aria-hidden="true">
+          <span class="star star-a"></span>
+          <span class="star star-b"></span>
+          <span class="star star-c"></span>
+          <span class="star star-d"></span>
+        </div>
+
+        <div class="hero-copy">
+          <p class="kicker">Spring 2026</p>
+          <h1 id="page-title">Hurricane Hackathon</h1>
+          <p class="intro">
+            Open the builds. Keep the sparks.
+          </p>
+          <a class="primary-link" href="#projects">Enter the project arcade</a>
+        </div>
+
+        <div class="terminal" aria-label="Hackathon status">
+          <div class="titlebar">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+            <span class="window-title">hackathon.log</span>
+          </div>
+          <div class="terminal-body">
+            <p><span>&gt;</span> live builds: 6</p>
+            <p><span>&gt;</span> scaffold shelves: 3</p>
+            <p><span>&gt;</span> generated hero: loaded</p>
+            <p><span>&gt;</span> rule: each folder is its own project</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="ticker" aria-label="Workspace note">
+        <div class="ticker-track">
+          <span>brainstorm</span>
+          <span>prototype</span>
+          <span>click around</span>
+          <span>ship the weird first version</span>
+          <span>pocket zoo warming up</span>
+          <span>museum shelf added</span>
+          <span>pixel pop blinking</span>
+          <span>repeat</span>
+        </div>
+      </section>
+
+      <section class="projects" id="projects" aria-labelledby="projects-title">
+        <div class="section-heading">
+          <div>
+            <p class="kicker">Project folders</p>
+            <h2 id="projects-title">Choose a doorway</h2>
+          </div>
+          <p class="section-note">Six live builds, three shelves waiting for their first page.</p>
+        </div>
+
+        <div class="project-grid">
+          <a class="project-tile tile-capsules is-live" href="./time-capsules/dist/">
+            <span class="project-status">Live</span>
+            <span class="tile-icon" aria-hidden="true"></span>
+            <span class="tile-name">Time Capsules</span>
+            <span class="tile-description">Small memories sealed for later.</span>
+            <span class="tile-action">Open</span>
+          </a>
+
+          <a class="project-tile tile-buttons is-live" href="./365%20buttons/dist/">
+            <span class="project-status">Live</span>
+            <span class="tile-icon" aria-hidden="true"></span>
+            <span class="tile-name">365 Buttons</span>
+            <span class="tile-description">A year of tiny presses and strange outcomes.</span>
+            <span class="tile-action">Open</span>
+          </a>
+
+          <a class="project-tile tile-scroll is-live" href="./scrollbreak/dist/">
+            <span class="project-status">Live</span>
+            <span class="tile-icon" aria-hidden="true"></span>
+            <span class="tile-name">Scrollbreak</span>
+            <span class="tile-description">A pause button for the endless feed.</span>
+            <span class="tile-action">Open</span>
+          </a>
+
+          <a class="project-tile tile-zoo is-live" href="./pocket-zoo/dist/">
+            <span class="project-status">Live</span>
+            <span class="tile-icon" aria-hidden="true"></span>
+            <span class="tile-name">Pocket Zoo</span>
+            <span class="tile-description">A tiny habitat of draggable, snackable cartoon animals.</span>
+            <span class="tile-action">Open</span>
+          </a>
+
+          <div class="project-tile tile-whimsy is-paused" aria-label="Whimsy Net is an idea folder without a published page yet">
+            <span class="project-status">Queued</span>
+            <span class="tile-icon" aria-hidden="true"></span>
+            <span class="tile-name">Whimsy Net</span>
+            <span class="tile-description">An idea folder, still before its first page.</span>
+            <span class="tile-action">Queued</span>
+          </div>
+
+          <a class="project-tile tile-museum is-live" href="./fun-internet-museum/dist/">
+            <span class="project-status">Live</span>
+            <span class="tile-icon" aria-hidden="true"></span>
+            <span class="tile-name">Fun Internet Museum</span>
+            <span class="tile-description">A loud hallway of web relics, strange links, fake popups, and button trouble.</span>
+            <span class="tile-action">Open</span>
+          </a>
+
+          <a class="project-tile tile-pixel is-live" href="./pixel-pop-arcade/dist/">
+            <span class="project-status">Live</span>
+            <span class="tile-icon" aria-hidden="true"></span>
+            <span class="tile-name">Pixel Pop Arcade</span>
+            <span class="tile-description">A cutesy cabinet row with Space Invaders, Pac-Munch, and Snake.</span>
+            <span class="tile-action">Play</span>
+          </a>
+
+          <a class="project-tile tile-slop is-paused" href="./slopternet/PLAN.md">
+            <span class="project-status">Plan</span>
+            <span class="tile-icon" aria-hidden="true"></span>
+            <span class="tile-name">Slopternet</span>
+            <span class="tile-description">A plan for a web-native critique of internet instability.</span>
+            <span class="tile-action">Read</span>
+          </a>
+
+          <div class="project-tile tile-quiet is-paused" aria-label="Quiet Collapse is an empty idea folder without a published page yet">
+            <span class="project-status">Queued</span>
+            <span class="tile-icon" aria-hidden="true"></span>
+            <span class="tile-name">Quiet Collapse</span>
+            <span class="tile-description">An empty shelf with a very good name.</span>
+            <span class="tile-action">Queued</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="note" aria-labelledby="note-title">
+        <h2 id="note-title">Loose rules</h2>
+        <p>
+          The live doors point to built dist pages. Unbuilt shelves stay visible until they are ready to publish.
+        </p>
+      </section>
+    </main>
+  </body>
+</html>

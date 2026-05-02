@@ -1,18 +1,30 @@
 # Hurricane Hackathon Spring 2026
 
-This repository is a hackathon lab. We are brainstorming many small product ideas in parallel, and each top-level project folder should be treated as its own separate experiment for now.
+This repository began as a hackathon lab for small product tests. The actual project going forward is `slopularity/`; treat the earlier top-level projects as experiments, references, or prototypes unless the user explicitly names one of them.
 
 ## Repository Shape
 
 - `index.html` is the GitHub Pages root. It exists only to introduce the hackathon workspace and link into the subprojects.
 - `styles.css` styles the root hub page.
+- `slopularity/` is the primary project folder. It is currently a planning shell for the real build, not an implemented app yet.
 - `time-capsules/`, `365 buttons/`, `scrollbreak/`, `pocket-zoo/`, and `fun-internet-museum/` are independent Vite projects with their own source, package files, and build flow.
-- `whimsy-net/`, `pixel-pop-arcade/`, `slopternet/`, and `quiet-collapse/` are idea or scaffold folders that may become published projects later.
+- `slopternet/` and `quiet-collapse/` are especially relevant references for AI-slop and trust-collapse mechanics, but they are not the main project unless the user asks to work on them directly.
+- `whimsy-net/`, `pixel-pop-arcade/`, and other top-level folders are idea, scaffold, or test folders that may become published projects later.
 - Do not merge subprojects into one app unless the user explicitly asks for that.
+
+## Primary Project Direction
+
+- The main project is `slopularity/`, a future-facing web app set around 2030: the "everything app" after AI has supposedly unified every product, workflow, feed, assistant, dashboard, marketplace, and personal tool.
+- The core joke and critique: the product poses as the singularity of websites, but because it is AI-made and unchecked, it is basically slop. As the user uses it, the interface should slowly fall apart.
+- Use `quiet-collapse/` as a reference for gradual degradation, stateful discoveries, and trust failure. This project should feel broader and more like a super app: search, social, productivity, commerce, identity, assistant, files, feeds, and automation all collapsing into one overconfident surface.
+- Do not implement `slopularity/` until the user asks for implementation. For now, preserve the README and local AGENTS file as durable product direction.
+- Future implementation should make degradation interactive and earned: user actions should trigger contradictions, duplicate panels, fake integrations, generated artifacts, confident wrongness, layout drift, memory leaks, and recovery paths.
+- Keep the first version understandable without explanatory copy. The app should demonstrate the satire through behavior, not through visible text announcing the premise.
 
 ## Development Workflow
 
 - Work inside the specific subproject folder when changing a subproject.
+- Work inside `slopularity/` for the primary project unless the request clearly targets the root hub or another named experiment.
 - Do root-only changes at the repository root.
 - For Vite subprojects, use their local scripts from inside that folder:
   - `npm install`

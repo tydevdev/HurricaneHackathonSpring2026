@@ -258,6 +258,12 @@ Keep global phase/instability behavior in `src/App.tsx` and shared seed data in 
 
 The first version should not try to include every idea. It should include enough linked surfaces that the user understands: this is the whole internet now, and every part of it is compromised.
 
+## Idea Backlog
+
+- Scrolling leaderboard: track how long the user has been scrolling, rank them against synthetic friends or local ghosts, and nudge them to keep going with increasingly hollow milestones. The joke should be that attention depletion becomes a competitive sport.
+- Gamification layer: award achievements for everything the user does, including feed reactions, searches, idle pauses, popup dismissals, cart hesitation, big-button presses, and privacy attempts. Store trophies on a shelf that becomes crowded with useless badges, with confetti moments that feel celebratory and suspiciously retention-optimized.
+- Florida under water tracker: a real-feeling dashboard widget that tracks Florida's flood status as if it were another productivity metric, climate alert, investment signal, travel feature, or gamified progress bar. It should sit naturally inside the everything-app surface and become stranger as the app tries to monetize or normalize the disaster.
+
 ## Open Questions
 
 - Should the visible product name be `The Singularity`, while the folder/project remains `slopularity`?

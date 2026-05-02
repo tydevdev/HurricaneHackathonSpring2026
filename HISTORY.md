@@ -529,3 +529,9 @@
 - Added a shared story viewer close handler so Escape, the close button, and backdrop clicks all clear active drag state before dismissing the dialog.
 - Added eager async story image decoding and a fallback story placeholder for posts without image assets.
 - Validation run: `git pull --rebase --autostash origin main`; `npm run lint`; `npm run build`.
+
+## [2026-05-02 18:29] Add Slopularity Idea Backlog Notes
+
+- Updated `slopularity/PLAN.md` with new backlog ideas for a scrolling leaderboard, trophy-shelf achievement gamification with confetti, and a Florida-under-water tracker.
+- Kept the notes in product-idea form only; no source behavior or generated build output changed.
+- Validation run: documentation-only change; no app checks needed.

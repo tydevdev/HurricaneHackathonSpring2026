@@ -65,6 +65,9 @@ The earlier top-level projects were built to figure out the direction. Treat the
 - Commit in small, reviewable increments during active work.
 - Use descriptive commit messages tied to behavior changes.
 - Run the relevant checks before pushing.
+- Whenever making repository changes, commit and push them before calling the task done.
+- If pushing requires resolving conflicts, resolve straightforward conflicts directly and continue.
+- If a conflict is not obvious to solve, stop and explain the conflicting files, the competing changes, and the decision needed from the user.
 - Avoid giant end-of-session commits when multiple logical changes occurred.
 
 ## Subagent Acceleration

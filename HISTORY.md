@@ -1,5 +1,11 @@
 # History
 
+## [2026-05-02 14:12] Require Commit And Push After Changes
+
+- Updated `AGENTS.md` commit policy so repository changes must be committed and pushed before work is considered done.
+- Added conflict-handling guidance: resolve straightforward conflicts directly, but stop and ask the user when the correct resolution is not obvious.
+- Validation run: inspected the edited markdown and reviewed the staged diff before committing.
+
 ## [2026-05-02 11:43] Prepare Initial Repo Commit
 
 - Expanded root `.gitignore` to cover macOS/editor noise, local env files, logs, dependency folders, local tool state, and caches while keeping Vite `dist/` output trackable for GitHub Pages demos.

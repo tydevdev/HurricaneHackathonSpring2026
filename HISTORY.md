@@ -3,6 +3,7 @@
 ## [2026-05-02 14:22] Strengthen Frontend Skill Defaults
 
 - Updated root `AGENTS.md` so future frontend, app, prototype, demo, game UI, landing page, and visually important web work always starts from `frontend-skill`.
+- Added explicit Claude guidance to default to its frontend design skill for visual and interaction work, including small UI changes.
 - Clarified that agents should pair `frontend-skill` with Build Web Apps for web implementation and responsive browser inspection, and use Superpowers as the default execution layer for substantial work.
 - Validation run: inspected the existing `Skills And Plugins` guidance and reviewed the markdown-only edit.
 

@@ -539,6 +539,20 @@ h1 {
     linear-gradient(145deg, #221053 0 18%, var(--pink) 18% 35%, #221053 35% 52%, var(--cyan) 52% 69%, #221053 69%);
 }
 
+.tile-singularity {
+  --tile-accent: var(--yellow);
+}
+
+.tile-singularity .tile-icon {
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 50% 50%, var(--ink) 0 10px, transparent 11px),
+    radial-gradient(circle at 50% 50%, var(--paper) 0 24px, transparent 25px),
+    linear-gradient(90deg, transparent 44%, rgba(8, 3, 22, 0.35) 45% 55%, transparent 56%),
+    linear-gradient(rgba(8, 3, 22, 0.35) 44%, transparent 45% 55%, rgba(8, 3, 22, 0.35) 56%),
+    conic-gradient(from 90deg, var(--pink), var(--cyan), var(--yellow), var(--green), var(--pink));
+}
+
 .tile-slop {
   --tile-accent: var(--green);
 }

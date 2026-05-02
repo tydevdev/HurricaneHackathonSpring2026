@@ -8,7 +8,7 @@ The earlier top-level projects were built to figure out the direction. Treat the
 
 - `index.html` is the GitHub Pages root. It exists only to introduce the hackathon workspace and link into the subprojects.
 - `styles.css` styles the root hub page.
-- `slopularity/` is the primary project folder and the default working area for this repository. It is currently a planning shell for the real build, not an implemented app yet.
+- `slopularity/` is the primary project folder and the default working area for this repository. It now has the first Vite/React skeleton for The Singularity.
 - Earlier Vite demos include `time-capsules/`, `365 buttons/`, `scrollbreak/`, `pocket-zoo/`, `fun-internet-museum/`, `pixel-pop-arcade/`, `slopternet/`, and `quiet-collapse/`.
 - `slopternet/` and `quiet-collapse/` are especially relevant references for AI-slop and trust-collapse mechanics, but they are prior experiments, not active product tracks.
 - `whimsy-net/` and other top-level folders are earlier idea or scaffold folders. Leave all non-`slopularity/` folders alone unless the user explicitly asks to work on one.
@@ -19,7 +19,6 @@ The earlier top-level projects were built to figure out the direction. Treat the
 - The active project is `slopularity/`, a future-facing web app set around 2030: the "everything app" after AI has supposedly unified every product, workflow, feed, assistant, dashboard, marketplace, and personal tool.
 - The core joke and critique: the product poses as the singularity of websites, but because it is AI-made and unchecked, it is basically slop. As the user uses it, the interface should slowly fall apart.
 - Use `quiet-collapse/` as a reference for gradual degradation, stateful discoveries, and trust failure. This project should feel broader and more like a super app: search, social, productivity, commerce, identity, assistant, files, feeds, and automation all collapsing into one overconfident surface.
-- Do not implement `slopularity/` until the user asks for implementation. For now, preserve the README and local AGENTS file as durable product direction.
 - Future implementation should make degradation interactive and earned: user actions should trigger contradictions, duplicate panels, fake integrations, generated artifacts, confident wrongness, layout drift, memory leaks, and recovery paths.
 - Keep the first version understandable without explanatory copy. The app should demonstrate the satire through behavior, not through visible text announcing the premise.
 

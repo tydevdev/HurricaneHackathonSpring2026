@@ -12,7 +12,7 @@ The joke is that it is AI-made slop. It looks powerful, expensive, and inevitabl
 
 ## Current State
 
-This folder is intentionally not implemented yet. It exists so future work has a real home and a durable product direction.
+This folder now contains the first implementation skeleton for The Singularity.
 
 The earlier projects in this repository were tests, studies, or prototypes. `quiet-collapse/` is the closest reference for the slow-failure mechanic, while `slopternet/` is a louder reference for obvious AI slop. `slopularity/` should become the main build.
 
@@ -47,10 +47,18 @@ Keep the satire sharp but not random. The app should be funny because it is spec
 
 Avoid visible meta-copy that says the project is clever, beautiful, intentional, premium, or satirical. Let the interface prove it.
 
+## Build
+
+```sh
+npm install
+npm run dev
+npm run lint
+npm run build
+```
+
 ## Implementation Guardrails
 
-- Do not scaffold code here until the user asks to implement.
-- When implementation begins, use a local project structure that can build cleanly for GitHub Pages.
+- Continue from the existing Vite/React app structure.
 - Prefer a responsive browser app with desktop and phone QA.
 - Record significant work in the root `HISTORY.md`.
-- Keep root links honest: only link `slopularity/dist/` from the root page after a real build exists.
+- Keep `dist/` build output committed so GitHub Pages can serve the root link.

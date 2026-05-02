@@ -185,3 +185,20 @@
 - Added ideas for fake friends, assistant prompts, feed optimization, product nudges, wellness-break consent flows, data-labeling games, and profile inference triggered by inactivity.
 - Added idle time as a collapse trigger and first-build priority so future implementation treats stillness as exploitable app behavior.
 - Validation run: inspected the plan sections, applied a docs-only update, and checked the edited markdown.
+
+## [2026-05-02 14:03] Implement Slopularity Skeleton
+
+- Created `slopularity/` as a Vite/React/TypeScript app with package scripts, TypeScript configs, ESLint config, favicon, source files, and built `dist/` output.
+- Implemented The Singularity app shell with the tagline "All of the Internet is here now.", top status area, multiple tabs, and shared instability state.
+- Added Feed, Friends, Games, Shop, Search, Assistant, and Profile surfaces, including aspirational feed posts, engagement buttons that mutate toward `envy`, `compare`, `optimize me`, and `buy the context`, fake affirming friends, cutesy data-labeling games, product nudges, contaminated search results, confident assistant replies, and inferred profile metrics.
+- Added site-wide popup friend/chat swarm behavior, idle stillness detection for desktop and phone interaction signals, internal leak labels, local reset, and source-code comments from the last human developer.
+- Updated root `index.html` and `styles.css` so The Singularity is linked as the active live project, and updated Slopularity docs/AGENTS files to reflect that implementation has started.
+- Validation run: `npm install`, `npm run lint`, and `npm run build` inside `slopularity/`.
+
+## [2026-05-02 14:09] Tighten Slopularity Demo Phases
+
+- Updated `slopularity/PLAN.md` to define a four-phase presentation-friendly collapse arc driven by one shared instability variable.
+- Updated `slopularity/src/App.tsx` so the app reports four phases instead of five and includes a `Demo pulse` control for quick 5 to 10 minute presentation walkthroughs.
+- Added visible "Last human developer" source-code fragments to the app rail so the source narrative gradually leaks into the product as instability rises.
+- Updated responsive rail layout in `slopularity/src/index.css` so the added source fragments fit better on tablet and phone widths.
+- Validation run: `npm run lint` and `npm run build` inside `slopularity/`; Browser plugin opened `http://127.0.0.1:5190/`, confirmed the tagline, and clicked `Demo pulse` to phase 3 with `Envy` visible; bundled Playwright QA clicked through Feed, Friends, Games, Assistant, and Profile, confirmed phase 4, popup count 3, visible human-developer fragments, no console/page errors, no mobile horizontal overflow at `390x844`, and screenshots at `/tmp/slopularity-desktop.png`, `/tmp/slopularity-desktop-interacted.png`, and `/tmp/slopularity-phone.png`.

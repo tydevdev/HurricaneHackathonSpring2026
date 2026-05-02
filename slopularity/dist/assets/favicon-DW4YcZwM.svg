@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="The Singularity">
+  <rect width="64" height="64" rx="14" fill="#0b1020"/>
+  <circle cx="32" cy="32" r="22" fill="#f7f1ff"/>
+  <path d="M14 34c8-18 28-18 36 0-8 14-28 14-36 0Z" fill="#ff4fd8"/>
+  <circle cx="32" cy="32" r="7" fill="#0b1020"/>
+  <path d="M10 12h14M40 12h14M10 52h14M40 52h14" stroke="#62f5c8" stroke-width="5" stroke-linecap="round"/>
+</svg>

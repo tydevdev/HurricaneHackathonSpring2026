@@ -13,8 +13,8 @@ Assume future product work in this repository belongs in `slopularity/`. The oth
 
 ## Current State
 
-- This folder is planning-only until the user asks for implementation.
-- Do not create a Vite app, package files, build output, or app source in this folder unless the user explicitly asks to start building.
+- This folder now contains the first Vite/React implementation skeleton for The Singularity.
+- Continue building from the existing app structure instead of starting over.
 - Keep `README.md`, `PLAN.md`, and this file synchronized with major product-direction decisions.
 - Use `PLAN.md` as the living idea tracker for tabs, mechanics, commentary targets, collapse stages, and first-build priorities.
 

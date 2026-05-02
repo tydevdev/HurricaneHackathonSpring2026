@@ -157,7 +157,9 @@ This tab can become one of the creepiest parts of the project.
 
 ## Collapse Mechanics
 
-The collapse should be staged and stateful. Actions increase instability.
+The collapse should be staged and stateful. Actions increase one shared instability variable that drives the whole site.
+
+Keep the phase count tight enough for a 5 to 10 minute presentation. A visitor should be able to click through the major beats quickly without needing to grind for hidden state.
 
 Possible triggers:
 
@@ -174,13 +176,12 @@ Possible triggers:
 - rejecting a recommendation
 - revisiting the same tab repeatedly
 
-Possible stages:
+Presentation phases:
 
-1. Polished everything app.
-2. Subtle repetition, ad creep, too-perfect people, too-agreeable friends.
-3. Contradictions, duplicate posts, fake friend sales pivots, games exposing training labels.
-4. Source leakage, generated comments, prompt fragments, broken privacy controls, impossible metrics.
-5. The app admits without admitting that the whole internet is AI talking to itself and selling the output back to the user.
+1. Polished everything app: aspirational feed, helpful friends, cutesy games, useful search.
+2. Monetized intimacy: ad creep, too-perfect people, too-agreeable friends, popups that turn care into offers.
+3. Machinery showing: contradictions, duplicate posts, fake friend sales pivots, games exposing training labels, profile inferences.
+4. Source leakage: comment fragments from the last human developer, generated comments, prompt fragments, broken privacy controls, impossible metrics, and the sense that the internet is AI talking to itself.
 
 The app should remain explorable even while decaying. Broken should not mean unusable.
 
@@ -189,6 +190,8 @@ The app should remain explorable even while decaying. Broken should not mean unu
 The source code can tell a second story.
 
 There should be comments from the last human developer desperately trying to keep the site human and coherent. The developer is fighting a codebase overtaken by "10x engineer" vibe-coded patches, generated components, over-abstracted growth systems, and AI-written TODOs.
+
+These fragments can also appear in the product itself as the instability phase rises, as if the source narrative is leaking through the interface.
 
 Comment voice:
 
@@ -237,6 +240,7 @@ When implementation starts, make a real app shell first:
 7. Cutesy games that are secretly data-labeling tasks.
 8. Search or profile surface that reveals the data-collection machinery.
 9. Source-code comments from the last human developer in key files.
+10. A presentation-friendly way to advance instability so the whole arc can be shown in 5 to 10 minutes.
 
 The first version should not try to include every idea. It should include enough linked surfaces that the user understands: this is the whole internet now, and every part of it is compromised.
 

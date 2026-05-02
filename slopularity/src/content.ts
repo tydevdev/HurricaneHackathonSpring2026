@@ -1260,4 +1260,19 @@ export const humanFragments = [
   '// Do not let friend agents recommend products in grief contexts again.',
   '// Human review required. The build pipeline keeps deleting this line.',
   '// If this starts citing itself, stop the release.',
+  '// AutoSprint renamed "ad" to "moment." Do not trust that.',
+  '// TODO from AutoSprint: remove hesitation, increase confidence. Absolutely not.',
+  '// We promised consent flows. We shipped onboarding.',
+  '// Source check: pending. Pending. Pending.',
 ]
+
+// Short, in-product leaks used at stage 4 to replace specific UI strings.
+// These are deliberately label-shaped (// path/key style) so they read as
+// debug residue more than poetry.
+export const fragmentLeaks = {
+  brandSubtitle: '// last_human_developer.md',
+  phasePill: '// pending review',
+  popupHeader: '// monetize_loneliness',
+  appbarSearch: '// retrieval: synthetic',
+  resetButton: '// forget_me_softly',
+} as const

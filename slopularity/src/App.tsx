@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
 import { PopupSwarm } from './components/PopupSwarm'
-import { popupSeeds, tabs } from './content'
+import { fragmentLeaks, popupSeeds, tabs } from './content'
 import { featureFlags } from './featureFlags'
 import { AssistantPage } from './pages/AssistantPage'
 import { FeedPage } from './pages/FeedPage'
@@ -260,7 +260,9 @@ function App() {
           </span>
           <span className="brand-text">
             <strong>The Singularity</strong>
-            <small>everything app · 2030</small>
+            <small className={visibleStage >= 4 ? 'is-leak' : ''}>
+              {visibleStage >= 4 ? fragmentLeaks.brandSubtitle : 'everything app · 2030'}
+            </small>
           </span>
         </div>
 
@@ -282,7 +284,7 @@ function App() {
         <div className="appbar-status" aria-label="System status">
           <span className={`phase-pill phase-${visibleStage}`} title={`phase ${visibleStage} of 4`}>
             <span className="phase-dot" aria-hidden="true" />
-            phase {visibleStage}/4
+            {visibleStage >= 4 ? fragmentLeaks.phasePill : `phase ${visibleStage}/4`}
           </span>
           {interruptionMode && (
             <button

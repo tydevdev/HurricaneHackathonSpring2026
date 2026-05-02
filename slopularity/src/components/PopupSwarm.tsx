@@ -1,3 +1,4 @@
+import { fragmentLeaks } from '../content'
 import type { Popup } from '../types'
 
 type PopupSwarmProps = {
@@ -27,7 +28,7 @@ export function PopupSwarm({
     <section className="popup-swarm" aria-label="Friend popups">
       <header className="popup-dock-head">
         <div>
-          <strong>Friends checking in</strong>
+          <strong>{stage >= 4 ? fragmentLeaks.popupHeader : 'Friends checking in'}</strong>
           <small>{popups.length === 1 ? '1 message' : `${popups.length} messages`}</small>
         </div>
         <div className="popup-dock-actions">

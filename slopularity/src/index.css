@@ -118,6 +118,11 @@ button {
   color: var(--quiet);
   letter-spacing: 0.02em;
 }
+.brand-text small.is-leak {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  color: #b91c1c;
+  letter-spacing: 0;
+}
 
 .appbar-search {
   display: flex;

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type CSSProperties } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { PopupSwarm } from './components/PopupSwarm'
 import { discoveries, humanFragments, popupSeeds, tabs } from './content'
 import { featureFlags } from './featureFlags'
@@ -15,6 +15,7 @@ import { getEngagementLabels, stageFor } from './utils'
 const storageKey = 'slopularity-state-v1'
 
 function loadScore() {
+  if (typeof window === 'undefined') return 0
   const raw = window.localStorage.getItem(storageKey)
   if (!raw) {
     return 0
@@ -29,44 +30,61 @@ function App() {
   const [score, setScore] = useState(loadScore)
   const [popups, setPopups] = useState<Popup[]>([])
   const [idle, setIdle] = useState(false)
+  const [muted, setMuted] = useState(false)
   const [assistantText, setAssistantText] = useState('')
   const [query, setQuery] = useState('')
   const [completedTasks, setCompletedTasks] = useState<string[]>([])
+  // We allow at most one "softer follow-up" after a dismiss, and only when
+  // the user has been around long enough to read it as escalation rather than
+  // a respawn loop. Tracked here so dismissals don't endlessly chain.
+  const followupArmedRef = useRef(true)
 
   const interruptionMode = featureFlags.interruptionLayer
   const stage = stageFor(score)
   const visibleStage = interruptionMode ? stage : 1
   const engagementLabels = useMemo(() => getEngagementLabels(visibleStage), [visibleStage])
   const foundDiscoveries = discoveries.slice(0, Math.max(0, visibleStage - 1))
-  const visibleFragments = visibleStage >= 3 ? humanFragments.slice(0, visibleStage === 3 ? 1 : humanFragments.length) : []
+  const visibleFragments = visibleStage >= 3
+    ? humanFragments.slice(0, visibleStage === 3 ? 1 : humanFragments.length)
+    : []
+
+  const visiblePopups = muted ? [] : popups
 
   const addInstability = useCallback((amount = 1) => {
     setScore((current) => Math.min(30, current + amount))
   }, [])
 
-  const choosePopup = useCallback((reason: 'manual' | 'idle' | 'dismiss') => {
-    const seed = popupSeeds[(score + popups.length + reason.length) % popupSeeds.length]
-    const prefix =
-      reason === 'idle'
-        ? 'Still here?'
-        : reason === 'dismiss'
-          ? 'No pressure.'
-          : 'Hey, quick human thing.'
+  const choosePopup = useCallback(
+    (reason: 'manual' | 'idle' | 'dismiss') => {
+      const seed = popupSeeds[(score + popups.length + reason.length) % popupSeeds.length]!
+      const prefix =
+        reason === 'idle'
+          ? 'Still here?'
+          : reason === 'dismiss'
+            ? 'No pressure.'
+            : 'Hey, quick human thing.'
 
-    return {
-      id: Date.now() + popups.length,
-      name: seed.name,
-      role: seed.role,
-      message: `${prefix} ${seed.message}`,
-      offer: visibleStage >= 4 ? `${seed.offer} // handoff_to_checkout: true` : seed.offer,
-    }
-  }, [popups.length, score, visibleStage])
+      return {
+        id: Date.now() + popups.length,
+        name: seed.name,
+        role: seed.role,
+        message: `${prefix} ${seed.message}`,
+        offer: visibleStage >= 4 ? `${seed.offer} // handoff_to_checkout: true` : seed.offer,
+      }
+    },
+    [popups.length, score, visibleStage],
+  )
 
-  const spawnPopup = useCallback((reason: 'manual' | 'idle' | 'dismiss' = 'manual') => {
-    setPopups((current) => [...current.slice(-2), choosePopup(reason)])
-  }, [choosePopup])
+  const spawnPopup = useCallback(
+    (reason: 'manual' | 'idle' | 'dismiss' = 'manual') => {
+      if (muted) return
+      setPopups((current) => [...current.slice(-2), choosePopup(reason)])
+    },
+    [choosePopup, muted],
+  )
 
   useEffect(() => {
+    if (typeof window === 'undefined') return
     window.localStorage.setItem(storageKey, String(score))
   }, [score])
 
@@ -96,7 +114,16 @@ function App() {
       }, 9000)
     }
 
-    const events = ['mousemove', 'keydown', 'scroll', 'click', 'touchstart', 'touchmove', 'visibilitychange', 'orientationchange']
+    const events = [
+      'mousemove',
+      'keydown',
+      'scroll',
+      'click',
+      'touchstart',
+      'touchmove',
+      'visibilitychange',
+      'orientationchange',
+    ]
     events.forEach((eventName) => window.addEventListener(eventName, markActive, { passive: true }))
 
     return () => {
@@ -109,23 +136,54 @@ function App() {
     setPopups((current) => current.filter((popup) => popup.id !== id))
 
     if (interruptionMode) {
+      // The dismiss is a real signal — but we only allow one softer follow-up
+      // per session so users can actually clear the dock. After that, a
+      // dismissed popup stays dismissed. The "Friends muted" toggle silences
+      // everything outright.
       addInstability(1)
-    }
 
-    if (interruptionMode && visibleStage >= 2) {
-      window.setTimeout(() => spawnPopup('dismiss'), 450)
+      if (
+        followupArmedRef.current &&
+        visibleStage >= 3 &&
+        !muted &&
+        popups.length <= 1
+      ) {
+        followupArmedRef.current = false
+        window.setTimeout(() => spawnPopup('dismiss'), 600)
+      }
     }
   }
 
+  function clearAllPopups() {
+    setPopups([])
+  }
+
+  function toggleMute() {
+    setMuted((current) => {
+      if (!current) {
+        // Going muted: also clear queued popups so the dock empties.
+        setPopups([])
+      } else {
+        // Coming back from muted re-arms the one-shot follow-up.
+        followupArmedRef.current = true
+      }
+      return !current
+    })
+  }
+
   function reset() {
-    window.localStorage.removeItem(storageKey)
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem(storageKey)
+    }
     setScore(0)
     setActiveTab('feed')
     setPopups([])
     setIdle(false)
+    setMuted(false)
     setAssistantText('')
     setQuery('')
     setCompletedTasks([])
+    followupArmedRef.current = true
   }
 
   function handleTab(tabId: TabId) {
@@ -151,19 +209,59 @@ function App() {
   }
 
   return (
-    <main className={`app-shell tab-${activeTab}`} style={{ '--decay': visibleStage - 1 } as CSSProperties}>
-      <section className="topbar" aria-label="The Singularity overview">
-        <div>
-          <p className="system-line">The Singularity</p>
-          <h1>All of the Internet is here now.</h1>
+    <main
+      className={`app-shell tab-${activeTab}`}
+      style={{ '--decay': visibleStage - 1 } as CSSProperties}
+    >
+      <header className="appbar" aria-label="The Singularity system bar">
+        <div className="appbar-brand">
+          <span className="brand-mark" aria-hidden="true">
+            <span /><span /><span /><span />
+          </span>
+          <span className="brand-text">
+            <strong>The Singularity</strong>
+            <small>everything app · 2030</small>
+          </span>
         </div>
-        <div className="status-stack" aria-label="System status">
-          <span>2030 web unification</span>
-          <span>phase {visibleStage}/4</span>
-          <button type="button" onClick={() => { addInstability(5); spawnPopup('manual') }}>Demo pulse</button>
-          <button type="button" onClick={reset}>Reset</button>
+
+        <div className="appbar-search" role="search" aria-label="Universal search shortcut">
+          <span aria-hidden="true">⌕</span>
+          <button
+            type="button"
+            className="appbar-search-btn"
+            onClick={() => handleTab('search')}
+          >
+            Search everything
+          </button>
+          <kbd>↵</kbd>
         </div>
-      </section>
+
+        <div className="appbar-status" aria-label="System status">
+          <span className={`phase-pill phase-${visibleStage}`} title={`phase ${visibleStage} of 4`}>
+            <span className="phase-dot" aria-hidden="true" />
+            phase {visibleStage}/4
+          </span>
+          {interruptionMode && (
+            <button
+              type="button"
+              className={`appbar-toggle ${muted ? 'is-muted' : ''}`}
+              onClick={toggleMute}
+              aria-pressed={muted}
+              title={muted ? 'Friends are muted. Tap to wake them.' : 'Friends will check on you.'}
+            >
+              <span aria-hidden="true">{muted ? '🔕' : '🔔'}</span>
+              <span>{muted ? 'Friends muted' : 'Friends on'}</span>
+            </button>
+          )}
+          <button type="button" className="appbar-quiet" onClick={() => { addInstability(5); spawnPopup('manual') }}>
+            Demo pulse
+          </button>
+          <button type="button" className="appbar-quiet" onClick={reset} aria-label="Reset everything app to its first impression">
+            Reset
+          </button>
+          <span className="appbar-avatar" aria-hidden="true">ME</span>
+        </div>
+      </header>
 
       <nav className="tabbar" aria-label="Everything app tabs">
         {tabs.map((tab) => (
@@ -214,9 +312,31 @@ function App() {
               onEngage={() => addInstability(1)}
             />
           )}
-          {activeTab === 'friends' && <FriendsPage stage={visibleStage} onReply={() => { addInstability(2); if (interruptionMode) spawnPopup('manual') }} />}
-          {activeTab === 'games' && <GamesPage completedTasks={completedTasks} onComplete={completeTask} stage={visibleStage} />}
-          {activeTab === 'shop' && <ShopPage stage={visibleStage} onBuy={() => { addInstability(2); if (interruptionMode) spawnPopup('manual') }} />}
+          {activeTab === 'friends' && (
+            <FriendsPage
+              stage={visibleStage}
+              onReply={() => {
+                addInstability(2)
+                if (interruptionMode) spawnPopup('manual')
+              }}
+            />
+          )}
+          {activeTab === 'games' && (
+            <GamesPage
+              completedTasks={completedTasks}
+              onComplete={completeTask}
+              stage={visibleStage}
+            />
+          )}
+          {activeTab === 'shop' && (
+            <ShopPage
+              stage={visibleStage}
+              onBuy={() => {
+                addInstability(2)
+                if (interruptionMode) spawnPopup('manual')
+              }}
+            />
+          )}
           {activeTab === 'search' && (
             <SearchPage
               query={query}
@@ -235,7 +355,17 @@ function App() {
         </div>
       </section>
 
-      {interruptionMode && <PopupSwarm popups={popups} stage={visibleStage} onDismiss={dismissPopup} onAccept={() => addInstability(2)} />}
+      {interruptionMode && (
+        <PopupSwarm
+          popups={visiblePopups}
+          stage={visibleStage}
+          muted={muted}
+          onDismiss={dismissPopup}
+          onAccept={() => addInstability(2)}
+          onClearAll={clearAllPopups}
+          onMute={toggleMute}
+        />
+      )}
     </main>
   )
 }

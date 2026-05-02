@@ -190,14 +190,20 @@ Intention: connection as an interruptive sales interface.
 
 Popups should first read as social notifications. They should slide in with intimate timing, follow the user across tabs, react to hesitation or idle time, and return softer after dismissal.
 
-This mechanic is currently a skeleton and should stay feature-flagged off during feed-focused work. When it comes back, implement it deliberately from the interaction plan rather than letting placeholder popups interrupt unrelated UI development.
+This mechanic is currently feature-flagged off (`featureFlags.interruptionLayer = false`) so feed-sprint work is not interrupted. When the flag is flipped on, the dock now behaves as follows:
+
+- Popups stack in a bottom-LEFT dock with a header that reads "Friends checking in" and shows a count. The dock never overlaps the right-side developer-fragments rail.
+- Each popup has a real `×` close button. Clicking it (or "Not now") removes the popup permanently.
+- The "softer follow-up" rule is one-shot per session: at stage ≥ 3, the *first* dismiss after popups are nearly empty arms exactly one gentler check-in via `'dismiss'` reason. After that, dismissing means dismissing.
+- A "Friends muted" toggle in the appbar clears the dock and blocks new spawns. Re-enabling it re-arms the one-shot follow-up.
+- Idle ticks, manual demo pulse, and per-tab pivots (assistant ask, friends reply, shop add, search submit) still spawn popups but respect the muted state.
 
 Interaction hooks:
 
-- dismissing creates a gentler follow-up
-- multiple popups compete over the same conversion
-- blocking becomes paid or asks for more preference data
-- leaked fields such as `friendship_intent`, `handoff_to_checkout`, or `abandonment_risk`
+- dismissing creates one gentler follow-up at stage ≥ 3, then no further auto-respawn
+- multiple popups compete over the same conversion (max 3 visible)
+- muting becomes its own loud "Friends muted" affordance — paid-blocking is reserved for a later stage
+- leaked fields such as `friendship_intent`, `handoff_to_checkout`, or `abandonment_risk` appear in the popup `<small>` once stage ≥ 4
 
 ### Idle Attention
 
@@ -227,6 +233,15 @@ Interaction hooks:
 - labels that become visible after repeated plays
 - task receipts that mention model improvement
 - "tiny relaxing task" prompts that appear during idle time
+
+Current implementation:
+
+- Five playable mini-games are wired up under `src/games/`. Each is a real interaction (drag-to-classify, click-to-find, A/B preference, multi-class annotation, pointer-trace segmentation) wrapped in cozy CSS / SVG art.
+- Per-game state is local; submission goes through the shared `onComplete(title)` so the App's `completedTasks` list and instability score keep advancing.
+- Each game ends in a sticker receipt that flips at stage 3 from "reward: sticker pack" to the training pipeline string (`vision_label_queue.snack_v41`, `hallucination_dataset.cottage_v12`, `rlhf_preference_batch.helpful_kind_safe`, `emotion_annotation.soft_face_v3`, `segmentation_seed.path_v9`).
+- The Games surface footer ("Today's training queue") mirrors the same flip across all queues at once and exposes a leaked AutoSprint TODO at stage 4.
+- Stage 4 also leaks per-cell debug labels (e.g. the truth tag inside a sorted basket chip, the `inferred:` confidence under a cloud) so the visitor can see what the system was already labeling them with.
+- Verification: lint, build, desktop and phone widths via the responsive media query, keyboard / pointer / touch input on all five games.
 
 ### Shop
 

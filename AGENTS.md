@@ -116,6 +116,7 @@ The earlier projects were built to figure out the direction and now live under `
 - Codex should keep subagents working constantly whenever there is any useful independent thread of work; prefer one primary local path plus parallel support over a single-agent bottleneck.
 - Codex should use multiple subagents when the task has separable surfaces, such as different subprojects, UI and data logic, implementation and testing, or build debugging and product polish.
 - For image generation work, Codex should exclusively delegate generation to subagents. The main agent should write direction, review results, and integrate assets, but must not generate images directly.
+- Image-generation subagents must use `gpt-5.4` with `reasoning_effort: low`. Do not assign image generation or the `imagegen` skill to `gpt-5.3-codex-spark`; Spark cannot use image generation in this environment.
 - When Codex directs image-generation subagents, specify `transparent background` when the asset should have no backdrop; the image generator can return transparent-background images when explicitly asked.
 - Codex should give each subagent concrete ownership, clear output expectations, and file boundaries when editing is involved.
 - Codex should integrate subagent results itself so the final outcome feels cohesive, fast, and finished.

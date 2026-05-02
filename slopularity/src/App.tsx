@@ -6,6 +6,7 @@ import { AssistantPage } from './pages/AssistantPage'
 import { FeedPage } from './pages/FeedPage'
 import { FriendsPage } from './pages/FriendsPage'
 import { GamesPage } from './pages/GamesPage'
+import { LandingPage } from './pages/LandingPage'
 import { ProfilePage } from './pages/ProfilePage'
 import { SearchPage } from './pages/SearchPage'
 import { ShopPage } from './pages/ShopPage'
@@ -13,6 +14,9 @@ import type { Popup, TabId } from './types'
 import { stageFor } from './utils'
 
 const storageKey = 'slopularity-state-v1'
+const enteredKey = 'slopularity-entered-v1'
+
+type View = 'landing' | 'app'
 
 function loadScore() {
   if (typeof window === 'undefined') return 0
@@ -25,7 +29,13 @@ function loadScore() {
   return Number.isFinite(value) ? value : 0
 }
 
+function loadView(): View {
+  if (typeof window === 'undefined') return 'landing'
+  return window.localStorage.getItem(enteredKey) === '1' ? 'app' : 'landing'
+}
+
 function App() {
+  const [view, setView] = useState<View>(loadView)
   const [activeTab, setActiveTab] = useState<TabId>('feed')
   const [score, setScore] = useState(loadScore)
   const [popups, setPopups] = useState<Popup[]>([])
@@ -54,21 +64,17 @@ function App() {
   }, [])
 
   const choosePopup = useCallback(
-    (reason: 'manual' | 'idle' | 'dismiss') => {
+    (reason: 'manual' | 'idle' | 'dismiss'): Popup => {
       const seed = popupSeeds[(score + popups.length + reason.length) % popupSeeds.length]!
-      const prefix =
-        reason === 'idle'
-          ? 'Still here?'
-          : reason === 'dismiss'
-            ? 'No pressure.'
-            : 'Hey, quick human thing.'
-
+      const message = seed.messages[reason]
       return {
         id: Date.now() + popups.length,
         name: seed.name,
         role: seed.role,
-        message: `${prefix} ${seed.message}`,
+        tone: seed.tone,
+        message,
         offer: visibleStage >= 4 ? `${seed.offer} // handoff_to_checkout: true` : seed.offer,
+        intent: seed.intent,
       }
     },
     [popups.length, score, visibleStage],
@@ -89,11 +95,19 @@ function App() {
 
   useEffect(() => {
     document.documentElement.dataset.stage = String(visibleStage)
-    document.title = visibleStage >= 4 ? 'The Singularity // source uncertain' : 'The Singularity'
-  }, [visibleStage])
+    document.documentElement.dataset.view = view
+    document.title = view === 'landing'
+      ? 'The Singularity — everything you need'
+      : visibleStage >= 4
+        ? 'The Singularity // source uncertain'
+        : 'The Singularity'
+  }, [visibleStage, view])
 
   useEffect(() => {
     if (!interruptionMode) {
+      return undefined
+    }
+    if (view !== 'app') {
       return undefined
     }
 
@@ -129,7 +143,19 @@ function App() {
       window.clearTimeout(timer)
       events.forEach((eventName) => window.removeEventListener(eventName, markActive))
     }
-  }, [addInstability, interruptionMode, spawnPopup])
+  }, [addInstability, interruptionMode, spawnPopup, view])
+
+  function enterApp() {
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(enteredKey, '1')
+    }
+    setView('app')
+    // First-time visitors get a warm welcome popup ~1s in to demonstrate the
+    // friend-check-in pattern without making the landing feel haunted.
+    if (interruptionMode) {
+      window.setTimeout(() => spawnPopup('manual'), 1100)
+    }
+  }
 
   function dismissPopup(id: number) {
     setPopups((current) => current.filter((popup) => popup.id !== id))
@@ -173,6 +199,7 @@ function App() {
   function reset() {
     if (typeof window !== 'undefined') {
       window.localStorage.removeItem(storageKey)
+      window.localStorage.removeItem(enteredKey)
     }
     setScore(0)
     setActiveTab('feed')
@@ -183,6 +210,7 @@ function App() {
     setQuery('')
     setCompletedTasks([])
     followupArmedRef.current = true
+    setView('landing')
   }
 
   function handleTab(tabId: TabId) {
@@ -205,6 +233,10 @@ function App() {
   function completeTask(title: string) {
     setCompletedTasks((current) => (current.includes(title) ? current : [...current, title]))
     addInstability(2)
+  }
+
+  if (view === 'landing') {
+    return <LandingPage onEnter={enterApp} />
   }
 
   return (

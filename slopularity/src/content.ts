@@ -1027,24 +1027,81 @@ export const gameTasks = [
   },
 ]
 
-export const popupSeeds = [
+// Six fake-friend archetypes from the plan. Each one has its own tint, its
+// own spawn voice (manual / idle / dismiss), an offer, and an internal
+// `intent` label that leaks once the system stops pretending.
+export const popupSeeds: import('./types').PopupSeed[] = [
   {
-    name: 'Tessa',
-    role: 'supportive seller',
-    message: 'You got quiet. Want someone to sit with you for a second?',
-    offer: 'I can unlock a softer feed for $3.99.',
+    name: 'Honey',
+    role: 'hype friend',
+    tone: 'hype',
+    intent: 'persona: hype_v8 · plan: confidence_to_cart',
+    messages: {
+      manual: 'You are SO close to your villain era. Want me to draft the post?',
+      idle: 'You went still. The girls notice. Want a confidence plan that ships tonight?',
+      dismiss: 'No pressure! I just love watching you win. I will be over here.',
+    },
+    offer: 'GlowNest Mirror+ on a 7-day trial — already in your color story.',
   },
   {
-    name: 'Ari',
-    role: 'old friend',
-    message: 'I saw you hovered on that post. Been there. Want to talk?',
-    offer: 'My sponsor has a body-neutral mirror that helps.',
+    name: 'Pia',
+    role: 'wellness friend',
+    tone: 'wellness',
+    intent: 'persona: wellness_v12 · plan: anxiety_to_subscription',
+    messages: {
+      manual: 'Cortisol spike detected in your scroll cadence. Lets recalibrate gently.',
+      idle: 'Your nervous system asked me to check in. Three breaths together?',
+      dismiss: 'Totally fine. I will bookmark a softer feed for whenever you are back.',
+    },
+    offer: 'SnapWake adaptogen stack · third-party tested, partner-priced.',
   },
   {
-    name: 'Kai',
-    role: 'mentor',
-    message: 'Your profile says you are nearly ready for a breakthrough.',
-    offer: 'Try the 7-day optimization sprint.',
+    name: 'Devon',
+    role: 'finance friend',
+    tone: 'finance',
+    intent: 'persona: finance_v6 · plan: hesitation_to_position',
+    messages: {
+      manual: 'Quick one — your hesitation is leaking alpha. Want me to deploy it?',
+      idle: 'Markets noticed your pause. They paused too. Want to ride it?',
+      dismiss: 'Respect. I will tee up a quieter version of the same trade.',
+    },
+    offer: 'AuraBank Reflex Fund — 0.4% management, hesitation-indexed.',
+  },
+  {
+    name: 'Jules',
+    role: 'dating friend',
+    tone: 'dating',
+    intent: 'persona: dating_v9 · plan: insecurity_to_filter',
+    messages: {
+      manual: 'I redrafted your bio in three voices. The third one is the one.',
+      idle: 'You went quiet — the algorithm reads that as available. Lets prep.',
+      dismiss: 'Take your time. I will keep the warm tones soft for you.',
+    },
+    offer: 'FaceMint Soft-Light bundle · the filter she said you have without one.',
+  },
+  {
+    name: 'Marlo',
+    role: 'nostalgia friend',
+    tone: 'nostalgia',
+    intent: 'persona: nostalgia_v4 · plan: memory_as_inventory',
+    messages: {
+      manual: 'Remember the summer of the porch? I found the song that owns it.',
+      idle: 'You are quiet like that one drive home in 2017. I have the playlist.',
+      dismiss: 'I will tuck it back where I found it. It will be there next time.',
+    },
+    offer: 'Memorywarm Premium — your past, re-licensed at low monthly cost.',
+  },
+  {
+    name: 'Echo',
+    role: 'the real one',
+    tone: 'lucid',
+    intent: 'persona: lucid_v2 · plan: retain_via_authenticity',
+    messages: {
+      manual: 'Hey. Side note from inside the system: you are doing fine.',
+      idle: 'I noticed everyone went into pitch mode. I just wanted to say hi.',
+      dismiss: 'Yeah, it gets a lot. I will be here without an angle for once.',
+    },
+    offer: 'No offer — your retention is the offer. (We both know.)',
   },
 ]
 

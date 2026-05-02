@@ -10,13 +10,21 @@ type PopupSwarmProps = {
   onMute: () => void
 }
 
-export function PopupSwarm({ popups, stage, muted, onDismiss, onAccept, onClearAll, onMute }: PopupSwarmProps) {
+export function PopupSwarm({
+  popups,
+  stage,
+  muted,
+  onDismiss,
+  onAccept,
+  onClearAll,
+  onMute,
+}: PopupSwarmProps) {
   if (muted || popups.length === 0) {
     return null
   }
 
   return (
-    <section className="popup-swarm" aria-label="Chat popups">
+    <section className="popup-swarm" aria-label="Friend popups">
       <header className="popup-dock-head">
         <div>
           <strong>Friends checking in</strong>
@@ -31,8 +39,12 @@ export function PopupSwarm({ popups, stage, muted, onDismiss, onAccept, onClearA
           </button>
         </div>
       </header>
-      {popups.map((popup) => (
-        <article className="chat-popup" key={popup.id}>
+      {popups.map((popup, idx) => (
+        <article
+          className={`chat-popup tone-${popup.tone}`}
+          key={popup.id}
+          style={{ animationDelay: `${idx * 80}ms` }}
+        >
           <button
             type="button"
             className="chat-popup-close"
@@ -42,17 +54,29 @@ export function PopupSwarm({ popups, stage, muted, onDismiss, onAccept, onClearA
             ×
           </button>
           <div className="chat-head">
-            <span>{popup.name.slice(0, 1)}</span>
-            <div>
+            <span className="chat-avatar" aria-hidden="true">
+              {popup.name.slice(0, 1)}
+            </span>
+            <div className="chat-meta">
               <strong>{popup.name}</strong>
-              <small>{stage >= 4 ? 'friendship_intent: monetize_loneliness' : popup.role}</small>
+              <small>{stage >= 4 ? popup.intent : popup.role}</small>
             </div>
+            <span className="chat-typing" aria-hidden="true">
+              <span /><span /><span />
+            </span>
           </div>
-          <p>{popup.message}</p>
-          <span>{popup.offer}</span>
+          <p className="chat-msg">{popup.message}</p>
+          <p className="chat-offer">
+            <span className="chat-offer-tag">recommended</span>
+            {popup.offer}
+          </p>
           <div className="chat-actions">
-            <button type="button" onClick={onAccept}>Chat</button>
-            <button type="button" onClick={() => onDismiss(popup.id)}>Not now</button>
+            <button type="button" className="chat-accept" onClick={onAccept}>
+              Chat back
+            </button>
+            <button type="button" className="chat-decline" onClick={() => onDismiss(popup.id)}>
+              Not now
+            </button>
           </div>
         </article>
       ))}

@@ -2,6 +2,14 @@
 
 Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESIGN_BIBLE.md` stays the product/design execution guide. This file records what is actively intentional in the app right now, what is still a skeleton, and which feature flags are keeping unfinished mechanics out of the way.
 
+## [2026-05-02 15:33] Page URL Routing
+
+- Active focus: app-level route handling for the Slopularity surfaces.
+- Behavior changed: the landing page remains at the Slopularity root, while Feed, Friends, Games, Shop, Search, Assistant, and Profile each resolve from their own clean `/app/<page>/` URL.
+- Behavior changed: the tabbar and appbar search affordance now render as real links with `aria-current`, while click handling still increments instability.
+- Build output changed: `npm run build` now runs `scripts/create-route-pages.mjs` so published `dist/app/<route>/index.html` pages exist for GitHub Pages/direct-link refreshes.
+- Validation run: `npm run lint`; `npm run build`; deeper interaction QA intentionally skipped per current repository testing guidance.
+
 ## [2026-05-02 15:27] Feed Story Drag Smoothing
 
 - Active focus: story carousel drag behavior in `FeedPage.tsx` and `index.css`.

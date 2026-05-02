@@ -345,6 +345,14 @@
 - Created `slopularity/` as a Vite/React/TypeScript app with package scripts, TypeScript configs, ESLint config, favicon, source files, and built `dist/` output.
 - Implemented The Singularity app shell with the tagline "All of the Internet is here now.", top status area, multiple tabs, and shared instability state.
 - Added Feed, Friends, Games, Shop, Search, Assistant, and Profile surfaces, including aspirational feed posts, engagement buttons that mutate toward `envy`, `compare`, `optimize me`, and `buy the context`, fake affirming friends, cutesy data-labeling games, product nudges, contaminated search results, confident assistant replies, and inferred profile metrics.
+## [2026-05-02 15:33] Add Slopularity Page URLs
+
+- Updated `slopularity/src/App.tsx` and new `slopularity/src/routes.ts` so the landing page stays at the Slopularity root while Feed, Friends, Games, Shop, Search, Assistant, and Profile resolve from separate `/app/<page>/` URLs.
+- Changed the app tabbar and appbar search affordance to real links while preserving the existing instability increment on navigation.
+- Added `slopularity/scripts/create-route-pages.mjs` and updated `slopularity/package.json` so `npm run build` creates nested `dist/app/<route>/index.html` files for GitHub Pages/direct-link refreshes.
+- Updated `slopularity/DESIGN_BIBLE.md` and `slopularity/IMPLEMENTATION_STATUS.md` with the routing rule and current implementation note.
+- Validation run: `npm run lint`; `npm run build`; deeper interaction QA intentionally skipped per the updated `AGENTS.md` guidance.
+
 - Added site-wide popup friend/chat swarm behavior, idle stillness detection for desktop and phone interaction signals, internal leak labels, local reset, and source-code comments from the last human developer.
 - Updated root `index.html` and `styles.css` so The Singularity is linked as the active live project, and updated Slopularity docs/AGENTS files to reflect that implementation has started.
 - Validation run: `npm install`, `npm run lint`, and `npm run build` inside `slopularity/`.
@@ -405,3 +413,10 @@
 - Preserved left/right third tap navigation, 3-second auto-advance, keyboard controls, and no visible Previous/Next buttons.
 - Regenerated `slopularity/dist/` so the published build includes the smoother carousel.
 - Validation run: `npm run lint`; `npm run build`; headless Chrome DevTools checks at desktop and 390px confirmed three rendered story slides, changing transform during drag, drag-to-next, left/right third taps, 3s progress, no visible Previous/Next controls, no horizontal overflow, and zero captured runtime errors.
+
+## [2026-05-02 15:40] Feed Photo Click Expansion and Hover Fix
+
+- Updated `slopularity/src/pages/FeedPage.tsx` so clicking a feed photo opens a foreground photo lightbox with an overlay and a white close button in the top-right of the image.
+- Removed the existing feed image hover wash by disabling `.ig-photo:hover` dimming behavior in `slopularity/src/index.css`.
+- Added `activePhotoPost` state and close handlers for photo expansion so image clicks now open/close the expanded view without triggering a reaction.
+- Kept the modal style using dark backdrop opacity and positioned controls/close affordance to keep the action visually focused on the image.

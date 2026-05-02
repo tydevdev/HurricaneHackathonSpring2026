@@ -381,6 +381,18 @@ Phone:
 
 Every surface added to this app should be checked at desktop and phone widths before the work is called done.
 
+## Page URLs
+
+The app surfaces are separate pages, not only local tab state.
+
+- landing lives at the Slopularity root
+- app surfaces live at `/app/feed/`, `/app/friends/`, `/app/games/`, `/app/shop/`, `/app/search/`, `/app/assistant/`, and `/app/profile/`
+- tab chrome should use real links with `aria-current`, then layer product state changes on click
+- direct visits to a tab route should open the app shell immediately on that surface
+- GitHub Pages builds should include nested `dist/app/<route>/index.html` files so shared links do not depend on a server fallback
+
+Preserve the satire as behavior across routes: moving between pages can still increase instability, but URLs must remain readable, shareable, and resilient on refresh.
+
 ## Keeping This Updated
 
 When adding or changing a major section, update that section here with:

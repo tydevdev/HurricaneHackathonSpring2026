@@ -272,7 +272,7 @@ p {
 
 .status-stack span,
 .status-stack button,
-.tabbar button,
+.tabbar a,
 .engagement-row button,
 .primary-action,
 .search-box button,
@@ -334,7 +334,15 @@ p {
 .tabbar::-webkit-scrollbar { height: 4px; }
 .tabbar::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.1); border-radius: 999px; }
 
-.tabbar button {
+.tab-feed .tabbar {
+  justify-content: center;
+}
+
+.tab-feed .tabbar a {
+  min-width: 78px;
+}
+
+.tabbar a {
   flex: 0 0 auto;
   min-width: 78px;
   min-height: 34px;
@@ -348,11 +356,15 @@ p {
   letter-spacing: -0.01em;
   font-family: inherit;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
   transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 }
 
-.tabbar button:hover,
-.tabbar button:focus-visible {
+.tabbar a:hover,
+.tabbar a:focus-visible {
   color: var(--ink);
   background: #f4f5f8;
   border-color: var(--line);
@@ -567,6 +579,27 @@ p {
   font-weight: 720;
 }
 
+.ig-top-actions .make-post-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #fff;
+  background: #050505;
+  border-color: #050505;
+}
+
+.make-post-button span {
+  display: grid;
+  width: 18px;
+  height: 18px;
+  place-items: center;
+  color: #050505;
+  background: #fff;
+  border-radius: 50%;
+  font-size: 1rem;
+  line-height: 1;
+}
+
 .story-strip {
   display: flex;
   gap: 16px;
@@ -741,6 +774,9 @@ p {
 .ig-post {
   background: #fff;
   border-bottom: 1px solid #efefef;
+  contain: layout paint style;
+  content-visibility: auto;
+  contain-intrinsic-size: 820px;
 }
 
 .ig-post:last-child {
@@ -898,9 +934,7 @@ p {
 .ig-author:hover,
 .ig-author:focus-visible,
 .story-chip:hover,
-.story-chip:focus-visible,
-.ig-photo:hover,
-.ig-photo:focus-visible {
+.story-chip:focus-visible {
   outline: 0;
   opacity: 0.72;
 }
@@ -912,6 +946,7 @@ p {
   aspect-ratio: 1 / 1;
   overflow: hidden;
   padding: 0;
+  cursor: zoom-in;
   background:
     radial-gradient(circle at 50% 28%, rgba(255, 255, 255, 0.74), transparent 12%),
     linear-gradient(135deg, #f7c3d1 0%, #d9e7ff 54%, #f8f8fb 100%);
@@ -958,6 +993,70 @@ p {
     radial-gradient(circle at 18% 76%, rgba(0, 0, 0, 0.1), transparent 12%);
   mix-blend-mode: soft-light;
   pointer-events: none;
+}
+
+.photo-lightbox-backdrop {
+  background: rgba(4, 4, 4, 0.8);
+}
+
+.photo-lightbox {
+  position: relative;
+  display: grid;
+  width: min(100%, 960px);
+  max-height: calc(100svh - 48px);
+}
+
+.photo-lightbox-media {
+  position: relative;
+  overflow: hidden;
+  max-width: 100%;
+  max-height: calc(100svh - 96px);
+  border-radius: 22px;
+  box-shadow: 0 22px 84px rgba(0, 0, 0, 0.52);
+}
+
+.photo-lightbox-media img {
+  display: block;
+  width: 100%;
+  max-height: calc(100svh - 96px);
+  object-fit: contain;
+}
+
+.photo-lightbox-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  padding: 18%;
+  color: #d4d4d8;
+  font-weight: 820;
+  line-height: 1.1;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.photo-lightbox-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  color: #fff;
+  font-size: 1.45rem;
+  line-height: 1;
+  background: rgba(255, 255, 255, 0.19);
+  border: 1px solid rgba(255, 255, 255, 0.36);
+  border-radius: 999px;
+}
+
+.photo-lightbox-close:hover,
+.photo-lightbox-close:focus-visible {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.28);
 }
 
 .ig-post-body {
@@ -1015,6 +1114,7 @@ p {
 
 .feed-action-chip.jealousy.is-active,
 .feed-action-chip.cancel.is-active,
+.feed-action-chip.offended.is-active,
 .feed-action-chip.steal.is-active,
 .feed-action-chip.context.is-active {
   color: #fff;
@@ -1032,6 +1132,11 @@ p {
 .feed-action-chip.cancel.is-active {
   background: #050505;
   border-color: #050505;
+}
+
+.feed-action-chip.offended.is-active {
+  background: #1877f2;
+  border-color: #1877f2;
 }
 
 .feed-action-chip.steal.is-active {
@@ -1160,7 +1265,7 @@ p {
   padding: 0 12px;
 }
 
-.comment-drawer button,
+.comment-drawer form button,
 .helpy-submit {
   min-height: 38px;
   padding: 0 14px;
@@ -1169,6 +1274,11 @@ p {
   border: 0;
   border-radius: 999px;
   font-weight: 720;
+}
+
+.feed-load-sentinel {
+  height: 1px;
+  pointer-events: none;
 }
 
 .loop-note {
@@ -1189,6 +1299,325 @@ p {
   padding: 18px;
   background: rgba(5, 5, 5, 0.66);
   backdrop-filter: blur(10px);
+}
+
+.comment-backdrop {
+  align-items: end;
+  padding: 18px;
+  background:
+    radial-gradient(circle at 50% 100%, rgba(255, 255, 255, 0.18), transparent 28%),
+    rgba(5, 5, 5, 0.58);
+}
+
+.comment-sheet {
+  display: grid;
+  grid-template-rows: auto auto auto auto minmax(0, 1fr) auto auto;
+  width: min(100%, 760px);
+  max-height: min(760px, calc(100svh - 36px));
+  overflow: hidden;
+  color: #050505;
+  background: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 26px;
+  box-shadow: 0 26px 90px rgba(0, 0, 0, 0.34);
+  animation: comment-sheet-in 180ms cubic-bezier(0.2, 0.82, 0.2, 1) both;
+}
+
+@keyframes comment-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.comment-sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 18px 18px 12px;
+  border-bottom: 1px solid #efefef;
+}
+
+.comment-sheet-head p,
+.comment-sheet-head h3,
+.comment-post-context p,
+.comment-post-context small,
+.comment-bubble p,
+.comment-insight-strip span,
+.comment-insight-strip strong {
+  margin: 0;
+}
+
+.comment-sheet-head p {
+  color: #ff3040;
+  font-size: 0.78rem;
+  font-weight: 820;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.comment-sheet-head h3 {
+  margin-top: 2px;
+  font-size: clamp(1.35rem, 3vw, 1.9rem);
+  font-weight: 830;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.comment-sheet-head button {
+  min-height: 36px;
+  padding: 0 13px;
+  color: #050505;
+  background: #f5f5f5;
+  border: 1px solid #efefef;
+  border-radius: 999px;
+  font-weight: 760;
+}
+
+.comment-post-context {
+  display: grid;
+  grid-template-columns: 66px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  padding: 13px 18px;
+  background: linear-gradient(180deg, #fff, #fafafa);
+  border-bottom: 1px solid #efefef;
+}
+
+.comment-post-thumb {
+  display: grid;
+  place-items: center;
+  width: 66px;
+  height: 66px;
+  overflow: hidden;
+  color: #fff;
+  background: #050505;
+  border-radius: 18px;
+  font-size: 0.82rem;
+  font-weight: 820;
+}
+
+.comment-post-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.comment-post-context strong {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 0.94rem;
+  font-weight: 820;
+}
+
+.comment-post-context p {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #262626;
+  font-size: 0.9rem;
+  line-height: 1.28;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.comment-post-context small {
+  display: block;
+  margin-top: 6px;
+  overflow: hidden;
+  color: #8a8a8a;
+  font-size: 0.74rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.comment-sort-row {
+  display: flex;
+  gap: 8px;
+  padding: 12px 18px;
+  overflow-x: auto;
+  border-bottom: 1px solid #efefef;
+  scrollbar-width: none;
+}
+
+.comment-sort-row::-webkit-scrollbar,
+.quick-replies::-webkit-scrollbar {
+  display: none;
+}
+
+.comment-sort-row button,
+.quick-replies button,
+.comment-actions button {
+  min-height: 34px;
+  color: #525252;
+  background: #f7f7f7;
+  border: 1px solid #efefef;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 760;
+  white-space: nowrap;
+}
+
+.comment-sort-row button {
+  padding: 0 13px;
+}
+
+.comment-sort-row button.is-active,
+.comment-actions button.is-active {
+  color: #fff;
+  background: #050505;
+  border-color: #050505;
+}
+
+.comment-insight-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 18px;
+  color: #737373;
+  background: #fbfbfb;
+  border-bottom: 1px solid #efefef;
+  font-size: 0.78rem;
+}
+
+.comment-insight-strip strong {
+  flex: 0 0 auto;
+  color: #050505;
+  font-weight: 820;
+}
+
+.comment-thread {
+  display: grid;
+  gap: 14px;
+  overflow: auto;
+  padding: 16px 18px;
+  overscroll-behavior: contain;
+}
+
+.comment-item {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 10px;
+}
+
+.comment-item.is-user {
+  align-items: start;
+}
+
+.comment-avatar {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  color: #fff;
+  background: linear-gradient(135deg, #6366f1, #ec4899);
+  border-radius: 50%;
+  font-size: 0.68rem;
+  font-weight: 820;
+}
+
+.comment-bubble {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  padding: 11px 12px;
+  background: #f7f7f7;
+  border: 1px solid #efefef;
+  border-radius: 17px;
+}
+
+.comment-item.is-user .comment-bubble {
+  background: #eef5ff;
+  border-color: #d6e8ff;
+}
+
+.comment-bubble header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.comment-bubble strong {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 0.88rem;
+  font-weight: 820;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.comment-bubble small {
+  flex: 0 0 auto;
+  color: #8a8a8a;
+  font-size: 0.7rem;
+}
+
+.comment-bubble p {
+  color: #262626;
+  font-size: 0.9rem;
+  line-height: 1.38;
+}
+
+.comment-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.comment-actions button {
+  min-height: 29px;
+  padding: 0 10px;
+  font-size: 0.72rem;
+}
+
+.quick-replies {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 10px 18px;
+  border-top: 1px solid #efefef;
+  scrollbar-width: none;
+}
+
+.quick-replies button {
+  padding: 0 12px;
+  color: #050505;
+  background: #fff;
+}
+
+.comment-composer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  padding: 12px 18px 18px;
+  border-top: 1px solid #efefef;
+}
+
+.comment-composer input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 14px;
+  color: #050505;
+  background: #f7f7f7;
+  border: 1px solid #e5e5e5;
+  border-radius: 999px;
+}
+
+.comment-composer button {
+  min-height: 44px;
+  padding: 0 18px;
+  color: #fff;
+  background: #050505;
+  border: 0;
+  border-radius: 999px;
+  font-weight: 820;
 }
 
 .double-scroll-backdrop {
@@ -1536,6 +1965,19 @@ p {
   font-weight: 680;
 }
 
+.helpy-field > span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.helpy-field small {
+  color: #a3a3a3;
+  font-size: 0.76rem;
+  font-weight: 680;
+}
+
 .helpy-field textarea,
 .helpy-field select {
   min-height: 44px;
@@ -1543,6 +1985,182 @@ p {
   font-size: 0.92rem;
   font-weight: 520;
   line-height: 1.35;
+}
+
+.helpy-preview {
+  display: grid;
+  grid-template-columns: 126px minmax(0, 1fr);
+  gap: 12px;
+  align-items: stretch;
+  overflow: hidden;
+  padding: 10px;
+  background: #fafafa;
+  border: 1px solid #efefef;
+  border-radius: 18px;
+}
+
+.helpy-preview-image {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1;
+  background: #efefef;
+  border-radius: 14px;
+}
+
+.helpy-preview-image img,
+.helpy-preview-image .photo-subject {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.helpy-preview-copy {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 9px;
+  align-content: start;
+  min-width: 0;
+  padding: 4px 2px;
+}
+
+.helpy-preview-copy .ig-avatar {
+  width: 34px;
+  height: 34px;
+  background: #050505;
+}
+
+.helpy-preview-copy p {
+  min-width: 0;
+  margin: 0;
+  color: #262626;
+  font-size: 0.9rem;
+  line-height: 1.32;
+  overflow-wrap: anywhere;
+}
+
+.helpy-preview-copy small {
+  grid-column: 2;
+  color: #737373;
+  font-size: 0.76rem;
+  font-weight: 680;
+  line-height: 1.25;
+}
+
+.helpy-source-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.helpy-upload {
+  position: relative;
+  display: grid;
+  gap: 4px;
+  padding: 14px;
+  color: #262626;
+  background: #f7f7f7;
+  border: 1px solid #e5e5e5;
+  border-radius: 16px;
+  cursor: pointer;
+}
+
+.helpy-upload.is-active {
+  background: #fff4f6;
+  border-color: #ffb8c4;
+}
+
+.helpy-upload span,
+.helpy-reenactments span {
+  color: #050505;
+  font-size: 0.9rem;
+  font-weight: 780;
+}
+
+.helpy-upload small,
+.helpy-reenactments small {
+  color: #737373;
+  font-size: 0.8rem;
+  font-weight: 620;
+  line-height: 1.28;
+}
+
+.helpy-upload input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.helpy-upload-result {
+  margin: -4px 0 0;
+  color: #be123c;
+  font-size: 0.8rem;
+  font-weight: 720;
+  line-height: 1.28;
+}
+
+.helpy-reenactments {
+  display: grid;
+  gap: 9px;
+}
+
+.helpy-reenactments > div:first-child {
+  display: grid;
+  gap: 3px;
+}
+
+.reenactment-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.reenactment-grid button {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1;
+  min-height: 0;
+  padding: 0;
+  color: #737373;
+  background: #efefef;
+  border: 2px solid transparent;
+  border-radius: 12px;
+}
+
+.reenactment-grid button.is-active {
+  border-color: #050505;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(5, 5, 5, 0.2);
+}
+
+.reenactment-grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.helpy-presets {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+
+.helpy-presets::-webkit-scrollbar {
+  display: none;
+}
+
+.helpy-presets button {
+  flex: 0 0 auto;
+  max-width: 220px;
+  min-height: 36px;
+  padding: 0 12px;
+  color: #262626;
+  background: #f7f7f7;
+  border: 1px solid #efefef;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .helpy-options {
@@ -1579,6 +2197,12 @@ p {
   color: #7f1d1d;
   font-size: 0.88rem;
   line-height: 1.32;
+}
+
+.helpy-submit:disabled {
+  color: #737373;
+  background: #e5e5e5;
+  cursor: not-allowed;
 }
 
 .feed-grid {
@@ -2230,8 +2854,8 @@ p {
     border-top: 1px solid #dbdbdb;
   }
 
-  .tabbar button,
-  .tab-feed .tabbar button {
+  .tabbar a,
+  .tab-feed .tabbar a {
     min-width: 0;
     min-height: 44px;
     padding: 0 10px;
@@ -2241,8 +2865,8 @@ p {
   }
 
   .tabbar .is-active,
-  .tabbar button:hover,
-  .tabbar button:focus-visible {
+  .tabbar a:hover,
+  .tabbar a:focus-visible {
     color: #050505;
     background: #f5f5f5;
     transform: none;
@@ -2271,6 +2895,26 @@ p {
 
   .ig-feed-topbar {
     min-height: 60px;
+    padding: 10px 12px;
+  }
+
+  .ig-feed-topbar p {
+    font-size: 1.22rem;
+  }
+
+  .ig-top-actions {
+    gap: 7px;
+  }
+
+  .ig-top-actions button {
+    min-height: 34px;
+    padding: 0 10px;
+    font-size: 0.78rem;
+  }
+
+  .make-post-button span {
+    width: 16px;
+    height: 16px;
   }
 
   .story-strip {
@@ -2282,6 +2926,82 @@ p {
   .ig-post-body {
     padding-right: 12px;
     padding-left: 12px;
+  }
+
+  .comment-backdrop {
+    align-items: end;
+    padding: 0;
+  }
+
+  .comment-sheet {
+    width: 100%;
+    max-height: min(88svh, 760px);
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+    border-radius: 24px 24px 0 0;
+  }
+
+  .comment-sheet-head,
+  .comment-post-context,
+  .comment-sort-row,
+  .comment-insight-strip,
+  .comment-thread,
+  .quick-replies,
+  .comment-composer {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+
+  .comment-post-context {
+    grid-template-columns: 54px minmax(0, 1fr);
+  }
+
+  .comment-post-thumb {
+    width: 54px;
+    height: 54px;
+    border-radius: 15px;
+  }
+
+  .comment-insight-strip {
+    display: grid;
+    gap: 3px;
+  }
+
+  .comment-insight-strip strong {
+    flex: initial;
+  }
+
+  .comment-item {
+    grid-template-columns: 34px minmax(0, 1fr);
+  }
+
+  .comment-avatar {
+    width: 34px;
+    height: 34px;
+  }
+
+  .helpy-modal {
+    gap: 12px;
+    padding: 14px;
+    border-radius: 18px;
+  }
+
+  .helpy-modal h3 {
+    font-size: 1.28rem;
+  }
+
+  .helpy-preview {
+    grid-template-columns: 96px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .reenactment-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .helpy-presets button {
+    max-width: 190px;
   }
 
   .surface-heading,

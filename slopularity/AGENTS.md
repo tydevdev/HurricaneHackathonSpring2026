@@ -34,5 +34,5 @@ Assume future product work in this repository belongs in `slopularity/`. The oth
 - Degradation should be legible and escalating: normal confidence, subtle contradictions, generated artifacts, duplicated surfaces, leaking internals, unreliable recovery, then an earned final reveal.
 - Preserve enough usability that the user can keep exploring even while the app decays.
 - Keep visible copy short, specific, and in-world. Do not add explanatory copy that describes the satire from outside the product.
-- Verify desktop and phone behavior before calling implementation work done.
+- Keep verification proportional. For most changes, `npm run lint` and `npm run build` are the expected proof. Add a quick browser smoke check for the exact changed path when routing, responsive layout, asset loading, or visible UI behavior changed, but do not test every interaction unless the user explicitly asks for deeper QA.
 - Append root `HISTORY.md` entries for significant sessions, including files changed, behavior impact, and validation run.

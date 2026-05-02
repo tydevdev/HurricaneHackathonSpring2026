@@ -7,6 +7,7 @@ import { FeedPage } from './pages/FeedPage'
 import { FriendsPage } from './pages/FriendsPage'
 import { GamesPage } from './pages/GamesPage'
 import { ProfilePage } from './pages/ProfilePage'
+import { pathForTab, tabFromLocation } from './routes'
 import { SearchPage } from './pages/SearchPage'
 import { ShopPage } from './pages/ShopPage'
 import type { Popup, TabId } from './types'
@@ -26,8 +27,13 @@ function loadScore() {
   return Number.isFinite(value) ? value : 0
 }
 
+function loadTab(): TabId {
+  if (typeof window === 'undefined') return 'feed'
+  return tabFromLocation() ?? 'feed'
+}
+
 function App() {
-  const [activeTab, setActiveTab] = useState<TabId>('feed')
+  const [activeTab, setActiveTab] = useState<TabId>(loadTab)
   const [score, setScore] = useState(loadScore)
   const [popups, setPopups] = useState<Popup[]>([])
   const [idle, setIdle] = useState(false)
@@ -49,6 +55,18 @@ function App() {
     : []
 
   const visiblePopups = muted ? [] : popups
+
+  useEffect(() => {
+    const syncRoute = () => {
+      const routedTab = tabFromLocation()
+      if (routedTab) {
+        setActiveTab(routedTab)
+      }
+    }
+
+    window.addEventListener('popstate', syncRoute)
+    return () => window.removeEventListener('popstate', syncRoute)
+  }, [])
 
   const addInstability = useCallback((amount = 1) => {
     setScore((current) => Math.min(30, current + amount))
@@ -200,6 +218,9 @@ function App() {
   }
 
   function handleTab(tabId: TabId) {
+    if (typeof window !== 'undefined' && tabFromLocation() !== tabId) {
+      window.history.pushState(null, '', pathForTab(tabId))
+    }
     setActiveTab(tabId)
     addInstability(1)
   }
@@ -239,13 +260,16 @@ function App() {
 
         <div className="appbar-search" role="search" aria-label="Universal search shortcut">
           <span aria-hidden="true">⌕</span>
-          <button
-            type="button"
+          <a
             className="appbar-search-btn"
-            onClick={() => handleTab('search')}
+            href={pathForTab('search')}
+            onClick={(event) => {
+              event.preventDefault()
+              handleTab('search')
+            }}
           >
             Search everything
-          </button>
+          </a>
           <kbd>↵</kbd>
         </div>
 
@@ -278,14 +302,18 @@ function App() {
 
       <nav className="tabbar" aria-label="Everything app tabs">
         {tabs.map((tab) => (
-          <button
+          <a
             key={tab.id}
             className={activeTab === tab.id ? 'is-active' : ''}
-            type="button"
-            onClick={() => handleTab(tab.id)}
+            href={pathForTab(tab.id)}
+            aria-current={activeTab === tab.id ? 'page' : undefined}
+            onClick={(event) => {
+              event.preventDefault()
+              handleTab(tab.id)
+            }}
           >
             {tab.label}
-          </button>
+          </a>
         ))}
       </nav>
 

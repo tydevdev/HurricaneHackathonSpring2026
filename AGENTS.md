@@ -52,7 +52,7 @@ The earlier projects were built to figure out the direction and now live under `
 - Add dependencies only when they earn their weight. Prefer Vite/React/browser-native APIs and existing project helpers unless a proven library handles a real domain problem better.
 - Keep generated or published assets organized in the relevant project folder. For published Vite demos, update `dist/` after source changes so GitHub Pages links keep working.
 - Handle empty, loading, error, reset, and reduced-motion states deliberately when the feature can encounter them.
-- Before finishing coding work, run the strongest practical local proof: usually `npm run lint`, `npm run build`, and browser checks for both desktop and phone-sized viewports when UI changed.
+- Before finishing coding work, run the practical proof that fits the change. For most Slopularity edits, `npm run lint` and `npm run build` are enough. Add a light browser smoke check only when the change affects routing, responsive layout, asset loading, or a visibly risky UI path. Do not exhaustively click every interaction unless the user explicitly asks for deep QA or the change directly touches those interactions.
 
 ## Skills And Plugins
 
@@ -82,7 +82,7 @@ The earlier projects were built to figure out the direction and now live under `
 - For websites and browser apps, design, implement, and verify both desktop web pages and phone-sized experiences before calling the work done.
 - Websites must look great on computer and phone: responsive layout, readable text, no awkward overflow, no broken spacing, and no important controls hidden off-screen.
 - Websites must be fully interactable on computer and phone: mouse, keyboard where relevant, touch targets, scrolling, forms, buttons, menus, gestures, and game controls should work in the appropriate viewport.
-- When practical, verify responsive behavior with both a desktop browser viewport and a phone-sized viewport, then record that validation in `HISTORY.md`.
+- When practical and relevant, do one quick responsive smoke check for desktop or phone-sized layout, then record that validation in `HISTORY.md`. Avoid broad interaction sweeps by default; compile/build correctness and the specific changed path are the normal bar.
 
 ## Maintenance
 

@@ -1,10 +1,24 @@
 # History
 
+## [2026-05-02 14:56] Clarify Imagegen Subagent Model
+
+- Updated `AGENTS.md` so image-generation subagents must use `gpt-5.4` with `reasoning_effort: low`.
+- Added an explicit warning not to assign image generation or the `imagegen` skill to `gpt-5.3-codex-spark` because Spark cannot use image generation in this environment.
+- Validation run: inspected the existing subagent instructions and applied a docs-only update.
+
 ## [2026-05-02 14:54] Clarify Web And Phone App Requirement
 
 - Updated `AGENTS.md` so active web apps must be built for both full desktop pages and phone-sized screens from the start.
 - Tightened the demo-quality rules to require desktop web page and phone experience implementation and verification before work is called done.
 - Validation run: inspected the existing agent instructions and applied a docs-only update.
+
+## [2026-05-02 14:53] Expand Slopularity Feed To 50 Posts
+
+- Added 30 new canonical feed posts in `slopularity/src/content.ts`, bringing the social loop from 20 to 50 posts.
+- Updated `slopularity/src/pages/FeedPage.tsx` so the loop note reflects the live canonical post count and Helpy can remix any feed image.
+- Added generated feed imagery under `slopularity/src/assets/feed/post-21.jpg` through `post-50.jpg`.
+- Updated `slopularity/DESIGN_BIBLE.md` and `slopularity/IMPLEMENTATION_STATUS.md` with the expanded feed intention and current testing posture.
+- Validation run: pending final lint, build, and browser checks after image assets finish generating.
 
 ## [2026-05-02 14:52] Discourage Branch-First Workflow
 
@@ -305,3 +319,12 @@
 - Simplified `slopularity/src/App.tsx` so it owns shared shell state, instability phase, idle handling, popup orchestration, and tab routing only.
 - Updated `slopularity/README.md`, `slopularity/PLAN.md`, and `slopularity/AGENTS.md` to document the independent page-file ownership model.
 - Validation run: `npm run lint` and `npm run build` inside `slopularity/`. Browser testing intentionally skipped per user request.
+
+## [2026-05-02 14:55] Add Feed Double Scroll Trial
+
+- Updated `slopularity/src/pages/FeedPage.tsx` so seeing the tenth feed post triggers a confetti modal titled `Congratulations, Super Scroller` with the requested `DOUBLE SCROLL` trial copy and the only dismiss action `Hooray! I love double scroll`.
+- Updated `slopularity/src/pages/FeedPage.tsx` so accepting the modal enables two side-by-side feed lanes while keeping post reactions, comments, menus, saves, and loop loading functional.
+- Updated `slopularity/src/index.css` with the double-scroll layout, mobile two-lane constraints, confetti motion, modal styling, and reduced-overflow behavior.
+- Updated `slopularity/DESIGN_BIBLE.md` and `slopularity/IMPLEMENTATION_STATUS.md` to record the new feed mechanic and its validation posture.
+- Rebuilt `slopularity/dist/` so the GitHub Pages-ready output includes the double-scroll trial behavior.
+- Validation run: `npm run lint`; `npm run build`; Chrome DevTools Protocol browser checks at desktop and 390px mobile confirmed the tenth-post trigger, modal copy, one-button unlock, two feed lanes, no document horizontal overflow on mobile, and zero captured runtime/log errors.

@@ -12,6 +12,14 @@ Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESI
 - Still tracked underneath: interaction score still increments so future collapse work can reconnect to the plan without rebuilding the state model.
 - Skeleton for later: popup friends, idle stillness detection, multi-surface collapse, late-stage source leakage, and cross-tab degradation are real planned mechanics but should stay off until each one is intentionally fleshed out.
 
+## [2026-05-02 14:53] Feed Expansion Pass
+
+- Active focus: expanded the implemented feed from 20 to 50 canonical posts.
+- Files changed: `src/content.ts`, `src/pages/FeedPage.tsx`, `src/assets/feed/post-21.jpg` through `post-50.jpg`, `DESIGN_BIBLE.md`, `IMPLEMENTATION_STATUS.md`, and root `HISTORY.md`.
+- Intentional behavior: the feed now has a wider image-backed lifestyle loop across wellness, travel, productivity, home automation, beauty, grocery, fitness, sleep, and social proximity.
+- Still calm: visible collapse remains feature-flagged off; new posts use in-world sponsor texture and comments rather than noisy breakdown mechanics.
+- Validation run: pending final lint, build, and browser checks after image assets finish generating.
+
 ## [2026-05-02 14:50] Feed Comment Bot Pass
 
 - Active focus: feed comment drawers now intentionally read as spam-bot and fake-human social proof instead of normal friend comments.
@@ -34,3 +42,11 @@ Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESI
 - Feed looping is demo-oriented: the 20 canonical posts repeat in rendered cycles, and loop-instance controls use unique accessible labels so repeated copies remain testable.
 - Still skeleton/deferred: real uploads, real AI image editing, accounts, backend persistence, real story creation, real share destinations, cross-tab degradation, popup friends, idle reactions, and production-grade infinite virtualization.
 - Validation run: `npm run lint`, `npm run build`, Browser/IAB checks for real images, story open/next, Helpy local publish, reaction drawers, comment submission, looped copy labels, suppressed popups, and suppressed degraded captions while `featureFlags.interruptionLayer` is off.
+
+## [2026-05-02 14:55] Double Scroll Trial Pass
+
+- Active focus: feed scroll depth now triggers a subscription-style interruption after the user has seen at least 10 posts.
+- Files changed: `src/pages/FeedPage.tsx`, `src/index.css`, `DESIGN_BIBLE.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/` output.
+- Behavior changed: the Super Scroller modal appears with confetti, includes the $49.99/week trial fine print, and only offers `Hooray! I love double scroll`.
+- Behavior changed: accepting the modal enables `DOUBLE SCROLL`, rendering two side-by-side feed lanes while preserving post actions, comments, saves, likes, and loop loading.
+- Validation run: `npm run lint`; `npm run build`; Chrome DevTools Protocol browser checks for desktop scroll trigger, modal copy, one-button unlock, two-lane desktop layout, two-lane 390px mobile layout with no document horizontal overflow, and zero captured runtime/log errors.

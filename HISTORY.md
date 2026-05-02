@@ -1,5 +1,11 @@
 # History
 
+## [2026-05-02 14:22] Strengthen Frontend Skill Defaults
+
+- Updated root `AGENTS.md` so future frontend, app, prototype, demo, game UI, landing page, and visually important web work always starts from `frontend-skill`.
+- Clarified that agents should pair `frontend-skill` with Build Web Apps for web implementation and responsive browser inspection, and use Superpowers as the default execution layer for substantial work.
+- Validation run: inspected the existing `Skills And Plugins` guidance and reviewed the markdown-only edit.
+
 ## [2026-05-02 14:17] Add Coding Practice Guidance
 
 - Updated root `AGENTS.md` with a `Coding Practices` section covering readable React/TypeScript structure, deterministic state transitions, accessibility, responsive layout, dependency restraint, published `dist/` updates, and practical verification.

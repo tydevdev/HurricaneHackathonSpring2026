@@ -51,8 +51,11 @@ The earlier projects were built to figure out the direction and now live under `
 ## Skills And Plugins
 
 - Before starting substantial work, check whether a listed Codex skill or plugin applies and use it as the operating playbook, not as decoration.
-- Use Superpowers process skills for planning, test-first work, systematic debugging, verification, and finishing a branch when the task fits.
-- Use Build Web Apps and Browser Use for frontend implementation and real browser inspection, especially local Vite pages and responsive QA.
+- For any website, app, prototype, demo, game UI, landing page, or visually important frontend work, always use `frontend-skill` as the art-direction and interaction-quality baseline.
+- Claude should default to its frontend design skill for any visual or interaction work in this repository, even for small UI changes, so design judgment is active from the start instead of treated as late polish.
+- Pair `frontend-skill` with Build Web Apps for frontend implementation, responsive layout, local Vite workflows, and browser inspection. Treat Build Web Apps as the default plugin lane for this repository's web product work.
+- Use Superpowers process skills as the default execution layer for substantial work: planning, test-first implementation when practical, systematic debugging, verification, and finishing a branch.
+- Use Browser Use for real browser inspection, especially local Vite pages and responsive QA.
 - Use Game Studio skills for browser games, playable simulations, Phaser, Three.js, asset pipelines, and playtesting.
 - Use GitHub skills or tooling for issues, pull requests, CI, publishing, branch cleanup, commits, and pushes.
 - Use Documents, Presentations, Spreadsheets, Life Science Research, Build iOS Apps, Build macOS Apps, Gmail, or Vercel only when the task actually touches those domains.

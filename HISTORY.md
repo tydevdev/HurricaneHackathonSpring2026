@@ -153,3 +153,12 @@
 - Added `slopularity/AGENTS.md` so future agents preserve the planning-only state until implementation is requested and keep the super-app slop-collapse direction in mind.
 - Updated root `AGENTS.md` to treat previous top-level projects as experiments and `slopularity/` as the main project going forward.
 - Validation run: inspected root instructions, created the new folder, and confirmed the new markdown files exist without scaffolding app code.
+
+## [2026-05-02 13:54] Add Slopularity Idea Plan
+
+- Created `slopularity/PLAN.md` as the living plan for The Singularity, the final everything-app website where the internet has collapsed into one AI-generated super app.
+- Captured core tabs and mechanics for Feed, Friends, Games, Shop, Search, Assistant, and Profile, including impossible beauty standards, dead internet theory, fake affirming AI friends, constant sales pressure, subtle brand placement, data collection, and cutesy data-labeling games.
+- Added staged collapse ideas covering interaction-driven instability, self-training AI slop, enshittification, fake citations, duplicate content, source leakage, and broken privacy controls.
+- Added a source-code narrative direction for comments from the last human developer fighting vibe-coded 10x-engineer patches and trying to keep the app human.
+- Updated `slopularity/README.md` and `slopularity/AGENTS.md` to point future work at `PLAN.md`.
+- Validation run: inspected existing Slopularity docs, added the plan without scaffolding implementation code, and checked markdown edits.

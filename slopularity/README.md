@@ -16,6 +16,8 @@ This folder is intentionally not implemented yet. It exists so future work has a
 
 The earlier projects in this repository were tests, studies, or prototypes. `quiet-collapse/` is the closest reference for the slow-failure mechanic, while `slopternet/` is a louder reference for obvious AI slop. `slopularity/` should become the main build.
 
+`PLAN.md` is the living idea tracker for the project.
+
 ## Product Shape
 
 The first implemented version should feel like a complete app, not a landing page. A visitor should be dropped directly into the 2030 super app surface and be able to poke at meaningful areas:

@@ -13,7 +13,8 @@ This is the primary project for the repository. Treat it as the real build, not 
 
 - This folder is planning-only until the user asks for implementation.
 - Do not create a Vite app, package files, build output, or app source in this folder unless the user explicitly asks to start building.
-- Keep `README.md` and this file synchronized with major product-direction decisions.
+- Keep `README.md`, `PLAN.md`, and this file synchronized with major product-direction decisions.
+- Use `PLAN.md` as the living idea tracker for tabs, mechanics, commentary targets, collapse stages, and first-build priorities.
 
 ## Future Build Rules
 

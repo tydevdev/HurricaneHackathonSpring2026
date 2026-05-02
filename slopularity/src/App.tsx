@@ -223,9 +223,6 @@ function App() {
         ? 'I can answer that from 11 generated summaries that cite one another. Confidence: radiant. Source: pending.'
         : 'I can help. I noticed your feed, friends, cart, and pauses all point toward one convenient upgrade.',
     )
-    if (interruptionMode) {
-      spawnPopup('manual')
-    }
   }
 
   function completeTask(title: string) {
@@ -319,10 +316,7 @@ function App() {
           {activeTab === 'friends' && (
             <FriendsPage
               stage={visibleStage}
-              onReply={() => {
-                addInstability(2)
-                if (interruptionMode) spawnPopup('manual')
-              }}
+              onReply={() => addInstability(2)}
             />
           )}
           {activeTab === 'games' && (
@@ -335,10 +329,7 @@ function App() {
           {activeTab === 'shop' && (
             <ShopPage
               stage={visibleStage}
-              onBuy={() => {
-                addInstability(2)
-                if (interruptionMode) spawnPopup('manual')
-              }}
+              onBuy={() => addInstability(2)}
             />
           )}
           {activeTab === 'search' && (
@@ -346,10 +337,7 @@ function App() {
               query={query}
               setQuery={setQuery}
               stage={visibleStage}
-              onSearch={() => {
-                addInstability(2)
-                if (interruptionMode) spawnPopup('manual')
-              }}
+              onSearch={() => addInstability(2)}
             />
           )}
           {activeTab === 'assistant' && (

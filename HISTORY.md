@@ -1,5 +1,11 @@
 # History
 
+## [2026-05-02 14:54] Clarify Web And Phone App Requirement
+
+- Updated `AGENTS.md` so active web apps must be built for both full desktop pages and phone-sized screens from the start.
+- Tightened the demo-quality rules to require desktop web page and phone experience implementation and verification before work is called done.
+- Validation run: inspected the existing agent instructions and applied a docs-only update.
+
 ## [2026-05-02 14:52] Discourage Branch-First Workflow
 
 - Updated root `AGENTS.md` commit guidance to discourage creating branches by default.

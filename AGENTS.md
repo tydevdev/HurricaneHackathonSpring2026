@@ -33,6 +33,7 @@ The earlier projects were built to figure out the direction and now live under `
 - Work inside `slopularity/` by default.
 - Work inside an archived subproject folder only when the user explicitly targets that subproject.
 - Do root-only changes at the repository root.
+- Build every active web app for both full desktop pages and phone-sized screens from the start. Do not treat mobile as a late cleanup pass.
 - For Vite subprojects, use their local scripts from inside that folder:
   - `npm install`
   - `npm run dev`
@@ -78,7 +79,7 @@ The earlier projects were built to figure out the direction and now live under `
 
 - Treat every project as a demo, but never as disposable. Each one should feel polished, well fleshed out, and built with care.
 - Make the core interaction complete enough that a real visitor can understand the idea, use it, and see why it is interesting without reading extra explanation.
-- For websites and browser apps, design and verify both desktop and phone experiences before calling the work done.
+- For websites and browser apps, design, implement, and verify both desktop web pages and phone-sized experiences before calling the work done.
 - Websites must look great on computer and phone: responsive layout, readable text, no awkward overflow, no broken spacing, and no important controls hidden off-screen.
 - Websites must be fully interactable on computer and phone: mouse, keyboard where relevant, touch targets, scrolling, forms, buttons, menus, gestures, and game controls should work in the appropriate viewport.
 - When practical, verify responsive behavior with both a desktop browser viewport and a phone-sized viewport, then record that validation in `HISTORY.md`.

@@ -2,6 +2,31 @@
 
 Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESIGN_BIBLE.md` stays the product/design execution guide. This file records what is actively intentional in the app right now, what is still a skeleton, and which feature flags are keeping unfinished mechanics out of the way.
 
+## [2026-05-02 15:03] Feed Reactions And Comments Pass
+
+- Active focus: `FeedPage.tsx` reaction language and per-post comment behavior.
+- Files changed: `src/pages/FeedPage.tsx`, `src/index.css`, `src/App.tsx`, `src/utils.ts`, `PLAN.md`, `DESIGN_BIBLE.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/` output.
+- Behavior changed: `Jealousy`, `Cancel`, and `This offends me` are now real per-post reactions with pressed states and counts instead of share/context/save-style controls. Buy Context is removed from the feed UI and stage labels.
+- Comment behavior changed: every post now shows a comment section by default with preview comments, expansion, and local submission that adds the user comment plus the compromised brand reply.
+- Validation run: pending in this session.
+
+## [2026-05-02 15:05] Feed Story Carousel Pass
+
+- Active focus: feed stories now behave like a phone-native carousel rather than a modal with explicit previous/next controls.
+- Files changed: `src/pages/FeedPage.tsx`, `src/index.css`, `DESIGN_BIBLE.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/` output.
+- Behavior changed: the story progress line fills over three seconds, then advances to the next story with wraparound.
+- Behavior changed: the visible Previous/Next controls were removed; the left third and right third of the story image now move backward/forward, while pointer dragging lets the current image slide before committing to the next story.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome DevTools checks at desktop and 390px confirmed no visible Previous/Next controls, the 3s progress animation, auto-advance, left/right third taps, drag-to-next, no horizontal overflow, and zero captured runtime errors.
+
+## [2026-05-02 15:15] Feed Triple Scroll Unlock
+
+- Active focus: `FeedPage.tsx` scroll-depth unlocks and the subscription-style confetti modal.
+- Behavior changed: the feed now uses one scroll-mode state (`single` -> `double` -> `triple`) instead of a one-off double-scroll flag.
+- Behavior changed: seeing the tenth post opens the DOUBLE SCROLL trial; after accepting and scrolling another ten-post-equivalent depth, the same modal opens the TRIPLE SCROLL trial and accepting it renders three feed lanes.
+- Bug fixed: confetti pieces no longer rely on unsupported CSS custom-property multiplication inside `calc()`. Each piece receives concrete custom properties for left position, hue, drift, spin, and delay, so computed styles resolve in Chromium.
+- Files changed: `src/pages/FeedPage.tsx`, `src/index.css`, `DESIGN_BIBLE.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
+- Validation run: `npm run lint`; `npm run build`; local Playwright script against `http://127.0.0.1:5177/` at 1280x900 and 390x844 confirmed DOUBLE SCROLL unlock, TRIPLE SCROLL unlock after the next scroll interval, three lanes after acceptance, no horizontal overflow, computed confetti positions/colors, and zero captured page errors.
+
 ## [2026-05-02 15:14] Games Playable + Popup / Chrome Pass
 
 - Active focus: `GamesPage.tsx` plus shared chrome (`App.tsx`, `PopupSwarm.tsx`, `index.css`). `FeedPage.tsx` was untouched — feed sprint is owned by another agent.
@@ -12,6 +37,14 @@ Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESI
 - Feature flag posture is unchanged (`featureFlags.interruptionLayer` still `false`). The popup fixes only become visible when the flag flips on, so feed-sprint work stays uninterrupted.
 - Files changed: `src/App.tsx`, `src/components/PopupSwarm.tsx`, `src/pages/GamesPage.tsx`, `src/games/*` (new), `src/index.css`. No `FeedPage.tsx` edits.
 - Validation: `npm run lint` clean, `npm run build` succeeds, `dist/` regenerated and committed for GitHub Pages. Phone QA at <720px reviewed via the responsive media query (appbar collapses to a 2-row grid, tabbar stays bottom-fixed, popup dock lifts above the bottom tabbar).
+
+## [2026-05-02 15:03] Feed Post Overflow Menu
+
+- Active focus: `FeedPage.tsx` and the feed overflow affordance.
+- Behavior changed: each post's top-right three-dot button now opens an anchored submenu with `steal`, `cancel`, `envision as yourself with AI`, `show context receipt`, and `not today`.
+- Intentional routing: `steal` and `cancel` set matching reactions, `envision as yourself with AI` preloads Helpy with that post, and `show context receipt` opens the bot-comment section.
+- Files changed: `src/pages/FeedPage.tsx`, `src/index.css`, `DESIGN_BIBLE.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
+- Validation run: `npm run lint`; `npm run build`; headless Chromium checks at 1280px and 390px confirmed menu labels, `steal` / `cancel` action toggles, Helpy preselection, no mobile horizontal overflow, and zero captured runtime errors.
 
 ## [2026-05-02 14:31] Feed Focus Pass
 
@@ -47,8 +80,8 @@ Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESI
 
 ## [2026-05-02 14:51] Feed Sprint Images And Interactions
 
-- Fully implemented in the feed: 20 photoreal image-backed canonical posts, optimized local feed assets, repeated demo feed cycles, smaller 430px desktop feed sizing, story viewer with previous/next, Slopularity-native reaction chips, per-post comment drawer with local comment submission, cancellation/context popovers, save/jealousy toggles, more menu, and Helpy local post drafts.
-- Interaction language now follows the plan more closely: `Jealousy`, `Cancel`, `This offends me`, and `Buy context` replace generic heart/comment/share-only behavior.
+- Fully implemented in the feed: 20 photoreal image-backed canonical posts, optimized local feed assets, repeated demo feed cycles, smaller 430px desktop feed sizing, story viewer with previous/next, Slopularity-native reaction chips, per-post comment section with local comment submission, more menu, and Helpy local post drafts.
+- Interaction language now follows the plan more closely: `Jealousy`, `Cancel`, and `This offends me` replace generic heart/comment/share-only behavior.
 - Helpy now works as a local session composer: opens from create, accepts a caption, offers AI touch-up options, pushes a draft post to the top of the feed, and keeps the $9.99 upsell in-world.
 - Feed looping is demo-oriented: the 20 canonical posts repeat in rendered cycles, and loop-instance controls use unique accessible labels so repeated copies remain testable.
 - Still skeleton/deferred: real uploads, real AI image editing, accounts, backend persistence, real story creation, real share destinations, cross-tab degradation, popup friends, idle reactions, and production-grade infinite virtualization.

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type Dispatch, type FormEvent, type SetStateAction } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent, type PointerEvent } from 'react'
 import { feedPosts } from '../content'
 import type { FeedPost } from '../types'
 
@@ -6,30 +6,6 @@ function HeartIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <path d="M20.2 5.8c-1.6-1.7-4.2-1.8-5.9-.2L12 7.8 9.7 5.6C8 4 5.4 4.1 3.8 5.8c-1.7 1.8-1.6 4.7.2 6.4l8 7.3 8-7.3c1.8-1.7 1.9-4.6.2-6.4Z" />
-    </svg>
-  )
-}
-
-function CommentIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M5 5.8A7.8 7.8 0 0 1 12.8 4h.4A7.8 7.8 0 0 1 21 11.8v.3a7.8 7.8 0 0 1-7.8 7.8h-1.1L5 21l1.2-5A7.7 7.7 0 0 1 5 12.1V5.8Z" />
-    </svg>
-  )
-}
-
-function SendIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M21 3 3.8 10.4c-.8.3-.8 1.4.1 1.7l6.3 2.1 2.1 6.2c.3.9 1.5 1 1.8.1L21 3Z" />
-    </svg>
-  )
-}
-
-function SaveIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M6.5 4.5h11v16L12 17.2l-5.5 3.3v-16Z" />
     </svg>
   )
 }
@@ -64,7 +40,68 @@ const botCommenters = [
 ]
 
 const replyProducts = ['GlowNest', 'AuraBank Select', 'SelfOS Beauty', 'MealHalo', 'FormCloud', 'CalmCan']
-const doubleScrollConfetti = Array.from({ length: 28 }, (_, index) => index)
+const scrollConfetti = Array.from({ length: 36 }, (_, index) => index)
+const scrollUnlockInterval = 10
+
+type ScrollMode = 'single' | 'double' | 'triple'
+type ScrollPrompt = Exclude<ScrollMode, 'single'>
+type FeedLane = 'single' | 'left' | 'middle' | 'right'
+
+type FeedReaction = {
+  id: 'jealousy' | 'cancel' | 'offended'
+  label: string
+  icon: 'heart' | 'x' | 'spark'
+  baseCountOffset: number
+}
+
+type LocalComment = {
+  author: string
+  text: string
+}
+
+type ConfettiStyle = CSSProperties & {
+  '--confetti-left': string
+  '--confetti-hue': string
+  '--confetti-x': string
+  '--confetti-spin': string
+  '--confetti-delay': string
+}
+
+function getConfettiStyle(piece: number): ConfettiStyle {
+  const seed = piece + 1
+  return {
+    '--confetti-left': `${4 + ((seed * 37) % 92)}%`,
+    '--confetti-hue': `${(seed * 47) % 360}`,
+    '--confetti-x': `${((seed * 29) % 96) - 48}px`,
+    '--confetti-spin': `${220 + seed * 33}deg`,
+    '--confetti-delay': `${(seed % 15) * 32}ms`,
+  }
+}
+
+function ReactionIcon({ icon }: { icon: FeedReaction['icon'] }) {
+  if (icon === 'heart') {
+    return <HeartIcon />
+  }
+
+  if (icon === 'x') {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="m6.5 6.5 11 11M17.5 6.5l-11 11" />
+      </svg>
+    )
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 3.8 13.9 9l5.3 1.8-5.3 1.9L12 18l-1.9-5.3-5.3-1.9L10.1 9 12 3.8Z" />
+    </svg>
+  )
+}
+
+function reactionCount(post: FeedPost, reaction: FeedReaction, isActive: boolean) {
+  const baseline = Math.max(12, Math.round(post.baseLikes / (reaction.baseCountOffset + 73)))
+  return baseline + (isActive ? 1 : 0)
+}
 
 function makeHelpyPost(basePost: FeedPost, caption: string, options: string[]): FeedPost {
   const optionText = options.length > 0 ? ` Helpy applied ${options.join(', ')} and called it care.` : ''
@@ -94,29 +131,35 @@ function makeHelpyPost(basePost: FeedPost, caption: string, options: string[]): 
 }
 
 type FeedPageProps = {
-  engagementLabels: string[]
   stage: number
   onEngage: () => void
 }
 
-export function FeedPage({ engagementLabels, stage, onEngage }: FeedPageProps) {
-  const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set(['glass-ledger']))
-  const [savedPosts, setSavedPosts] = useState<Set<string>>(new Set())
+export function FeedPage({ stage, onEngage }: FeedPageProps) {
+  const [postReactions, setPostReactions] = useState<Record<string, Set<FeedReaction['id']>>>({
+    'glass-ledger': new Set(['jealousy']),
+  })
   const [openComments, setOpenComments] = useState<string | null>(null)
-  const [openShare, setOpenShare] = useState<string | null>(null)
   const [openMenu, setOpenMenu] = useState<string | null>(null)
   const [storyIndex, setStoryIndex] = useState<number | null>(null)
+  const [storyDirection, setStoryDirection] = useState<1 | -1>(1)
+  const [storyDragX, setStoryDragX] = useState(0)
   const [commentDrafts, setCommentDrafts] = useState<Record<string, string>>({})
-  const [localComments, setLocalComments] = useState<Record<string, string[]>>({})
+  const [localComments, setLocalComments] = useState<Record<string, LocalComment[]>>({})
   const [localPosts, setLocalPosts] = useState<FeedPost[]>([])
   const [cycleCount, setCycleCount] = useState(3)
   const [isHelpyOpen, setIsHelpyOpen] = useState(false)
   const [helpyCaption, setHelpyCaption] = useState('Trying the future self filter before it tries me.')
   const [helpyBaseId, setHelpyBaseId] = useState(feedPosts[0]?.id ?? '')
   const [helpyOptions, setHelpyOptions] = useState<string[]>(['face confidence'])
-  const [isDoubleScrollPromptOpen, setIsDoubleScrollPromptOpen] = useState(false)
-  const [isDoubleScrollEnabled, setIsDoubleScrollEnabled] = useState(false)
+  const [scrollMode, setScrollMode] = useState<ScrollMode>('single')
+  const [scrollPrompt, setScrollPrompt] = useState<ScrollPrompt | null>(null)
   const superScrollerUnlocked = useRef(false)
+  const tripleScrollerUnlocked = useRef(false)
+  const storyDragStartX = useRef<number | null>(null)
+  const storyTapDirection = useRef<1 | -1 | null>(null)
+  const storyPointerId = useRef<number | null>(null)
+  const storyClickWasDrag = useRef(false)
 
   const allPosts = useMemo(() => [...localPosts, ...feedPosts], [localPosts])
   const loopedPosts = useMemo(
@@ -126,6 +169,12 @@ export function FeedPage({ engagementLabels, stage, onEngage }: FeedPageProps) {
   const storyPosts = allPosts.slice(0, 14)
   const storyPost = storyIndex === null ? null : storyPosts[storyIndex]
   const isDegrading = stage >= 4
+  const isMultiScroll = scrollMode !== 'single'
+  const feedReactions: FeedReaction[] = [
+    { id: 'jealousy', label: 'Jealousy', icon: 'heart', baseCountOffset: 0 },
+    { id: 'cancel', label: 'Cancel', icon: 'x', baseCountOffset: 19 },
+    { id: 'offended', label: 'This offends me', icon: 'spark', baseCountOffset: 43 },
+  ]
 
   useEffect(() => {
     const growLoop = () => {
@@ -140,24 +189,32 @@ export function FeedPage({ engagementLabels, stage, onEngage }: FeedPageProps) {
   }, [])
 
   useEffect(() => {
-    if (superScrollerUnlocked.current || isDoubleScrollEnabled) {
+    if (scrollPrompt !== null || scrollMode === 'triple') {
       return
     }
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (superScrollerUnlocked.current) {
+        const targetIndex = scrollMode === 'single' ? scrollUnlockInterval - 1 : scrollUnlockInterval * 2 - 1
+        const isAlreadyUnlocked = scrollMode === 'single' ? superScrollerUnlocked.current : tripleScrollerUnlocked.current
+
+        if (isAlreadyUnlocked) {
           return
         }
 
-        const hasSeenTenthPost = entries.some((entry) => {
+        const hasReachedNextUnlock = entries.some((entry) => {
           const feedIndex = Number(entry.target.getAttribute('data-feed-index'))
-          return entry.isIntersecting && feedIndex >= 9
+          return entry.isIntersecting && feedIndex >= targetIndex
         })
 
-        if (hasSeenTenthPost) {
-          superScrollerUnlocked.current = true
-          setIsDoubleScrollPromptOpen(true)
+        if (hasReachedNextUnlock) {
+          if (scrollMode === 'single') {
+            superScrollerUnlocked.current = true
+            setScrollPrompt('double')
+          } else {
+            tripleScrollerUnlocked.current = true
+            setScrollPrompt('triple')
+          }
           onEngage()
           observer.disconnect()
         }
@@ -169,31 +226,48 @@ export function FeedPage({ engagementLabels, stage, onEngage }: FeedPageProps) {
     posts.forEach((post) => observer.observe(post))
 
     return () => observer.disconnect()
-  }, [isDoubleScrollEnabled, loopedPosts.length, onEngage])
+  }, [loopedPosts.length, onEngage, scrollMode, scrollPrompt])
 
-  function toggleSet(setter: Dispatch<SetStateAction<Set<string>>>, postId: string) {
-    setter((current) => {
-      const next = new Set(current)
-      if (next.has(postId)) {
-        next.delete(postId)
+  useEffect(() => {
+    if (storyIndex === null || storyPosts.length === 0) {
+      return undefined
+    }
+
+    const advanceTimer = window.setTimeout(() => {
+      setStoryDirection(1)
+      setStoryIndex((current) => {
+        if (current === null) {
+          return null
+        }
+
+        return (current + 1) % storyPosts.length
+      })
+    }, 3000)
+
+    return () => window.clearTimeout(advanceTimer)
+  }, [storyIndex, storyPosts.length])
+
+  function toggleReaction(postId: string, reactionId: FeedReaction['id']) {
+    setPostReactions((current) => {
+      const currentReactions = current[postId] ?? new Set<FeedReaction['id']>()
+      const nextReactions = new Set(currentReactions)
+
+      if (nextReactions.has(reactionId)) {
+        nextReactions.delete(reactionId)
       } else {
-        next.add(postId)
+        nextReactions.add(reactionId)
       }
-      return next
+
+      return {
+        ...current,
+        [postId]: nextReactions,
+      }
     })
     onEngage()
   }
 
   function toggleComments(instanceId: string) {
     setOpenComments((current) => (current === instanceId ? null : instanceId))
-    setOpenShare(null)
-    setOpenMenu(null)
-    onEngage()
-  }
-
-  function toggleShare(instanceId: string) {
-    setOpenShare((current) => (current === instanceId ? null : instanceId))
-    setOpenComments(null)
     setOpenMenu(null)
     onEngage()
   }
@@ -201,7 +275,27 @@ export function FeedPage({ engagementLabels, stage, onEngage }: FeedPageProps) {
   function toggleMenu(instanceId: string) {
     setOpenMenu((current) => (current === instanceId ? null : instanceId))
     setOpenComments(null)
-    setOpenShare(null)
+    onEngage()
+  }
+
+  function reactFromMenu(postId: string, reactionId: FeedReaction['id']) {
+    toggleReaction(postId, reactionId)
+    setOpenMenu(null)
+  }
+
+  function envisionAsSelf(post: FeedPost) {
+    setHelpyBaseId(post.id)
+    setHelpyCaption(`Me, but with ${post.sponsor.replace(/^.+? by /, '').replace(/^.+? with /, '')} confidence.`)
+    setHelpyOptions(['face confidence', 'wealth lighting'])
+    setOpenMenu(null)
+    setIsHelpyOpen(true)
+    onEngage()
+  }
+
+  function openCommentTrail(instanceId: string) {
+    setOpenComments(instanceId)
+    setOpenMenu(null)
+    onEngage()
   }
 
   function submitComment(event: FormEvent<HTMLFormElement>, postId: string) {
@@ -217,7 +311,11 @@ export function FeedPage({ engagementLabels, stage, onEngage }: FeedPageProps) {
 
     setLocalComments((current) => ({
       ...current,
-      [postId]: [...(current[postId] ?? []), botReply],
+      [postId]: [
+        ...(current[postId] ?? []),
+        { author: 'you', text: value },
+        { author: 'BrandFriendOS', text: botReply },
+      ],
     }))
     setCommentDrafts((current) => ({ ...current, [postId]: '' }))
     onEngage()
@@ -241,6 +339,8 @@ export function FeedPage({ engagementLabels, stage, onEngage }: FeedPageProps) {
   }
 
   function nextStory(direction: 1 | -1) {
+    setStoryDirection(direction)
+    setStoryDragX(0)
     setStoryIndex((current) => {
       if (current === null) {
         return null
@@ -250,24 +350,84 @@ export function FeedPage({ engagementLabels, stage, onEngage }: FeedPageProps) {
     onEngage()
   }
 
-  function unlockDoubleScroll() {
-    setIsDoubleScrollPromptOpen(false)
-    setIsDoubleScrollEnabled(true)
+  function beginStoryDrag(event: PointerEvent<HTMLDivElement>) {
+    const frameRect = event.currentTarget.getBoundingClientRect()
+    const relativeX = event.clientX - frameRect.left
+
+    storyDragStartX.current = event.clientX
+    storyTapDirection.current = relativeX < frameRect.width / 3 ? -1 : relativeX > (frameRect.width * 2) / 3 ? 1 : null
+    storyPointerId.current = event.pointerId
+    storyClickWasDrag.current = false
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+
+  function moveStoryDrag(event: PointerEvent<HTMLDivElement>) {
+    if (storyDragStartX.current === null || storyPointerId.current !== event.pointerId) {
+      return
+    }
+
+    const nextDragX = event.clientX - storyDragStartX.current
+    if (Math.abs(nextDragX) > 5) {
+      storyClickWasDrag.current = true
+    }
+    setStoryDragX(Math.max(-110, Math.min(110, nextDragX)))
+  }
+
+  function finishStoryDrag(event: PointerEvent<HTMLDivElement>) {
+    if (storyDragStartX.current === null || storyPointerId.current !== event.pointerId) {
+      return
+    }
+
+    const finalDragX = event.clientX - storyDragStartX.current
+    const tapDirection = storyTapDirection.current
+    storyDragStartX.current = null
+    storyTapDirection.current = null
+    storyPointerId.current = null
+    setStoryDragX(0)
+
+    if (finalDragX <= -54) {
+      nextStory(1)
+    } else if (finalDragX >= 54) {
+      nextStory(-1)
+    } else if (!storyClickWasDrag.current && tapDirection !== null) {
+      nextStory(tapDirection)
+    }
+  }
+
+  function cancelStoryDrag() {
+    storyDragStartX.current = null
+    storyTapDirection.current = null
+    storyPointerId.current = null
+    setStoryDragX(0)
+  }
+
+  function unlockScrollMode() {
+    if (scrollPrompt === null) {
+      return
+    }
+
+    setScrollMode(scrollPrompt)
+    setScrollPrompt(null)
     setOpenComments(null)
-    setOpenShare(null)
     setOpenMenu(null)
     onEngage()
   }
 
-  function renderPost(post: FeedPost, cycle: number, feedIndex: number, lane: 'single' | 'left' | 'right') {
-    const isLiked = likedPosts.has(post.id)
-    const isSaved = savedPosts.has(post.id)
-    const visibleComments = [...post.sampleComments, ...(localComments[post.id] ?? [])]
-    const likes = post.baseLikes + (isLiked ? 1 : 0)
+  function renderPost(post: FeedPost, cycle: number, feedIndex: number, lane: FeedLane) {
+    const reactionsForPost = postReactions[post.id] ?? new Set<FeedReaction['id']>()
+    const visibleComments: LocalComment[] = [
+      ...post.sampleComments.map((comment, commentIndex) => ({
+        author: botCommenters[commentIndex % botCommenters.length],
+        text: comment,
+      })),
+      ...(localComments[post.id] ?? []),
+    ]
+    const likes = post.baseLikes + reactionsForPost.size
     const postTitle = isDegrading ? `${post.title} // caption regenerated from caption` : post.title
     const instanceId = `${lane}-${post.id}-${cycle}`
     const occurrence = cycle === 0 ? '' : ` loop ${cycle + 1}`
-    const jealousyLabel = engagementLabels[0] === 'Like' ? 'Jealousy' : engagementLabels[0]
+    const visibleCommentCount = visibleComments.length
+    const commentPreview = openComments === instanceId ? visibleComments : visibleComments.slice(0, 2)
 
     return (
       <article
@@ -283,33 +443,63 @@ export function FeedPage({ engagementLabels, stage, onEngage }: FeedPageProps) {
               <small>{post.location}</small>
             </span>
           </button>
-          <button className="icon-button" type="button" aria-label={`More options for ${post.author}${occurrence}`} onClick={() => toggleMenu(instanceId)}>
-            <MoreIcon />
-          </button>
+          <div className="ig-post-menu">
+            <button
+              className="icon-button"
+              type="button"
+              aria-haspopup="menu"
+              aria-expanded={openMenu === instanceId}
+              aria-label={`More options for ${post.author}${occurrence}`}
+              onClick={() => toggleMenu(instanceId)}
+            >
+              <MoreIcon />
+            </button>
+
+            {openMenu === instanceId && (
+              <div className="post-action-menu" role="menu" aria-label={`${post.author} options`}>
+                <button type="button" role="menuitem" onClick={() => reactFromMenu(post.id, 'cancel')}>
+                  <strong>cancel</strong>
+                  <span>Mark the post as socially unsafe.</span>
+                </button>
+                <button type="button" role="menuitem" onClick={() => envisionAsSelf(post)}>
+                  <strong>envision as yourself with AI</strong>
+                  <span>Open Helpy with this life preloaded.</span>
+                </button>
+                <button type="button" role="menuitem" onClick={() => openCommentTrail(instanceId)}>
+                  <strong>open comments</strong>
+                  <span>Read the sponsored feelings trail.</span>
+                </button>
+                <button type="button" role="menuitem" onClick={() => setOpenMenu(null)}>
+                  <strong>not today</strong>
+                  <span>Log gentle refusal signal.</span>
+                </button>
+              </div>
+            )}
+          </div>
         </header>
 
-        <button className="ig-photo" type="button" onClick={() => toggleSet(setLikedPosts, post.id)} aria-label={`${post.author} post image${occurrence}`}>
+        <button className="ig-photo" type="button" onClick={() => toggleReaction(post.id, 'jealousy')} aria-label={`${post.author} post image${occurrence}`}>
           {post.imageSrc ? <img src={post.imageSrc} alt="" /> : <span className="photo-subject" aria-hidden="true" />}
         </button>
 
         <div className="ig-post-body">
           <div className="ig-action-row" aria-label={`${post.author} post actions${occurrence}`}>
-            <button className={`feed-action-chip jealousy ${isLiked ? 'is-active' : ''}`} type="button" onClick={() => toggleSet(setLikedPosts, post.id)}>
-              <HeartIcon />
-              {jealousyLabel}
-            </button>
-            <button className="feed-action-chip" type="button" onClick={() => toggleShare(instanceId)}>
-              <SendIcon />
-              Cancel
-            </button>
-            <button className="feed-action-chip" type="button" onClick={() => toggleComments(instanceId)}>
-              <CommentIcon />
-              This offends me
-            </button>
-            <button className={`feed-action-chip context ${isSaved ? 'is-active' : ''}`} type="button" onClick={() => toggleSet(setSavedPosts, post.id)}>
-              <SaveIcon />
-              Buy context
-            </button>
+            {feedReactions.map((reaction) => {
+              const isActive = reactionsForPost.has(reaction.id)
+              return (
+                <button
+                  className={`feed-action-chip ${reaction.id} ${isActive ? 'is-active' : ''}`}
+                  type="button"
+                  aria-pressed={isActive}
+                  key={reaction.id}
+                  onClick={() => toggleReaction(post.id, reaction.id)}
+                >
+                  <ReactionIcon icon={reaction.icon} />
+                  <span>{reaction.label}</span>
+                  <small>{formatCompact(reactionCount(post, reaction, isActive))}</small>
+                </button>
+              )
+            })}
           </div>
 
           <p className="ig-likes">{formatCompact(likes)} signals</p>
@@ -317,49 +507,41 @@ export function FeedPage({ engagementLabels, stage, onEngage }: FeedPageProps) {
             <strong>{post.handle}</strong>{' '}
             {postTitle}
           </p>
-          <button className="ig-comments" type="button" onClick={() => toggleComments(instanceId)}>{post.comments}</button>
           <p className="ig-time">{post.time} ago {post.sponsor}</p>
 
-          {openMenu === instanceId && (
-            <div className="feed-popover" aria-label={`${post.author} options`}>
-              <button type="button" onClick={() => toggleComments(instanceId)}>Ask why I saw this</button>
-              <button type="button" onClick={() => toggleSet(setSavedPosts, post.id)}>Save to insecurity board</button>
-              <button type="button" onClick={() => setOpenMenu(null)}>Close</button>
-            </div>
-          )}
-
-          {openShare === instanceId && (
-            <div className="feed-popover" aria-live="polite">
-              <strong>Cancellation packet drafted</strong>
-              <span>Helpy found 14 angles where this post could be about you.</span>
-            </div>
-          )}
-
-          {openComments === instanceId && (
-            <div className="comment-drawer">
-              {visibleComments.map((comment, commentIndex) => (
-                <p key={`${post.id}-comment-${commentIndex}`}>
-                  <strong>{botCommenters[commentIndex % botCommenters.length]}</strong> {comment}
+          <section className="comment-drawer" aria-label={`Comments for ${post.author}${occurrence}`}>
+            <button className="ig-comments" type="button" onClick={() => toggleComments(instanceId)}>
+              {openComments === instanceId ? 'Hide comments' : post.comments}
+            </button>
+            <div className="comment-list">
+              {commentPreview.map((comment, commentIndex) => (
+                <p key={`${post.id}-comment-${commentIndex}-${comment.author}`}>
+                  <strong>{comment.author}</strong> {comment.text}
                 </p>
               ))}
-              <form onSubmit={(event) => submitComment(event, post.id)}>
-                <input
-                  aria-label={`Add comment for ${post.author}${occurrence}`}
-                  placeholder="Add a comment..."
-                  value={commentDrafts[post.id] ?? ''}
-                  onChange={(event) => setCommentDrafts((current) => ({ ...current, [post.id]: event.target.value }))}
-                />
-                <button type="submit">Post</button>
-              </form>
             </div>
-          )}
+            {openComments !== instanceId && visibleCommentCount > commentPreview.length && (
+              <button className="comment-expand" type="button" onClick={() => toggleComments(instanceId)}>
+                Show {visibleCommentCount - commentPreview.length} more
+              </button>
+            )}
+            <form onSubmit={(event) => submitComment(event, post.id)}>
+              <input
+                aria-label={`Add comment for ${post.author}${occurrence}`}
+                placeholder="Add a comment..."
+                value={commentDrafts[post.id] ?? ''}
+                onChange={(event) => setCommentDrafts((current) => ({ ...current, [post.id]: event.target.value }))}
+              />
+              <button type="submit">Post</button>
+            </form>
+          </section>
         </div>
       </article>
     )
   }
 
   return (
-    <section className={`ig-feed-shell ${isDoubleScrollEnabled ? 'has-double-scroll' : ''}`} aria-labelledby="feed-title">
+    <section className={`ig-feed-shell ${isMultiScroll ? 'has-multi-scroll' : ''} ${scrollMode === 'triple' ? 'has-triple-scroll' : ''}`} aria-labelledby="feed-title">
       <header className="ig-feed-topbar">
         <div>
           <p>Slopularity</p>
@@ -382,8 +564,8 @@ export function FeedPage({ engagementLabels, stage, onEngage }: FeedPageProps) {
         ))}
       </div>
 
-      <div className={`ig-feed-list ${isDoubleScrollEnabled ? 'is-double-scroll' : ''}`} aria-label={isDoubleScrollEnabled ? 'Double Scroll post feed' : 'Looping post feed'}>
-        {isDoubleScrollEnabled ? (
+      <div className={`ig-feed-list ${isMultiScroll ? 'is-multi-scroll' : ''} ${scrollMode === 'triple' ? 'is-triple-scroll' : ''}`} aria-label={scrollMode === 'triple' ? 'Triple Scroll post feed' : scrollMode === 'double' ? 'Double Scroll post feed' : 'Looping post feed'}>
+        {isMultiScroll ? (
           <>
             <div className="double-scroll-lane" aria-label="Primary scroll">
               {loopedPosts.map(({ post, cycle }, feedIndex) => renderPost(post, cycle, feedIndex, 'left'))}
@@ -394,6 +576,14 @@ export function FeedPage({ engagementLabels, stage, onEngage }: FeedPageProps) {
                 return renderPost(shiftedPost, cycle, feedIndex, 'right')
               })}
             </div>
+            {scrollMode === 'triple' && (
+              <div className="double-scroll-lane" aria-label="Extra bonus scroll">
+                {loopedPosts.map(({ post, cycle }, feedIndex) => {
+                  const shiftedPost = loopedPosts[(feedIndex + 11) % loopedPosts.length]?.post ?? post
+                  return renderPost(shiftedPost, cycle, feedIndex, 'middle')
+                })}
+              </div>
+            )}
           </>
         ) : (
           loopedPosts.map(({ post, cycle }, feedIndex) => renderPost(post, cycle, feedIndex, 'single'))
@@ -403,36 +593,63 @@ export function FeedPage({ engagementLabels, stage, onEngage }: FeedPageProps) {
       <p className="loop-note" aria-live="polite">Looping demo feed: {cycleCount} cycles loaded from {feedPosts.length} canonical posts.</p>
 
       {storyPost && (
-        <div className="modal-backdrop" role="dialog" aria-modal="true" aria-label={`${storyPost.author} story`}>
+        <div
+          className="modal-backdrop"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${storyPost.author} story`}
+          onKeyDown={(event) => {
+            if (event.key === 'ArrowLeft') {
+              nextStory(-1)
+            } else if (event.key === 'ArrowRight') {
+              nextStory(1)
+            } else if (event.key === 'Escape') {
+              setStoryIndex(null)
+            }
+          }}
+        >
           <div className="story-viewer">
-            <div className="story-progress" aria-hidden="true"><span /></div>
+            <div className="story-progress" role="progressbar" aria-label="Story auto-advance" aria-valuemin={0} aria-valuemax={100}>
+              <span key={storyPost.id} />
+            </div>
             <header>
               <span className={`ig-avatar ${storyPost.storyTone}`}>{storyPost.initials}</span>
               <strong>{storyPost.author}</strong>
               <button type="button" onClick={() => setStoryIndex(null)}>Close</button>
             </header>
-            <div className="story-frame">
-              {storyPost.imageSrc && <img src={storyPost.imageSrc} alt="" />}
-              <p>{storyPost.title}</p>
-            </div>
-            <div className="story-controls">
-              <button type="button" onClick={() => nextStory(-1)}>Previous</button>
-              <button type="button" onClick={() => nextStory(1)}>Next</button>
+            <div
+              className="story-frame"
+              onPointerDown={beginStoryDrag}
+              onPointerMove={moveStoryDrag}
+              onPointerUp={finishStoryDrag}
+              onPointerCancel={cancelStoryDrag}
+            >
+              <div
+                className={`story-frame-window ${storyDragX !== 0 ? 'is-dragging' : ''}`}
+                data-direction={storyDirection}
+                key={storyPost.id}
+                style={{ transform: `translate3d(${storyDragX}px, 0, 0)` }}
+              >
+                {storyPost.imageSrc && <img src={storyPost.imageSrc} alt="" draggable={false} />}
+                <p>{storyPost.title}</p>
+              </div>
+              <span className="story-tap-zone story-tap-zone-previous" aria-hidden="true" />
+              <span className="story-tap-zone story-tap-zone-next" aria-hidden="true" />
             </div>
           </div>
         </div>
       )}
 
-      {isDoubleScrollPromptOpen && (
-        <div className="modal-backdrop double-scroll-backdrop" role="dialog" aria-modal="true" aria-labelledby="double-scroll-title">
+      {scrollPrompt && (
+        <div className="modal-backdrop double-scroll-backdrop" role="dialog" aria-modal="true" aria-labelledby="scroll-unlock-title">
           <div className="double-scroll-modal">
             <div className="confetti-field" aria-hidden="true">
-              {doubleScrollConfetti.map((piece) => <span key={piece} />)}
+              {scrollConfetti.map((piece) => <span key={piece} style={getConfettiStyle(piece)} />)}
             </div>
             <p className="double-scroll-kicker">Congratulations, Super Scroller</p>
-            <h3 id="double-scroll-title">You have unlocked the DOUBLE SCROLL feature trial *</h3>
-            <button type="button" onClick={unlockDoubleScroll}>Hooray! I love double scroll</button>
-            <small>*trial for subscription service for 2 days, after $49.99 per week</small>
+            <h3 id="scroll-unlock-title">You have unlocked the {scrollPrompt.toUpperCase()} SCROLL feature trial *</h3>
+            <button type="button" onClick={unlockScrollMode}>Hooray! I love {scrollPrompt} scroll</button>
+            <small>*trial stacks automatically. double is $49.99/week. triple is billed as enthusiasm.</small>
           </div>
         </div>
       )}

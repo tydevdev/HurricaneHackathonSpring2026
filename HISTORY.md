@@ -1,5 +1,22 @@
 # History
 
+## [2026-05-02 15:15] Fix Feed Confetti And Add Triple Scroll
+
+- Updated `slopularity/src/pages/FeedPage.tsx` so feed scrolling now progresses through `single`, `double`, and `triple` modes with one scroll-depth observer.
+- Fixed the double-scroll announcement confetti by moving piece position, hue, drift, spin, and delay into concrete inline CSS custom properties instead of unsupported custom-property multiplication in `calc()`.
+- Added the next escalation: after accepting DOUBLE SCROLL and scrolling another ten-post-equivalent depth, the modal unlocks TRIPLE SCROLL and accepting it renders three simultaneous feed lanes.
+- Updated `slopularity/src/index.css` for triple-lane feed sizing, active reaction colors, and reliable confetti animation values.
+- Updated `slopularity/DESIGN_BIBLE.md` and `slopularity/IMPLEMENTATION_STATUS.md` with the triple-scroll behavior and validation record.
+- Validation run: `npm run lint`; `npm run build`; local Playwright script at 1280x900 and 390x844 confirmed DOUBLE SCROLL unlock, TRIPLE SCROLL unlock, three lanes, no horizontal overflow, real computed confetti positions/colors, and zero page errors.
+
+## [2026-05-02 15:03] Make Feed Actions Real Reactions
+
+- Updated `slopularity/src/pages/FeedPage.tsx` so `Jealousy`, `Cancel`, and `This offends me` act as per-post reactions with pressed states and counts instead of popover/share/save-style controls.
+- Removed the feed's share behavior and removed `Buy context` from the feed UI and stage labels.
+- Added an always-present per-post comment section with preview comments, expansion, and local comment submission that keeps the user's comment visible before the brand-safe reply appears.
+- Updated `slopularity/src/index.css`, `slopularity/src/App.tsx`, `slopularity/src/utils.ts`, `slopularity/PLAN.md`, `slopularity/DESIGN_BIBLE.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to match the new reaction/comment model.
+- Validation run: pending in this session.
+
 ## [2026-05-02 15:02] Merge Feed Sprint Back To Main
 
 - Reconciled the feed branch with the latest `main` chrome, games, and popup-dock work, keeping the feed sprint scoped to 20 canonical image-backed posts that loop for the demo.
@@ -344,3 +361,19 @@
 - Updated `slopularity/DESIGN_BIBLE.md` and `slopularity/IMPLEMENTATION_STATUS.md` to record the new feed mechanic and its validation posture.
 - Rebuilt `slopularity/dist/` so the GitHub Pages-ready output includes the double-scroll trial behavior.
 - Validation run: `npm run lint`; `npm run build`; Chrome DevTools Protocol browser checks at desktop and 390px mobile confirmed the tenth-post trigger, modal copy, one-button unlock, two feed lanes, no document horizontal overflow on mobile, and zero captured runtime/log errors.
+
+## [2026-05-02 15:03] Add Feed Post Action Menus
+
+- Updated `slopularity/src/pages/FeedPage.tsx` so each post's top-right three-dot button opens a real submenu with `steal`, `cancel`, `envision as yourself with AI`, `show context receipt`, and `not today`.
+- Routed the new menu actions into existing feed behavior: stealing and canceling toggle their matching reaction chips, envisioning opens Helpy with the post preselected, and context receipt opens the comment/context drawer.
+- Updated `slopularity/src/index.css` with an anchored, keyboard-focusable post menu that fits the feed header and double-scroll lanes.
+- Updated `slopularity/DESIGN_BIBLE.md` and `slopularity/IMPLEMENTATION_STATUS.md` to record the post menu's product role and validation state.
+- Validation run: `npm run lint`; `npm run build`; headless Chromium checks at 1280px and 390px confirmed the menu labels, `steal` and `cancel` toggles, Helpy preselection, no mobile horizontal overflow, and zero captured runtime errors.
+
+## [2026-05-02 15:05] Make Feed Stories Carousel Native
+
+- Updated `slopularity/src/pages/FeedPage.tsx` so the story viewer no longer has visible Previous/Next buttons; the left third and right third of the story image move backward/forward instead.
+- Added three-second auto-advance for stories, keyboard ArrowLeft/ArrowRight/Escape handling, and pointer dragging so the active image follows a swipe before committing to the neighboring story.
+- Updated `slopularity/src/index.css` with animated story progress, slide-in motion, invisible tap zones, drag affordances, and story touch-action behavior.
+- Updated `slopularity/DESIGN_BIBLE.md` and `slopularity/IMPLEMENTATION_STATUS.md` to record the phone-native story carousel behavior.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome DevTools checks at desktop and 390px confirmed no visible Previous/Next controls, the 3s progress animation, auto-advance, left/right third taps, drag-to-next, no horizontal overflow, and zero captured runtime errors.

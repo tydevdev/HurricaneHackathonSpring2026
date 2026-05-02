@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
 import { PopupSwarm } from './components/PopupSwarm'
 import { discoveries, humanFragments, popupSeeds, tabs } from './content'
 import { featureFlags } from './featureFlags'
@@ -10,7 +10,7 @@ import { ProfilePage } from './pages/ProfilePage'
 import { SearchPage } from './pages/SearchPage'
 import { ShopPage } from './pages/ShopPage'
 import type { Popup, TabId } from './types'
-import { getEngagementLabels, stageFor } from './utils'
+import { stageFor } from './utils'
 
 const storageKey = 'slopularity-state-v1'
 
@@ -42,7 +42,6 @@ function App() {
   const interruptionMode = featureFlags.interruptionLayer
   const stage = stageFor(score)
   const visibleStage = interruptionMode ? stage : 1
-  const engagementLabels = useMemo(() => getEngagementLabels(visibleStage), [visibleStage])
   const foundDiscoveries = discoveries.slice(0, Math.max(0, visibleStage - 1))
   const visibleFragments = visibleStage >= 3
     ? humanFragments.slice(0, visibleStage === 3 ? 1 : humanFragments.length)
@@ -307,7 +306,6 @@ function App() {
         <div className="tab-panel">
           {activeTab === 'feed' && (
             <FeedPage
-              engagementLabels={engagementLabels}
               stage={visibleStage}
               onEngage={() => addInstability(1)}
             />

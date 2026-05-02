@@ -32,7 +32,7 @@ The social media tab should look aspirational, glossy, and poisonous.
 - Wellness, hustle, travel, body, productivity, and luxury content blended together.
 - Captions that become increasingly generated, contradictory, or hollow.
 - Subtle sponsored content everywhere.
-- Engagement buttons that feel normal at first, then become strange: `envy`, `compare`, `optimize me`, `buy the context`.
+- Engagement buttons that feel normal at first, then become strange reactions: `jealousy`, `cancel`, and `this offends me`.
 - Dead-internet hints: repeated faces, recycled captions, comments that answer prompts nobody asked, follower counts that do not add up.
 - The feed should make the user feel slightly bad in the way real feeds do, then expose the machinery behind that feeling.
 

@@ -12,10 +12,10 @@ export function getEngagementLabels(stage: number) {
   }
 
   if (stage === 3) {
-    return ['Envy', 'Compare', 'Optimize me', 'Buy context']
+    return ['Envy', 'Compare', 'Optimize me', 'Comment']
   }
 
-  return ['Envy', 'Rank body', 'Rewrite self', 'Buy the context']
+  return ['Envy', 'Rank body', 'Rewrite self', 'Comment']
 }
 
 export function scoreLikePrice(stage: number, index: number) {

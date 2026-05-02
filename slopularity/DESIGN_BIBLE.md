@@ -161,12 +161,14 @@ The canonical feed now contains 50 image-backed posts. Preserve the expanded ran
 
 Interaction hooks:
 
-- compare, envy, optimize, save, buy context
+- compare, envy, cancel, offended reactions
+- stories that behave like a familiar phone-native carousel: the top line fills over three seconds, auto-advances, accepts left/right image taps, and lets dragging the image move between posts
 - repeated scrolls that mutate captions or counts
-- after the user has seen at least ten posts, a forced celebratory subscription modal may unlock `DOUBLE SCROLL`: two simultaneous feed lanes that make the feed feel like a feature and a threat at the same time
-- comments that turn human input into brand-safe testimonials
+- after the user has seen at least ten posts, a forced celebratory subscription modal may unlock `DOUBLE SCROLL`: two simultaneous feed lanes that make the feed feel like a feature and a threat at the same time. After another ten-post-equivalent scroll depth, the same celebration can unlock `TRIPLE SCROLL`, adding a third lane and making the upsell escalation feel earned by the user's own momentum.
+- comments that stay visible as a real section and turn human input into brand-safe testimonials
 - sponsor disclosures that move, soften, or rename themselves
 - posts that reappear with tiny differences
+- top-right post menus should feel like social-app overflow menus that have been absorbed by the product machine: `cancel`, `envision as yourself with AI`, and comment-trail actions should route into existing feed actions instead of being dead jokes
 
 Current testing posture:
 
@@ -301,7 +303,7 @@ Interaction hooks:
 
 ## Collapse System
 
-Use one shared instability model with named events. Favor explicit events like `feed_compare`, `friend_sales_pivot`, `game_label_submitted`, `search_personal_query`, `assistant_direct_question`, `profile_privacy_toggle`, `popup_dismissed`, `idle_pause_detected`, and `cart_context_added`.
+Use one shared instability model with named events. Favor explicit events like `feed_compare`, `feed_reaction`, `friend_sales_pivot`, `game_label_submitted`, `search_personal_query`, `assistant_direct_question`, `profile_privacy_toggle`, `popup_dismissed`, and `idle_pause_detected`.
 
 Each event should be easy to trace from UI action to state change. Each threshold should unlock surface changes across more than one tab so the world feels connected.
 

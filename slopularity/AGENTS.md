@@ -1,6 +1,8 @@
 # Slopularity Agents
 
-This is the primary project for the repository. Treat it as the real build, not another throwaway experiment.
+This is the primary project for the repository. Treat it as the real build, not another experiment.
+
+Assume future product work in this repository belongs in `slopularity/`. The other top-level folders were prototypes used to figure out the direction; use them for reference only unless the user explicitly asks to modify one.
 
 ## Project Memory
 

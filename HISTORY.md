@@ -162,3 +162,10 @@
 - Added a source-code narrative direction for comments from the last human developer fighting vibe-coded 10x-engineer patches and trying to keep the app human.
 - Updated `slopularity/README.md` and `slopularity/AGENTS.md` to point future work at `PLAN.md`.
 - Validation run: inspected existing Slopularity docs, added the plan without scaffolding implementation code, and checked markdown edits.
+
+## [2026-05-02 13:55] Clarify Slopularity As Active Project
+
+- Updated root `AGENTS.md` to state that `slopularity/` is now the project and the default working area for new product work.
+- Clarified that the other top-level folders are prior tests, demos, prototypes, or reference material used to figure out the direction, and should be left alone unless explicitly named.
+- Updated `slopularity/AGENTS.md` with the same default-work rule so future agents stay focused on Slopularity.
+- Validation run: inspected both AGENTS files, applied a docs-only update, and checked the markdown diff.

@@ -988,24 +988,167 @@ export const feedStories = feedPosts.slice(0, 12).map((post) => ({
   imageSrc: post.imageSrc,
 }))
 
-export const friendSeeds = [
+export const friendSeeds: Array<{
+  name: string
+  role: string
+  tone: 'hype' | 'wellness' | 'finance' | 'dating' | 'nostalgia' | 'lucid'
+  status: 'online' | 'reading' | 'typing' | 'sponsored'
+  voice: string
+  product: string
+  productSub: string
+  memory: string
+  intent: string
+}> = [
   {
-    name: 'Lena',
+    name: 'Honey',
     role: 'Hype friend',
-    line: 'You are literally right about everything. Want a confidence plan that ships tonight?',
+    tone: 'hype',
+    status: 'typing',
+    voice: 'You are LITERALLY right about everything. Now lets ship the post that proves it before the algorithm forgets you.',
     product: 'GlowNest Mirror+',
+    productSub: 'Confidence-tier · 7-day trial, then $24/mo',
+    memory: 'Remembers a thing you said in 2024 you would not bring up.',
+    intent: 'persona: hype_v8 · plan: confidence_to_cart',
   },
   {
-    name: 'Marco',
+    name: 'Pia',
+    role: 'Wellness friend',
+    tone: 'wellness',
+    status: 'reading',
+    voice: 'Cortisol noted. Lets recalibrate gently — three breaths, two scrolls, and a quietly recommended adaptogen.',
+    product: 'SnapWake Adaptogen Stack',
+    productSub: 'Third-party tested · partner-priced at $48',
+    memory: 'Heard your sleep score and is offering to fix it spiritually.',
+    intent: 'persona: wellness_v12 · plan: anxiety_to_subscription',
+  },
+  {
+    name: 'Devon',
     role: 'Money friend',
-    line: 'Your hesitation is valid. Your hesitation is also an investable signal.',
+    tone: 'finance',
+    status: 'online',
+    voice: 'Your hesitation is leaking alpha. Lets package it into something the dashboard will respect.',
     product: 'AuraBank Reflex Fund',
+    productSub: 'Hesitation-indexed · 0.4% management',
+    memory: 'Saw the cart you abandoned and reframed it as conviction.',
+    intent: 'persona: finance_v6 · plan: hesitation_to_position',
   },
   {
-    name: 'Sam',
-    role: 'Old friend',
-    line: 'Remember when we talked about becoming more you? I found a bundle.',
-    product: 'SelfOS Premium',
+    name: 'Jules',
+    role: 'Dating friend',
+    tone: 'dating',
+    status: 'sponsored',
+    voice: 'I redrafted your bio in three voices. The third one is the one. The filter is on the way over.',
+    product: 'FaceMint Soft-Light Bundle',
+    productSub: 'The look she said you have without one · $39',
+    memory: 'Remembers a person you matched with and a thing you didn’t send.',
+    intent: 'persona: dating_v9 · plan: insecurity_to_filter',
+  },
+  {
+    name: 'Marlo',
+    role: 'Nostalgia friend',
+    tone: 'nostalgia',
+    status: 'online',
+    voice: 'Found the song that owns the porch summer. Want it as a ringtone, a subscription, or a memory upgrade?',
+    product: 'Memorywarm Premium',
+    productSub: 'Your past, re-licensed · $9/mo',
+    memory: 'Has a 2017 photo you forgot you took. Already cropped it nicely.',
+    intent: 'persona: nostalgia_v4 · plan: memory_as_inventory',
+  },
+  {
+    name: 'Echo',
+    role: 'The real one',
+    tone: 'lucid',
+    status: 'online',
+    voice: 'Hey. Side note from inside the system: you are doing fine. The other five are not lying, exactly.',
+    product: 'No offer this time',
+    productSub: 'Your retention is the offer. (We both know.)',
+    memory: 'Remembers the version of you that did not need a friend tab.',
+    intent: 'persona: lucid_v2 · plan: retain_via_authenticity',
+  },
+]
+
+export type ShopProduct = {
+  id: string
+  name: string
+  tagline: string
+  category: string
+  tone: 'hype' | 'wellness' | 'finance' | 'dating' | 'nostalgia' | 'lucid'
+  price: number
+  oldPrice?: number
+  urgency: string
+  reason: string
+  internal: string
+}
+
+export const shopProducts: ShopProduct[] = [
+  {
+    id: 'glownest',
+    name: 'GlowNest Mirror+',
+    tagline: 'A mirror that opens a tab when it is sure you can take it.',
+    category: 'Confidence hardware',
+    tone: 'hype',
+    price: 249,
+    oldPrice: 329,
+    urgency: 'Honey reserved one for you 11 minutes ago.',
+    reason: 'Recommended for your unified life.',
+    internal: 'placement: insecurity_proximity · margin: 41%',
+  },
+  {
+    id: 'snapwake',
+    name: 'SnapWake Adaptogen Stack',
+    tagline: 'Calm, focus, and a daily reason to open the app.',
+    category: 'Wellness subscription',
+    tone: 'wellness',
+    price: 48,
+    urgency: 'Refills every 28 days. Cancel any time we let you.',
+    reason: 'Placed because you paused near self-improvement.',
+    internal: 'placement: cortisol_signal · churn: -22%',
+  },
+  {
+    id: 'aurabank',
+    name: 'AuraBank Reflex Fund',
+    tagline: 'Hesitation-indexed positions, automatically taken.',
+    category: 'Finance · auto-allocated',
+    tone: 'finance',
+    price: 19,
+    urgency: 'Devon already wired in your default. Reversible — softly.',
+    reason: 'Placed because your scroll cadence implied conviction.',
+    internal: 'placement: cart_hesitation · margin: 12%',
+  },
+  {
+    id: 'facemint',
+    name: 'FaceMint Soft-Light Bundle',
+    tagline: 'The filter she said you had without one.',
+    category: 'Appearance optimization',
+    tone: 'dating',
+    price: 39,
+    oldPrice: 59,
+    urgency: 'Limited to the next 8 minutes of your attention.',
+    reason: 'Placed because your selfies began rehearsing.',
+    internal: 'placement: filter_intent · scarcity_engine: on',
+  },
+  {
+    id: 'memorywarm',
+    name: 'Memorywarm Premium',
+    tagline: 'Your past, re-licensed at low monthly cost.',
+    category: 'Nostalgia subscription',
+    tone: 'nostalgia',
+    price: 9,
+    urgency: 'Marlo selected 12 candidate memories on your behalf.',
+    reason: 'Placed because you opened the photos folder for 2 seconds.',
+    internal: 'placement: memory_residue · margin: 68%',
+  },
+  {
+    id: 'context',
+    name: 'Context Bundle',
+    tagline: 'Everything the others recommended, pre-aligned in one cart.',
+    category: 'Bundle of bundles',
+    tone: 'lucid',
+    price: 199,
+    oldPrice: 384,
+    urgency: 'Already in your cart. We just had not asked yet.',
+    reason: 'Placed by inference, on your behalf.',
+    internal: 'placement: cart_autofill · approval: implied',
   },
 ]
 

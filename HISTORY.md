@@ -1,5 +1,11 @@
 # History
 
+## [2026-05-02 14:17] Add Coding Practice Guidance
+
+- Updated root `AGENTS.md` with a `Coding Practices` section covering readable React/TypeScript structure, deterministic state transitions, accessibility, responsive layout, dependency restraint, published `dist/` updates, and practical verification.
+- Added a `Skills And Plugins` section so future agents deliberately use relevant Codex skills and plugins, including Superpowers, Build Web Apps, Browser Use, Game Studio, GitHub, and domain-specific artifact/research/app plugins when they fit.
+- Validation run: inspected the existing root and `slopularity/` agent instructions, reviewed the relevant AGENTS and human-readable-code skills, checked Superpowers guidance after the plugin was requested, and reviewed the edited markdown diff.
+
 ## [2026-05-02 14:16] Archive Previous Project Folders
 
 - Created `ARCHIVE/` and moved `365 buttons/`, `fun-internet-museum/`, `pixel-pop-arcade/`, `pocket-zoo/`, `quiet-collapse/`, `scrollbreak/`, `slopternet/`, `time-capsules/`, and `whimsy-net/` into it.

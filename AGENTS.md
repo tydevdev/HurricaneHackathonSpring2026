@@ -35,6 +35,29 @@ The earlier projects were built to figure out the direction and now live under `
   - `npm run lint`
 - Keep the GitHub Pages root lightweight and static so it can act as a reliable launch board.
 
+## Coding Practices
+
+- Read the existing component, state, styling, and content patterns before editing. Extend the local shape first; introduce new architecture only when it clearly reduces complexity.
+- Prefer small, named React components, plain TypeScript types, and explicit helper functions over dense inline logic. A future agent should be able to skim the main flow in under a minute.
+- Keep state transitions understandable and deterministic. For `slopularity/`, degradation mechanics should be driven by clear user actions, named events, and inspectable thresholds rather than scattered one-off mutations.
+- Use semantic HTML, accessible labels, keyboard-friendly controls, visible focus states, and touch-sized targets as part of normal implementation work.
+- Keep copy short and in-world. Do not add visible explanation that describes the joke, the design intent, or the mechanics from outside the product.
+- Treat responsive layout as product logic, not cleanup. Use stable dimensions, sensible grid/flex constraints, and explicit overflow handling so desktop and phone views remain usable.
+- Add dependencies only when they earn their weight. Prefer Vite/React/browser-native APIs and existing project helpers unless a proven library handles a real domain problem better.
+- Keep generated or published assets organized in the relevant project folder. For published Vite demos, update `dist/` after source changes so GitHub Pages links keep working.
+- Handle empty, loading, error, reset, and reduced-motion states deliberately when the feature can encounter them.
+- Before finishing coding work, run the strongest practical local proof: usually `npm run lint`, `npm run build`, and browser checks for both desktop and phone-sized viewports when UI changed.
+
+## Skills And Plugins
+
+- Before starting substantial work, check whether a listed Codex skill or plugin applies and use it as the operating playbook, not as decoration.
+- Use Superpowers process skills for planning, test-first work, systematic debugging, verification, and finishing a branch when the task fits.
+- Use Build Web Apps and Browser Use for frontend implementation and real browser inspection, especially local Vite pages and responsive QA.
+- Use Game Studio skills for browser games, playable simulations, Phaser, Three.js, asset pipelines, and playtesting.
+- Use GitHub skills or tooling for issues, pull requests, CI, publishing, branch cleanup, commits, and pushes.
+- Use Documents, Presentations, Spreadsheets, Life Science Research, Build iOS Apps, Build macOS Apps, Gmail, or Vercel only when the task actually touches those domains.
+- If a requested plugin or skill is unavailable, say so briefly, choose the closest practical fallback, and keep moving.
+
 ## Root Page Rules
 
 - The root page should connect to subprojects without changing the subprojects themselves.

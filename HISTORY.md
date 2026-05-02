@@ -332,6 +332,15 @@
 - Added popup engagement and dismissal as collapse triggers and included the mechanic in first-build priorities.
 - Validation run: inspected the existing plan sections, applied a docs-only update, and checked the edited markdown.
 
+## [2026-05-02 15:43] Revamp Feed Comment Experience
+
+- Updated `slopularity/src/pages/FeedPage.tsx` so `View all ... comments`, `Open thread`, and post-menu comment actions open a dedicated comment sheet instead of expanding inline comments.
+- Added comment sorting, post context, thread confidence copy, quick replies, per-comment `Helpful` / `Human?` / `Ad?` actions, draft-to-product signal preview, accessible dialog naming, and preserved the brand-safe auto-reply behavior for submitted comments.
+- Updated `slopularity/src/index.css` with the desktop modal and phone bottom-sheet layouts, comment thread bubbles, quick-reply controls, composer styling, and active-state treatment for the `This offends me` reaction.
+- Updated `slopularity/DESIGN_BIBLE.md` and `slopularity/IMPLEMENTATION_STATUS.md` to record the comment sheet as the intentional feed comment model.
+- Regenerated `slopularity/dist/` so the published build includes the comment revamp.
+- Validation run: `npm run lint`; `npm run build`; local Playwright/Chromium checks at 1280x900 and 390x844 confirmed comment sheet open, sorting, quick reply submission, generated brand reply, `Human?` action, no horizontal overflow, and zero captured console/page errors.
+
 ## [2026-05-02 13:57] Add Idle Attention Mechanic
 
 - Updated `slopularity/PLAN.md` with an idle attention/stillness detection concept for desktop and phone.
@@ -420,3 +429,12 @@
 - Removed the existing feed image hover wash by disabling `.ig-photo:hover` dimming behavior in `slopularity/src/index.css`.
 - Added `activePhotoPost` state and close handlers for photo expansion so image clicks now open/close the expanded view without triggering a reaction.
 - Kept the modal style using dark backdrop opacity and positioned controls/close affordance to keep the action visually focused on the image.
+
+## [2026-05-02 15:47] Fix Feed Deep-Scroll Lag
+
+- Updated `slopularity/src/pages/FeedPage.tsx` so the feed renders a bounded live window per lane instead of growing through unlimited repeated cycles.
+- Replaced the every-post unlock observer with a throttled single-target scroll check so DOUBLE SCROLL and TRIPLE SCROLL still unlock without attaching observers to the full feed.
+- Added lazy/async image loading for feed and story images and kept loop loading capped by the effective render window.
+- Updated `slopularity/DESIGN_BIBLE.md` and `slopularity/IMPLEMENTATION_STATUS.md` with the feed performance rule and current validation posture.
+- Regenerated `slopularity/dist/` so the published app includes the optimized feed.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome DevTools checks entered the app, confirmed lazy images, triggered DOUBLE and TRIPLE scroll, verified capped live card counts, repeatedly deep-scrolled to the bottom without unbounded DOM growth, and confirmed no horizontal overflow at 1280x900 or 390x844.

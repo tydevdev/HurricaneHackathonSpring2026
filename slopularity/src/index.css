@@ -1592,12 +1592,29 @@ p {
   background: #fff;
 }
 
+.comment-composer-wrap {
+  display: grid;
+  gap: 8px;
+  padding: 10px 18px 18px;
+  border-top: 1px solid #efefef;
+}
+
+.comment-draft-signal {
+  margin: 0;
+  color: #737373;
+  font-size: 0.76rem;
+  line-height: 1.25;
+}
+
+.comment-draft-signal strong {
+  color: #050505;
+  font-weight: 820;
+}
+
 .comment-composer {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 10px;
-  padding: 12px 18px 18px;
-  border-top: 1px solid #efefef;
 }
 
 .comment-composer input {
@@ -2948,7 +2965,7 @@ p {
   .comment-insight-strip,
   .comment-thread,
   .quick-replies,
-  .comment-composer {
+  .comment-composer-wrap {
     padding-right: 14px;
     padding-left: 14px;
   }

@@ -159,13 +159,15 @@ The feed should start glossy and emotionally familiar: wellness, adventure, prod
 
 The canonical feed now contains 50 image-backed posts. Preserve the expanded range as a broad lifestyle loop rather than a narrow influencer set: work, travel, home automation, beauty, grocery, fitness, finance, sleep, pets, and friendship should all feel absorbed into the same social product grammar.
 
+The feed must stay smooth even when the user scrolls aggressively. Keep the canonical pool broad, but render only a bounded live window per lane, lazy-decode feed/story images, and use single-target scroll checks for unlocks instead of observing or mounting every possible repeated post. The `DOUBLE SCROLL` and `TRIPLE SCROLL` modes should feel overwhelming because of layout and copy, not because the browser is being overloaded.
+
 Interaction hooks:
 
 - compare, envy, cancel, offended reactions
 - stories that behave like a familiar phone-native carousel: the top line fills over three seconds, auto-advances, accepts left/right image taps, and lets dragging the image move between posts
 - repeated scrolls that mutate captions or counts
 - after the user has seen at least ten posts, a forced celebratory subscription modal may unlock `DOUBLE SCROLL`: two simultaneous feed lanes that make the feed feel like a feature and a threat at the same time. After another ten-post-equivalent scroll depth, the same celebration can unlock `TRIPLE SCROLL`, adding a third lane and making the upsell escalation feel earned by the user's own momentum.
-- comments that stay visible as a real section and turn human input into brand-safe testimonials
+- comments that preview inline but open into a focused modal/bottom sheet with post context, sorting controls, quick replies, per-comment trust actions, and human input converted into brand-safe testimonial replies
 - sponsor disclosures that move, soften, or rename themselves
 - posts that reappear with tiny differences
 - top-right post menus should feel like social-app overflow menus that have been absorbed by the product machine: `cancel`, `envision as yourself with AI`, and comment-trail actions should route into existing feed actions instead of being dead jokes

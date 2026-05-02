@@ -44,6 +44,11 @@ const scrollConfetti = Array.from({ length: 36 }, (_, index) => index)
 const scrollUnlockInterval = 10
 const initialFeedCycles = 2
 const maxFeedCycles = 5
+const renderLimitByScrollMode: Record<ScrollMode, number> = {
+  single: 60,
+  double: 36,
+  triple: 30,
+}
 const feedScrollSessionKey = 'slopularity:feed-scroll-state'
 const localPostStorageKey = 'slopularity:feed-local-posts-v1'
 let hasInitializedFeedScrollMode = false
@@ -305,9 +310,15 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
     })
   ), [localPosts])
   const allPosts = useMemo(() => [...renderedLocalPosts, ...feedPosts], [renderedLocalPosts])
+  const renderLimit = renderLimitByScrollMode[scrollMode]
+  const effectiveMaxFeedCycles = Math.min(
+    maxFeedCycles,
+    Math.max(1, Math.ceil(renderLimit / Math.max(allPosts.length, 1))),
+  )
+  const renderedCycleCount = Math.min(cycleCount, effectiveMaxFeedCycles)
   const loopedPosts = useMemo(
-    () => Array.from({ length: cycleCount }, (_, cycle) => allPosts.map((post) => ({ post, cycle }))).flat(),
-    [allPosts, cycleCount],
+    () => Array.from({ length: renderedCycleCount }, (_, cycle) => allPosts.map((post) => ({ post, cycle }))).flat(),
+    [allPosts, renderedCycleCount],
   )
   const storyPosts = allPosts.slice(0, 14)
   const storyPost = storyIndex === null ? null : storyPosts[storyIndex]
@@ -323,7 +334,11 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
   const reenactmentPosts = feedPosts.slice(0, 20)
   const isDegrading = stage >= 4
   const isMultiScroll = scrollMode !== 'single'
-  const hasLoadedAllDemoCycles = cycleCount >= maxFeedCycles
+  const visibleLoopedPosts = useMemo(
+    () => loopedPosts.slice(0, Math.min(loopedPosts.length, renderLimit)),
+    [loopedPosts, renderLimit],
+  )
+  const hasLoadedAllDemoCycles = renderedCycleCount >= effectiveMaxFeedCycles
   const activeCommentPost = activeCommentPostId === null
     ? null
     : allPosts.find((post) => post.id === activeCommentPostId) ?? null
@@ -354,7 +369,6 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
     }
   }, [localPosts])
 
-
   useEffect(() => {
     const loadTarget = loadMoreRef.current
     if (!loadTarget || hasLoadedAllDemoCycles) {
@@ -367,14 +381,14 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
           return
         }
 
-        setCycleCount((current) => Math.min(maxFeedCycles, current + 1))
+        setCycleCount((current) => Math.min(effectiveMaxFeedCycles, current + 1))
       },
       { rootMargin: '1200px 0px 1600px', threshold: 0 },
     )
 
     observer.observe(loadTarget)
     return () => observer.disconnect()
-  }, [hasLoadedAllDemoCycles, cycleCount])
+  }, [effectiveMaxFeedCycles, hasLoadedAllDemoCycles])
 
   useEffect(() => {
     if (scrollPrompt !== null || scrollMode === 'triple') {
@@ -387,32 +401,49 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
       return
     }
 
-    const unlockTarget = document.querySelector<HTMLElement>(`[data-feed-index="${targetIndex}"]`)
-    if (!unlockTarget) {
-      return
+    let frameId = 0
+
+    const checkUnlockTarget = () => {
+      frameId = 0
+      const unlockTarget = document.querySelector<HTMLElement>(`[data-feed-index="${targetIndex}"]`)
+      if (!unlockTarget) {
+        return
+      }
+
+      const targetRect = unlockTarget.getBoundingClientRect()
+      const reachedTarget = targetRect.top <= window.innerHeight * 0.82 && targetRect.bottom >= 0
+      if (!reachedTarget) {
+        return
+      }
+
+      if (scrollMode === 'single') {
+        superScrollerUnlocked.current = true
+        setScrollPrompt('double')
+      } else {
+        tripleScrollerUnlocked.current = true
+        setScrollPrompt('triple')
+      }
+      onEngage()
     }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const hasReachedNextUnlock = entries.some((entry) => entry.isIntersecting)
+    const scheduleCheck = () => {
+      if (frameId !== 0) {
+        return
+      }
 
-        if (hasReachedNextUnlock) {
-          if (scrollMode === 'single') {
-            superScrollerUnlocked.current = true
-            setScrollPrompt('double')
-          } else {
-            tripleScrollerUnlocked.current = true
-            setScrollPrompt('triple')
-          }
-          onEngage()
-          observer.disconnect()
-        }
-      },
-      { rootMargin: '0px 0px -18% 0px', threshold: 0.42 },
-    )
+      frameId = window.requestAnimationFrame(checkUnlockTarget)
+    }
 
-    observer.observe(unlockTarget)
-    return () => observer.disconnect()
+    scheduleCheck()
+    window.addEventListener('scroll', scheduleCheck, { passive: true })
+    window.addEventListener('resize', scheduleCheck)
+    return () => {
+      if (frameId !== 0) {
+        window.cancelAnimationFrame(frameId)
+      }
+      window.removeEventListener('scroll', scheduleCheck)
+      window.removeEventListener('resize', scheduleCheck)
+    }
   }, [onEngage, scrollMode, scrollPrompt])
 
   useEffect(() => {
@@ -821,6 +852,8 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
     const comments = sortComments(commentsForPost(post))
     const reactionsForPost = postReactions[post.id] ?? emptyReactions
     const hasUserCommented = comments.some((comment) => comment.author === 'you')
+    const draftValue = commentDrafts[post.id]?.trim() ?? ''
+    const draftProduct = replyProducts[Math.abs(draftValue.length + post.id.length) % replyProducts.length]
 
     return (
       <div
@@ -925,15 +958,22 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
             ))}
           </div>
 
-          <form className="comment-composer" onSubmit={(event) => submitComment(event, post.id)}>
-            <input
-              aria-label={`Add comment for ${post.author}`}
-              placeholder="Add a comment..."
-              value={commentDrafts[post.id] ?? ''}
-              onChange={(event) => setCommentDrafts((current) => ({ ...current, [post.id]: event.target.value }))}
-            />
-            <button type="submit">Post</button>
-          </form>
+          <div className="comment-composer-wrap">
+            {draftValue && (
+              <p className="comment-draft-signal">
+                Brand-safe match armed: <strong>{draftProduct}</strong>
+              </p>
+            )}
+            <form className="comment-composer" onSubmit={(event) => submitComment(event, post.id)}>
+              <input
+                aria-label={`Add comment for ${post.author}`}
+                placeholder="Add a comment..."
+                value={commentDrafts[post.id] ?? ''}
+                onChange={(event) => setCommentDrafts((current) => ({ ...current, [post.id]: event.target.value }))}
+              />
+              <button type="submit">Post</button>
+            </form>
+          </div>
         </section>
       </div>
     )
@@ -962,7 +1002,7 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
         {storyPosts.map((post, index) => (
           <button className="story-chip" type="button" key={post.id} onClick={() => setStoryIndex(index)}>
             <span className={`story-avatar ${post.storyTone}`} aria-hidden="true">
-              {post.imageSrc ? <img src={post.imageSrc} alt="" /> : post.initials}
+              {post.imageSrc ? <img src={post.imageSrc} alt="" loading="lazy" decoding="async" /> : post.initials}
             </span>
             <span>{post.storyName}</span>
           </button>
@@ -973,31 +1013,31 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
         {isMultiScroll ? (
           <>
             <div className="double-scroll-lane" aria-label="Primary scroll">
-              {loopedPosts.map(({ post, cycle }, feedIndex) => renderPost(post, cycle, feedIndex, 'left'))}
+              {visibleLoopedPosts.map(({ post, cycle }, feedIndex) => renderPost(post, cycle, feedIndex, 'left'))}
             </div>
             <div className="double-scroll-lane" aria-label="Bonus scroll">
-              {loopedPosts.map(({ post, cycle }, feedIndex) => {
-                const shiftedPost = loopedPosts[(feedIndex + 5) % loopedPosts.length]?.post ?? post
+              {visibleLoopedPosts.map(({ post, cycle }, feedIndex) => {
+                const shiftedPost = visibleLoopedPosts[(feedIndex + 5) % visibleLoopedPosts.length]?.post ?? post
                 return renderPost(shiftedPost, cycle, feedIndex, 'right')
               })}
             </div>
             {scrollMode === 'triple' && (
               <div className="double-scroll-lane" aria-label="Extra bonus scroll">
-                {loopedPosts.map(({ post, cycle }, feedIndex) => {
-                  const shiftedPost = loopedPosts[(feedIndex + 11) % loopedPosts.length]?.post ?? post
+                {visibleLoopedPosts.map(({ post, cycle }, feedIndex) => {
+                  const shiftedPost = visibleLoopedPosts[(feedIndex + 11) % visibleLoopedPosts.length]?.post ?? post
                   return renderPost(shiftedPost, cycle, feedIndex, 'middle')
                 })}
               </div>
             )}
           </>
         ) : (
-          loopedPosts.map(({ post, cycle }, feedIndex) => renderPost(post, cycle, feedIndex, 'single'))
+          visibleLoopedPosts.map(({ post, cycle }, feedIndex) => renderPost(post, cycle, feedIndex, 'single'))
         )}
       </div>
 
       <div className="feed-load-sentinel" ref={loadMoreRef} aria-hidden="true" />
       <p className="loop-note" aria-live="polite">
-        Looping demo feed: {cycleCount} cycles loaded from {feedPosts.length} canonical posts{hasLoadedAllDemoCycles ? ' · feed cache warm' : ''}.
+        Looping demo feed: {renderedCycleCount} cycles loaded from {feedPosts.length} canonical posts · {visibleLoopedPosts.length} live cards per lane{hasLoadedAllDemoCycles ? ' · feed cache warm' : ''}.
       </p>
 
       {activeCommentPost && renderCommentSheet(activeCommentPost)}

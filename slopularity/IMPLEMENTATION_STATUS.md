@@ -2,6 +2,24 @@
 
 Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESIGN_BIBLE.md` stays the product/design execution guide. This file records what is actively intentional in the app right now, what is still a skeleton, and which feature flags are keeping unfinished mechanics out of the way.
 
+## [2026-05-02 15:47] Feed Deep-Scroll Performance
+
+- Active focus: `FeedPage.tsx` deep-scroll responsiveness and feed unlock stability.
+- Behavior changed: the feed now keeps a bounded live render window per lane instead of mounting every repeated canonical post as scrolling continues.
+- Behavior changed: feed/story images use lazy loading and async decoding, and the loop loader is capped by the effective render window so bottom scrolling cannot grow DOM work forever.
+- Behavior changed: the `DOUBLE SCROLL` / `TRIPLE SCROLL` unlock check now watches the next target post with a throttled single-target geometry check, preserving the upsell triggers without observing every rendered post.
+- Files changed: `src/pages/FeedPage.tsx`, `DESIGN_BIBLE.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome DevTools checks entered the app, confirmed lazy images, triggered DOUBLE and TRIPLE scroll, verified capped live card counts in single/double/triple modes, deep-scrolled to the bottom repeatedly without unbounded DOM growth, and confirmed no horizontal overflow at 1280x900 or 390x844.
+
+## [2026-05-02 15:43] Feed Comment Sheet Revamp
+
+- Active focus: `FeedPage.tsx` comment experience and responsive modal behavior.
+- Behavior changed: tapping `View all ... comments`, `Open thread`, or a post menu comment action now opens a focused comments sheet instead of expanding the small inline drawer.
+- Comment sheet now includes a post context strip, Trusted/Newest/Sponsored sorting, a thread confidence strip, quick replies, per-comment `Helpful` / `Human?` / `Ad?` toggles, a draft-to-product signal preview, and the existing brand-safe auto-reply path after submitting a comment.
+- Responsive behavior: desktop renders the comment sheet as a centered overlay; phone-sized viewports render it as a bottom sheet with constrained height and no document horizontal overflow.
+- Files changed: `src/pages/FeedPage.tsx`, `src/index.css`, `DESIGN_BIBLE.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
+- Validation run: `npm run lint`; `npm run build`; local Playwright/Chromium checks at 1280x900 and 390x844 confirmed opening the comments dialog, sorting, quick reply submission, generated brand reply, `Human?` toggle, no horizontal overflow, and zero captured console/page errors. Screenshots: `/tmp/slopularity-comments-desktop.png`, `/tmp/slopularity-comments-phone.png`.
+
 ## [2026-05-02 15:33] Page URL Routing
 
 - Active focus: app-level route handling for the Slopularity surfaces.

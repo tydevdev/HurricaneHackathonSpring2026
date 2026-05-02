@@ -17,6 +17,13 @@
 - Updated `slopularity/IMPLEMENTATION_STATUS.md` with build entry.
 - Validation: `npm run lint` clean; `npm run build` clean.
 
+## [2026-05-02 16:33] Fix Tiny Feed Separator Lines
+
+- Updated `slopularity/src/pages/FeedPage.tsx` to add a feed-only `no-seamfeed` class so separator suppression is scoped to the feed surface.
+- Updated `slopularity/src/index.css` to remove feed-only topbar/storystrip/post separators, lane dividers, menu row borders, and other `1px` horizontal artifacts causing the “tiny lines” effect in the feed.
+- Issue root cause identified: too many inherited border declarations in multi-lane feed states (`.ig-post`, `.ig-feed-list`, `.double-scroll-lane`, `.comment-drawer`, `.loop-note`, and menu/button row borders) stacked up and looked like fine orange-tinted stripes.
+- Validation not yet run post-sync; pending after remote pull.
+
 ## [2026-05-02 16:20] Fix Phone Feed Scrolling
 
 - Updated `slopularity/src/pages/FeedPage.tsx` so phone-sized viewports render the feed as one full-width column even when stored session state has unlocked `DOUBLE SCROLL` or `TRIPLE SCROLL`.

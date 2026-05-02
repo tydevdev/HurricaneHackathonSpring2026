@@ -519,6 +519,34 @@ p {
   box-shadow: 0 18px 54px rgba(15, 23, 42, 0.08);
 }
 
+.ig-feed-shell.no-seamfeed {
+  border-color: transparent;
+}
+
+.ig-feed-shell.no-seamfeed .ig-feed-topbar,
+.ig-feed-shell.no-seamfeed .story-strip,
+.ig-feed-shell.no-seamfeed .ig-feed-list,
+.ig-feed-shell.no-seamfeed .ig-post,
+.ig-feed-shell.no-seamfeed .comment-drawer,
+.ig-feed-shell.no-seamfeed .loop-note,
+.ig-feed-shell.no-seamfeed .double-scroll-lane + .double-scroll-lane,
+.ig-feed-shell.no-seamfeed .ig-feed-list.is-double-scroll,
+.ig-feed-shell.no-seamfeed .ig-feed-list.is-multi-scroll,
+.ig-feed-shell.no-seamfeed .ig-feed-list.is-triple-scroll,
+.ig-feed-shell.no-seamfeed .ig-feed-topbar,
+.ig-feed-shell.no-seamfeed .post-action-menu button,
+.ig-feed-shell.no-seamfeed .comment-sheet {
+  border-top: none !important;
+  border-bottom: none !important;
+  border-left: none !important;
+  border-right: none !important;
+}
+
+.ig-feed-shell.no-seamfeed .comment-sheet,
+.ig-feed-shell.no-seamfeed .photo-lightbox {
+  box-shadow: none;
+}
+
 .ig-feed-shell.has-double-scroll,
 .ig-feed-shell.has-multi-scroll {
   width: min(100%, calc(var(--feed-post-width) * 2));

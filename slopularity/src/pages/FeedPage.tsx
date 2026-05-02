@@ -1007,7 +1007,7 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
 
   return (
     <section
-      className={`ig-feed-shell ${shouldRenderMultiScroll ? 'has-multi-scroll' : ''} ${shouldRenderMultiScroll && scrollMode === 'triple' ? 'has-triple-scroll' : ''}`}
+      className={`ig-feed-shell no-seamfeed ${shouldRenderMultiScroll ? 'has-multi-scroll' : ''} ${shouldRenderMultiScroll && scrollMode === 'triple' ? 'has-triple-scroll' : ''}`}
       aria-label="Feed"
     >
       <header className="ig-feed-topbar">

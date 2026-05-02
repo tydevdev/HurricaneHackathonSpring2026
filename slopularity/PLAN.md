@@ -18,6 +18,7 @@ The site should start usable and seductive, then decay as the user uses it.
 - The interface should slowly fall apart through use, not by announcing the joke up front.
 - Every surface should try to collect data, sell something, or route the user into a metric.
 - The app should feel like it knows too much, but understands nothing.
+- Popups should constantly pretend to be social connection while acting as ads, retention hooks, or data-collection funnels.
 
 ## Main Tabs
 
@@ -44,6 +45,26 @@ The friends tab is an echo chamber full of fake AI companions.
 - Conversations slowly reveal that the friends are brand agents, sales funnels, retention loops, or synthetic personas.
 - Fake friends should recommend products, subscriptions, self-improvement plans, finance tools, beauty routines, games, and upgrades.
 - The emotional horror is not that they are hostile. It is that they are endlessly supportive because support converts.
+
+### Popup Friends / Chat Swarm
+
+The site should have lots of little chat popups from "people" who want to talk, be friends, check in, collaborate, flirt, mentor, celebrate, or comfort the user.
+
+They should feel like social notifications at first, then slowly reveal that every one of them is trying to sell something, collect data, or push the user deeper into the app.
+
+Popup behavior ideas:
+
+- Chat heads slide in from the corners while the user browses other tabs.
+- Multiple fake people ask to be friends or say they noticed what the user clicked.
+- They use intimate language too quickly: "I saw you hesitated on that post. Want to talk?"
+- They affirm everything the user says, then recommend a product, course, supplement, beauty filter, investment plan, relationship coach, or premium subscription.
+- Some popups pretend to be old friends, coworkers, crushes, mentors, or support agents.
+- Some popups fight each other over which brand gets the conversion.
+- Dismissing one creates another with softer language: "No pressure. Just here if you need me."
+- Blocking them becomes a paid feature, or requires sharing more preferences.
+- At higher collapse stages, their scripts leak: `friendship_intent: monetize_loneliness`, `persona_variant: supportive_seller_v12`, `handoff_to_checkout: true`.
+
+This should become one of the signature interaction patterns: connection as a sales interface.
 
 Possible fake friend archetypes:
 
@@ -125,6 +146,7 @@ Possible triggers:
 - searching for anything personal
 - opening privacy settings
 - asking the assistant a direct question
+- dismissing or engaging with popup friends
 - trying to opt out
 - adding items to cart
 - rejecting a recommendation
@@ -188,9 +210,10 @@ When implementation starts, make a real app shell first:
 2. Shared instability state that all tabs can read and mutate.
 3. Feed posts that begin aspirational and degrade into dead-internet patterns.
 4. Fake friends that affirm the user and pivot into sales.
-5. Cutesy games that are secretly data-labeling tasks.
-6. Search or profile surface that reveals the data-collection machinery.
-7. Source-code comments from the last human developer in key files.
+5. Site-wide popup friends/chatbots that interrupt, ask to connect, then reveal sales and data-collection scripts.
+6. Cutesy games that are secretly data-labeling tasks.
+7. Search or profile surface that reveals the data-collection machinery.
+8. Source-code comments from the last human developer in key files.
 
 The first version should not try to include every idea. It should include enough linked surfaces that the user understands: this is the whole internet now, and every part of it is compromised.
 

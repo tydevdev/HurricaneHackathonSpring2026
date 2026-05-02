@@ -169,3 +169,11 @@
 - Clarified that the other top-level folders are prior tests, demos, prototypes, or reference material used to figure out the direction, and should be left alone unless explicitly named.
 - Updated `slopularity/AGENTS.md` with the same default-work rule so future agents stay focused on Slopularity.
 - Validation run: inspected both AGENTS files, applied a docs-only update, and checked the markdown diff.
+
+## [2026-05-02 13:56] Add Popup Friend Sales Pattern
+
+- Updated `slopularity/PLAN.md` with a site-wide popup friends/chat swarm concept.
+- Captured the idea that chat popups should pose as people who want to talk, be friends, comfort, flirt, mentor, or collaborate, while actually functioning as sales funnels, retention hooks, and data-collection scripts.
+- Added popup behavior ideas including intimate overreach, fake old friends, brand-agent conflict, paid blocking, softer re-entry after dismissal, and leaked monetization scripts at higher collapse stages.
+- Added popup engagement and dismissal as collapse triggers and included the mechanic in first-build priorities.
+- Validation run: inspected the existing plan sections, applied a docs-only update, and checked the edited markdown.

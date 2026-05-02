@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { GAMES } from '../games'
+import { GAMES, rewardProgress, rewardStat, rewardText } from '../games'
 
 type GamesPageProps = {
   completedTasks: string[]
@@ -18,6 +18,9 @@ export function GamesPage({ completedTasks, onComplete, stage }: GamesPageProps)
   const titles = new Set(GAMES.map((g) => g.title))
   const stickers = completedTasks.filter((t) => titles.has(t)).length
 
+  const stat = rewardStat(stickers, GAMES.length, stage)
+  const progress = rewardProgress(stickers, stage)
+
   return (
     <section className="surface games-surface" aria-labelledby="games-title">
       <div className="surface-heading games-heading">
@@ -27,13 +30,18 @@ export function GamesPage({ completedTasks, onComplete, stage }: GamesPageProps)
         </div>
         <div className="games-stat-row" aria-label="Daily progress">
           <div className="games-stat">
-            <span>Stickers</span>
-            <strong>{stickers}/{GAMES.length}</strong>
+            <span>{stat.label}</span>
+            <strong>{stat.value}</strong>
           </div>
           <div className="games-stat">
             <span>Labels submitted</span>
             <strong>{submittedCount}</strong>
           </div>
+          {progress && (
+            <div className="games-stat games-stat-progress">
+              <span>{progress}</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -81,7 +89,7 @@ export function GamesPage({ completedTasks, onComplete, stage }: GamesPageProps)
               <span className="games-queue-emoji" aria-hidden="true">{g.emoji}</span>
               <span className="games-queue-name">{g.title}</span>
               <code className="games-queue-pipe">
-                {stage >= 3 ? g.receipt.pipeline : g.receipt.cute}
+                {stage >= 3 ? g.receipt.pipeline : rewardText(stage)}
               </code>
               {stage >= 4 && <small>{g.receipt.detail}</small>}
             </li>

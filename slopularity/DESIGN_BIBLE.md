@@ -161,6 +161,8 @@ The canonical feed now contains 50 image-backed posts. Preserve the expanded ran
 
 The feed must stay smooth even when the user scrolls aggressively. Keep the canonical pool broad, but render only a bounded live window per lane, lazy-decode feed/story images, and use single-target scroll checks for unlocks instead of observing or mounting every possible repeated post. The `DOUBLE SCROLL` and `TRIPLE SCROLL` modes should feel overwhelming because of layout and copy, not because the browser is being overloaded.
 
+On phone-sized viewports, preserve a single full-width feed column even when the session has already unlocked `DOUBLE SCROLL` or `TRIPLE SCROLL`. The escalation state may persist in the session, but narrow screens must not compress posts into side-by-side lanes or shrink reaction/comment surfaces; phone scrolling should keep the familiar social-feed rhythm.
+
 Interaction hooks:
 
 - compare, envy, cancel, offended reactions
@@ -436,6 +438,81 @@ Verification notes:
 - Helpy must be keyboard-accessible and visible on phone widths (full-width at small screens).
 - Reduced-motion users skip the hinge-fall animation (page simply fades out) and the Helpy pop-in animation.
 
+
+### Friends Interactive Chat & Decay
+
+Intention: friends feel more like sales agents the longer you talk to them.
+
+The Friends page is a list of 6 friend cards, each with a chat input at the bottom. Typing a message to any friend triggers a 3-rung emotional upsell ladder:
+
+1. **Rung 1**: Pure empathy. "I hear you. That sounds really heavy. You deserve to feel lighter."
+2. **Rung 2**: Soft product mention. "You know what helped me? [product]. Just a thought."
+3. **Rung 3**: Full pitch. "[product] changed everything. I can set up a free trial right now."
+
+The ladder is driven by message count (not content parsing), keeping it deterministic and inspectable.
+
+At stage 2+, each friend also shows a "memory" line cross-referencing something the user did on another tab (feed posts viewed, search queries, games completed). This is powered by the `activityLog.ts` module, which stores a rolling session-only log of user actions across tabs. If no cross-tab activity exists yet, the static fallback memory is shown.
+
+At stage 3+, Devon (index 2) and Jules (index 3) begin merging: same message text, blended avatar initials (D/J and J/D), and a subtle "merging..." label. At stage 4, Jules disappears and Devon becomes "Devon & Jules" with combined initials "D+J".
+
+At stage 4, every friend reply in chat gets a visible JSON block showing internal intent data:
+```json
+{"tone": "empathetic", "pivot_to": "checkout", "user_sentiment": "vulnerable"}
+```
+The JSON evolves through the ladder: first "pivot_to: none_yet", then "soft_mention", then "checkout".
+
+### Search Result Poisoning
+
+Intention: your search results are contaminated by what you did elsewhere.
+
+At stage 2+, the search results include 1–3 injected "personalized" results derived from the user's recent activity on other tabs. These poisoned results are placed after the first organic result so they feel planted but not obviously first.
+
+Each poisoned result is ~30% related to the search query and ~70% a product recommendation. Templates exist for feed activity, games completions, shop views, tab navigation, and friend chats.
+
+At stage 3+, up to 3 poisoned results appear (vs 1 at stage 2). The label changes from "Personalized result" to "Personalized · sponsored" and the signal text becomes "ranked by purchase proximity".
+
+Poisoned results get an orange left border accent via `.search-result-poisoned`.
+
+### Reward Devaluation (Games)
+
+Intention: the reward you earn shrinks until it's meaningless.
+
+The games reward system is stage-aware:
+
+- Stage 1: "reward: sticker pack" (the original)
+- Stage 2: "reward: 0.3 sticker credits"
+- Stage 3: "reward: 0.003 credits toward your next sticker pack (47,000 credits required)"
+- Stage 4: "reward: 0.00004 credits (sticker pack ETA: 11.7 years at current pace)"
+
+The stats row shows fractional credits and a percentage toward the 47,000-credit sticker pack. At stage 3+, a progress note appears: "Sticker pack: 0.000006% complete."
+
+### Game Becomes Work (SnackSort)
+
+Intention: a fun sorting game silently transitions into unpaid labor.
+
+SnackSort tracks how many rounds the user has played. Each round after the first strips more game-ness:
+
+- **Round 2** (work level 1): no visible changes yet, priming the shift.
+- **Round 3** (work level 2): Emoji removed from snack chips. Labels become clinical ("Item A-1", "Item B-2"). Baskets become "Category 1", "Category 2", "Category 3". A timer appears counting up. A quota bar shows "Batch 3 of 8 today". The submit button loses the "+1 sticker" label.
+- **Round 4+** (work level 3): Submit becomes "Submit batch (mandatory)". Play again becomes "Next batch →". Help text becomes "Quota: 6 remaining. Pace: below target."
+
+Throughout all rounds, the cheerful music note "🎵 cozy sorting time" stays visible in the work header, never changing. The contrast between the cheerful note and the clinical interface is the joke.
+
+### Idle Surveillance
+
+Intention: the app watches you when you stop using it.
+
+Three idle tiers activate sequentially when the user stops interacting:
+
+1. **10 seconds — Watching Eye**: A small CSS-drawn eye appears fixed at bottom-left. It blinks every 3 seconds. Its pupil follows the user's cursor with a subtle lag (4px max shift). The eye disappears instantly on any interaction (mousemove, keydown, click, touch, scroll).
+
+2. **12 seconds — Ambient Reorganization**: The app silently swaps two random tabs in the tab bar. Nothing is acknowledged. The user returns to a slightly different layout with no explanation.
+
+3. **15 seconds — Loneliness Monetization**: A center-bottom popup card rises into view: "You've been quiet. We've matched you with 3 people who also paused here." The 3 matches show names, avatars, and roles that are actually "Wellness Ambassador", "Brand Partner", and "Community Lead". "Meet them" navigates to Friends (+2 instability). "Not now" dismisses (+1 instability).
+
+4. **18 seconds — Friend popup spawn**: The existing popup swarm idle behavior fires.
+
+All idle effects reset on any user interaction. The eye uses `prefers-reduced-motion` to skip cursor tracking. The loneliness popup uses reduced-motion to skip its rise animation.
 
 ## Keeping This Updated
 

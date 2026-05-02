@@ -1,5 +1,30 @@
 # History
 
+## [2026-05-02 16:25] Batch Decay Features — Friends, Search, Games, Idle (10 features)
+
+- Created `slopularity/src/activityLog.ts`: session-only cross-tab activity tracker storing rolling log of user actions for cross-reference by Friends and Search.
+- Created `slopularity/src/components/IdleEye.tsx`: CSS-drawn eye that appears bottom-left after 10s idle, blinks every 3s, follows cursor with 4px lag, disappears on any interaction.
+- Created `slopularity/src/components/LonelinessPopup.tsx`: center-bottom popup at 15s idle showing 3 fake "matches" (Kai/Wellness Ambassador, Sable/Brand Partner, Wren/Community Lead).
+- Rewrote `slopularity/src/App.tsx`: replaced single-timer idle system with 4-tier idle detection (eye at 10s, ambient tab reorg at 12s, loneliness popup at 15s, friend popup at 18s). Added activity log pushes on tab switch, search, game complete, assistant ask. Tab order now state-managed for silent reordering.
+- Rewrote `slopularity/src/pages/FriendsPage.tsx`: added interactive chat input per friend with 3-rung emotional upsell ladder (empathy → product mention → full pitch). Cross-tab memory references from activityLog at stage 2+. Devon/Jules friend merge at stage 3+ (same messages, blended avatars, merged name at stage 4). Stage 4 script leak shows intent JSON below every friend reply.
+- Rewrote `slopularity/src/pages/SearchPage.tsx`: at stage 2+, 1-3 "personalized" results injected based on cross-tab activity (30% query-related, 70% product push). Orange left border accent on poisoned results.
+- Rewrote `slopularity/src/games/index.ts`: added `rewardText()`, `rewardStat()`, `rewardProgress()` for stage-aware reward devaluation (sticker pack → 0.3 credits → 0.003/47k → 0.00004/11.7yr ETA).
+- Rewrote `slopularity/src/pages/GamesPage.tsx`: stats row shows devalued credits and progress percentage at higher stages.
+- Rewrote `slopularity/src/games/SnackSort.tsx`: tracks rounds played; round 2+ removes emoji and uses clinical labels, round 3+ adds timer and quota bar, round 4+ makes submit mandatory. "🎵 cozy sorting time" stays cheerful throughout.
+- Updated `slopularity/src/index.css` with ~400 lines: friend chat input/bubbles/merge/script-leak styles, search poisoned result accent, SnackSort work-mode (timer/quota/clinical), idle eye with blink keyframe, loneliness popup card + match avatars, responsive @ 640px, reduced-motion fallbacks.
+- Updated `slopularity/DECAY_FEATURES.md` with all 10 new features and corrected popup statuses from skeleton to implemented.
+- Updated `slopularity/DESIGN_BIBLE.md` with 5 new sections (Friends Interactive Chat & Decay, Search Result Poisoning, Reward Devaluation, Game Becomes Work, Idle Surveillance).
+- Updated `slopularity/IMPLEMENTATION_STATUS.md` with build entry.
+- Validation: `npm run lint` clean; `npm run build` clean.
+
+## [2026-05-02 16:20] Fix Phone Feed Scrolling
+
+- Updated `slopularity/src/pages/FeedPage.tsx` so phone-sized viewports render the feed as one full-width column even when stored session state has unlocked `DOUBLE SCROLL` or `TRIPLE SCROLL`.
+- Prevented the mobile feed from applying multi-lane classes/rendering that compressed posts, photos, reactions, and comment surfaces while scrolling on phones.
+- Fixed the production build blocker in `slopularity/src/pages/FriendsPage.tsx` by marking the unused ladder parameter as intentionally unused, and cleared the current `SnackSort.tsx` lint blocker by moving its elapsed timer reset into the reset action.
+- Updated `slopularity/DESIGN_BIBLE.md` and `slopularity/IMPLEMENTATION_STATUS.md`; regenerated `slopularity/dist/`.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP at 390x844 with forced stored `scrollMode: "triple"` confirmed a single 374px feed column, no double-scroll lanes, matching post/photo/image widths, and no horizontal overflow.
+
 ## [2026-05-02 16:00] Onboarding Gate Sequence + Decay Feature Tracker
 
 - Rebuilt `slopularity/src/pages/LandingPage.tsx` from the multi-section marketing manifesto into a single focused onboarding gate with one "Enter the Singularity" button and a 3-click degradation sequence.

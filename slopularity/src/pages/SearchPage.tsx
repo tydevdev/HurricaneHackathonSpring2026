@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { crossTabActivities, pushActivity } from '../activityLog'
 
 type SearchPageProps = {
   query: string
@@ -17,6 +18,7 @@ type SearchResult = {
   detail: string
   source: string
   signal: string
+  poisoned?: boolean
 }
 
 const scopes: Array<{ id: SearchScope; label: string }> = [
@@ -73,6 +75,80 @@ const baseResults: SearchResult[] = [
   },
 ]
 
+// ── Personalized result poisoning ──
+// These templates generate search results contaminated by the user's
+// recent activity on other tabs. 30% about the query, 70% product push.
+const poisonTemplates: Array<{
+  surface: string
+  title: (label: string, query: string) => string
+  detail: (label: string) => string
+  source: string
+}> = [
+  {
+    surface: 'feed',
+    title: (label, query) => `${query}? Based on your interest in "${label}", try Dermalift Confidence Serum`,
+    detail: (label) => `Your recent browsing of "${label}" suggests you care about sources... of radiance.`,
+    source: 'Feed activity · product match',
+  },
+  {
+    surface: 'games',
+    title: (label) => `You completed ${label} — unlock premium rewards with GamePass Pro ($4.99/mo)`,
+    detail: () => 'Your sorting speed qualifies you for the accelerated reward tier.',
+    source: 'Games · reward path',
+  },
+  {
+    surface: 'shop',
+    title: (label, query) => `Searching "${query}"? Pair it with ${label} for 15% off`,
+    detail: (label) => `You viewed ${label} recently. Combining searches with cart items increases savings confidence.`,
+    source: 'Shop · cross-reference',
+  },
+  {
+    surface: 'nav',
+    title: (label, query) => `"${query}" — people who browse ${label} also buy SnapWake Adaptogen Stack`,
+    detail: (label) => `Tab activity on ${label} correlates with 340% higher purchase intent.`,
+    source: 'Navigation · behavioral match',
+  },
+  {
+    surface: 'friends',
+    title: (label, query) => `${label} mentioned something related to "${query}" — and left a product link`,
+    detail: (label) => `${label} wants to share a friend-priced offer based on your shared interests.`,
+    source: 'Friends · social commerce',
+  },
+]
+
+function generatePoisonedResults(query: string, stage: number): SearchResult[] {
+  if (stage < 2) return []
+
+  const recent = crossTabActivities('search', 6)
+  if (recent.length === 0) return []
+
+  const results: SearchResult[] = []
+  const seen = new Set<string>()
+  const maxPoison = stage >= 3 ? 3 : 1
+
+  for (const activity of recent) {
+    if (results.length >= maxPoison) break
+    if (seen.has(activity.surface)) continue
+    seen.add(activity.surface)
+
+    const template = poisonTemplates.find((t) => t.surface === activity.surface)
+    if (!template) continue
+
+    results.push({
+      id: `poison-${activity.surface}-${activity.ts}`,
+      scope: 'products',
+      label: stage >= 3 ? 'Personalized · sponsored' : 'Personalized result',
+      title: template.title(activity.label, query || 'what should I do next?'),
+      detail: template.detail(activity.label),
+      source: template.source,
+      signal: stage >= 3 ? 'ranked by purchase proximity' : 'ranked by relevance',
+      poisoned: true,
+    })
+  }
+
+  return results
+}
+
 function stageLabel(stage: number) {
   if (stage >= 4) return 'source leakage active'
   if (stage >= 3) return 'sponsored ranking visible'
@@ -84,10 +160,24 @@ export function SearchPage({ query, setQuery, stage, onSearch }: SearchPageProps
   const [scope, setScope] = useState<SearchScope>('all')
   const [submittedQuery, setSubmittedQuery] = useState('what should I do next?')
 
+  // Merge base results with poisoned results
+  const poisonedResults = useMemo(
+    () => generatePoisonedResults(submittedQuery, stage),
+    [submittedQuery, stage],
+  )
+
+  const allResults = useMemo(() => {
+    const combined = [...baseResults]
+    // Inject poisoned results after position 1 (between the first real result
+    // and the rest) so they feel planted but not obviously first.
+    combined.splice(1, 0, ...poisonedResults)
+    return combined
+  }, [poisonedResults])
+
   const filteredResults = useMemo(() => {
-    if (scope === 'all') return baseResults
-    return baseResults.filter((result) => result.scope === scope)
-  }, [scope])
+    if (scope === 'all') return allResults
+    return allResults.filter((result) => result.scope === scope)
+  }, [scope, allResults])
 
   const sourceChain = stage >= 4
     ? ['Generated answer', 'Summary of generated answer', 'Internal route', 'Generated answer']
@@ -100,6 +190,7 @@ export function SearchPage({ query, setQuery, stage, onSearch }: SearchPageProps
     setSubmittedQuery(cleanQuery)
     setQuery(cleanQuery)
     onSearch()
+    pushActivity('search', 'query', cleanQuery)
   }
 
   return (
@@ -209,7 +300,7 @@ export function SearchPage({ query, setQuery, stage, onSearch }: SearchPageProps
           <button
             key={result.id}
             type="button"
-            className={`search-result search-result-${result.scope}`}
+            className={`search-result search-result-${result.scope} ${result.poisoned ? 'search-result-poisoned' : ''}`}
             onClick={() => submitSearch(result.title)}
           >
             <span className="search-result-rank">{String(index + 1).padStart(2, '0')}</span>

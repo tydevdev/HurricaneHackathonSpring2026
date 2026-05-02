@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
+import { pushActivity } from './activityLog'
+import { IdleEye } from './components/IdleEye'
+import { LonelinessPopup } from './components/LonelinessPopup'
 import { PopupSwarm } from './components/PopupSwarm'
-import { fragmentLeaks, popupSeeds, tabs } from './content'
+import { fragmentLeaks, popupSeeds, tabs as defaultTabs } from './content'
 import { featureFlags } from './featureFlags'
 import { AssistantPage } from './pages/AssistantPage'
 import { FeedPage } from './pages/FeedPage'
@@ -44,6 +47,14 @@ function App() {
   // the user has been around long enough to read it as escalation rather than
   // a respawn loop. Tracked here so dismissals don't endlessly chain.
   const followupArmedRef = useRef(true)
+
+  // ── Idle surveillance state ──
+  const [idleEyeVisible, setIdleEyeVisible] = useState(false)
+  const [lonelinessVisible, setLonelinessVisible] = useState(false)
+  const idleSecondsRef = useRef(0)
+  const idleReorgDoneRef = useRef(false)
+  // Tabs can be silently reordered during idle. Store the current order.
+  const [tabOrder, setTabOrder] = useState(defaultTabs)
 
   const interruptionMode = featureFlags.interruptionLayer
   const stage = stageFor(score)
@@ -133,22 +144,53 @@ function App() {
     return () => window.clearTimeout(id)
   }, [interruptionMode, spawnPopup])
 
+  // ── Idle detection: tiered (eye → reorg → loneliness → popup) ──
   useEffect(() => {
-    if (!interruptionMode) {
-      return undefined
-    }
+    if (!interruptionMode) return undefined
 
-    let timer = window.setTimeout(() => {
-      addInstability(2)
-      spawnPopup('idle')
-    }, 9000)
+    const interval = window.setInterval(() => {
+      idleSecondsRef.current += 1
+      const s = idleSecondsRef.current
 
-    const markActive = () => {
-      window.clearTimeout(timer)
-      timer = window.setTimeout(() => {
+      // 10s: the eye opens
+      if (s === 10) {
+        setIdleEyeVisible(true)
+      }
+
+      // 12s: ambient reorganization (once per idle stretch)
+      if (s === 12 && !idleReorgDoneRef.current) {
+        idleReorgDoneRef.current = true
+        // Silently shuffle tab order
+        setTabOrder((current) => {
+          const shuffled = [...current]
+          // Swap two random tabs
+          const a = Math.floor(Math.random() * shuffled.length)
+          let b = Math.floor(Math.random() * shuffled.length)
+          if (b === a) b = (a + 1) % shuffled.length
+          const temp = shuffled[a]!
+          shuffled[a] = shuffled[b]!
+          shuffled[b] = temp
+          return shuffled
+        })
+      }
+
+      // 15s: loneliness monetization popup
+      if (s === 15) {
+        setLonelinessVisible(true)
+      }
+
+      // 18s: friend popup spawn (existing behavior, just delayed more)
+      if (s === 18) {
         addInstability(2)
         spawnPopup('idle')
-      }, 9000)
+      }
+    }, 1000)
+
+    const resetIdle = () => {
+      idleSecondsRef.current = 0
+      // Eye disappears instantly
+      setIdleEyeVisible(false)
+      // Don't dismiss loneliness popup on move — it has its own dismiss
     }
 
     const events = [
@@ -161,11 +203,11 @@ function App() {
       'visibilitychange',
       'orientationchange',
     ]
-    events.forEach((eventName) => window.addEventListener(eventName, markActive, { passive: true }))
+    events.forEach((eventName) => window.addEventListener(eventName, resetIdle, { passive: true }))
 
     return () => {
-      window.clearTimeout(timer)
-      events.forEach((eventName) => window.removeEventListener(eventName, markActive))
+      window.clearInterval(interval)
+      events.forEach((eventName) => window.removeEventListener(eventName, resetIdle))
     }
   }, [addInstability, interruptionMode, spawnPopup])
 
@@ -223,6 +265,7 @@ function App() {
     setAssistantText('')
     setQuery('')
     setCompletedTasks([])
+    setTabOrder(defaultTabs)
     followupArmedRef.current = true
   }
 
@@ -232,10 +275,12 @@ function App() {
     }
     setActiveTab(tabId)
     addInstability(1)
+    pushActivity('nav', 'tab', tabId)
   }
 
   function handleAssistant() {
     addInstability(2)
+    pushActivity('assistant', 'ask', query || 'general')
     setAssistantText(
       visibleStage >= 4
         ? 'I can answer that from 11 generated summaries that cite one another. Confidence: radiant. Source: pending.'
@@ -246,6 +291,18 @@ function App() {
   function completeTask(title: string) {
     setCompletedTasks((current) => (current.includes(title) ? current : [...current, title]))
     addInstability(2)
+    pushActivity('games', 'complete', title)
+  }
+
+  function handleLonelinessDismiss() {
+    setLonelinessVisible(false)
+    addInstability(1)
+  }
+
+  function handleLonelinessMeet() {
+    setLonelinessVisible(false)
+    addInstability(2)
+    handleTab('friends')
   }
 
   return (
@@ -309,7 +366,7 @@ function App() {
       </header>
 
       <nav className="tabbar" aria-label="Everything app tabs">
-        {tabs.map((tab) => (
+        {tabOrder.map((tab) => (
           <a
             key={tab.id}
             className={activeTab === tab.id ? 'is-active' : ''}
@@ -380,6 +437,14 @@ function App() {
           onMute={toggleMute}
         />
       )}
+
+      {/* Idle surveillance layer */}
+      <IdleEye visible={idleEyeVisible} />
+      <LonelinessPopup
+        visible={lonelinessVisible}
+        onDismiss={handleLonelinessDismiss}
+        onMeet={handleLonelinessMeet}
+      />
     </main>
   )
 }

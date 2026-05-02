@@ -168,6 +168,25 @@ function initScrollMode(): ScrollMode {
   }
 }
 
+function usePhoneFeedViewport() {
+  const [isPhoneFeedViewport, setIsPhoneFeedViewport] = useState(false)
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+      return undefined
+    }
+
+    const query = window.matchMedia('(max-width: 720px)')
+    const syncViewport = () => setIsPhoneFeedViewport(query.matches)
+    syncViewport()
+
+    query.addEventListener('change', syncViewport)
+    return () => query.removeEventListener('change', syncViewport)
+  }, [])
+
+  return isPhoneFeedViewport
+}
+
 function ReactionIcon({ icon }: { icon: FeedReaction['icon'] }) {
   if (icon === 'heart') {
     return <HeartIcon />
@@ -334,6 +353,8 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
   const reenactmentPosts = feedPosts.slice(0, 20)
   const isDegrading = stage >= 4
   const isMultiScroll = scrollMode !== 'single'
+  const isPhoneFeedViewport = usePhoneFeedViewport()
+  const shouldRenderMultiScroll = isMultiScroll && !isPhoneFeedViewport
   const visibleLoopedPosts = useMemo(
     () => loopedPosts.slice(0, Math.min(loopedPosts.length, renderLimit)),
     [loopedPosts, renderLimit],
@@ -986,7 +1007,7 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
 
   return (
     <section
-      className={`ig-feed-shell ${isMultiScroll ? 'has-multi-scroll' : ''} ${scrollMode === 'triple' ? 'has-triple-scroll' : ''}`}
+      className={`ig-feed-shell ${shouldRenderMultiScroll ? 'has-multi-scroll' : ''} ${shouldRenderMultiScroll && scrollMode === 'triple' ? 'has-triple-scroll' : ''}`}
       aria-label="Feed"
     >
       <header className="ig-feed-topbar">
@@ -1014,8 +1035,8 @@ export function FeedPage({ stage, onEngage }: FeedPageProps) {
         ))}
       </div>
 
-      <div className={`ig-feed-list ${isMultiScroll ? 'is-multi-scroll' : ''} ${scrollMode === 'triple' ? 'is-triple-scroll' : ''}`} aria-label={scrollMode === 'triple' ? 'Triple Scroll post feed' : scrollMode === 'double' ? 'Double Scroll post feed' : 'Looping post feed'}>
-        {isMultiScroll ? (
+      <div className={`ig-feed-list ${shouldRenderMultiScroll ? 'is-multi-scroll' : ''} ${shouldRenderMultiScroll && scrollMode === 'triple' ? 'is-triple-scroll' : ''}`} aria-label={shouldRenderMultiScroll ? (scrollMode === 'triple' ? 'Triple Scroll post feed' : 'Double Scroll post feed') : 'Looping post feed'}>
+        {shouldRenderMultiScroll ? (
           <>
             <div className="double-scroll-lane" aria-label="Primary scroll">
               {visibleLoopedPosts.map(({ post, cycle }, feedIndex) => renderPost(post, cycle, feedIndex, 'left'))}

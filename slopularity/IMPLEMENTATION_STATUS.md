@@ -2,6 +2,30 @@
 
 Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESIGN_BIBLE.md` stays the product/design execution guide. This file records what is actively intentional in the app right now, what is still a skeleton, and which feature flags are keeping unfinished mechanics out of the way.
 
+## [2026-05-02 16:25] Batch Decay Features — Friends, Search, Games, Idle
+
+- Active focus: 10 new decay/slop features across Friends, Search, Games, and Idle surfaces.
+- New file: `src/activityLog.ts` — session-only cross-tab activity tracker (module-level array, no localStorage).
+- New file: `src/components/IdleEye.tsx` — CSS-drawn eye that appears after 10s idle, blinks, follows cursor.
+- New file: `src/components/LonelinessPopup.tsx` — center-bottom card with 3 fake "matches" who are brand ambassadors.
+- Friends: interactive chat input per friend card, 3-rung emotional upsell ladder (empathy → product mention → full pitch), cross-tab memory references from activityLog, Devon/Jules friend merge at stage 3-4, script leak JSON at stage 4.
+- Search: personalized result poisoning — 1-3 injected results based on cross-tab activity, 30% about query / 70% product push, orange border accent.
+- Games: reward devaluation (sticker pack → 0.3 credits → 0.003 credits / 47k required → 0.00004 credits ETA 11.7 years), progress percentage in stats row.
+- Games/SnackSort: game-becomes-work — tracks rounds played, round 2+ removes emoji/cute labels, round 3+ adds timer and quota, round 4+ makes submit "mandatory" and play again becomes "Next batch →". Music note "🎵 cozy sorting time" stays cheerful.
+- App.tsx: 4-tier idle detection (eye at 10s, tab reorg at 12s, loneliness popup at 15s, friend popup at 18s). Activity log pushes on tab switch, search submit, game complete, assistant ask.
+- CSS: friend chat input/bubbles/merge/script-leak, search poisoned result accent, SnackSort work-mode header/timer/clinical styles, idle eye with blink animation, loneliness popup card + match avatars, responsive @ 640px, reduced-motion fallbacks.
+- Documentation: DECAY_FEATURES.md updated with all 10 features and corrected popup statuses. DESIGN_BIBLE.md with 5 new sections. HISTORY.md appended.
+- Files changed: `src/activityLog.ts` (new), `src/components/IdleEye.tsx` (new), `src/components/LonelinessPopup.tsx` (new), `src/App.tsx`, `src/pages/FriendsPage.tsx`, `src/pages/SearchPage.tsx`, `src/pages/GamesPage.tsx`, `src/games/index.ts`, `src/games/SnackSort.tsx`, `src/index.css`, `DECAY_FEATURES.md`, `DESIGN_BIBLE.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`.
+- Validation run: `npm run lint` clean; `npm run build` clean.
+
+## [2026-05-02 16:20] Phone Feed Scroll Guard
+
+- Active focus: `FeedPage.tsx` phone-width rendering after `DOUBLE SCROLL` / `TRIPLE SCROLL` has been unlocked.
+- Bug fixed: phone-sized viewports now render the feed as one full-width column even if the session scroll mode is stored as double or triple, preventing cramped side-by-side lanes and zoomed-in scrolling on mobile.
+- Build/lint blockers fixed: renamed the unused `FriendsPage.tsx` ladder parameter so TypeScript production builds pass again, and moved the `SnackSort.tsx` elapsed reset out of the timer effect so ESLint passes.
+- Files changed: `src/pages/FeedPage.tsx`, `src/pages/FriendsPage.tsx`, `src/games/SnackSort.tsx`, `DESIGN_BIBLE.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
+- Validation run: `npm run lint`; `npm run build`; direct headless Chrome/CDP smoke at 390x844 forced stored `scrollMode: "triple"` and confirmed one 374px feed column, zero `.double-scroll-lane` nodes, first post/photo/image all 374px wide, and no horizontal overflow.
+
 ## [2026-05-02 16:00] Onboarding Gate Sequence
 
 - Active focus: landing page rebuilt as a single-screen onboarding gate with 3-click degradation.

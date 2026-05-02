@@ -2,16 +2,17 @@
 
 This repository began as a hackathon lab for small product tests. Going forward, `slopularity/` is the project. Assume new product work belongs there unless the user explicitly names another folder.
 
-The earlier top-level projects were built to figure out the direction. Treat them as experiments, references, prototypes, or inspiration only; do not continue expanding them by default.
+The earlier projects were built to figure out the direction and now live under `ARCHIVE/`. Treat them as experiments, references, prototypes, or inspiration only; do not continue expanding them by default.
 
 ## Repository Shape
 
 - `index.html` is the GitHub Pages root. It exists only to introduce the hackathon workspace and link into the subprojects.
 - `styles.css` styles the root hub page.
 - `slopularity/` is the primary project folder and the default working area for this repository. It now has the first Vite/React skeleton for The Singularity.
-- Earlier Vite demos include `time-capsules/`, `365 buttons/`, `scrollbreak/`, `pocket-zoo/`, `fun-internet-museum/`, `pixel-pop-arcade/`, `slopternet/`, and `quiet-collapse/`.
-- `slopternet/` and `quiet-collapse/` are especially relevant references for AI-slop and trust-collapse mechanics, but they are prior experiments, not active product tracks.
-- `whimsy-net/` and other top-level folders are earlier idea or scaffold folders. Leave all non-`slopularity/` folders alone unless the user explicitly asks to work on one.
+- `ARCHIVE/` holds the earlier experiments and reference projects.
+- Earlier Vite demos include `ARCHIVE/time-capsules/`, `ARCHIVE/365 buttons/`, `ARCHIVE/scrollbreak/`, `ARCHIVE/pocket-zoo/`, `ARCHIVE/fun-internet-museum/`, `ARCHIVE/pixel-pop-arcade/`, `ARCHIVE/slopternet/`, and `ARCHIVE/quiet-collapse/`.
+- `ARCHIVE/slopternet/` and `ARCHIVE/quiet-collapse/` are especially relevant references for AI-slop and trust-collapse mechanics, but they are prior experiments, not active product tracks.
+- `ARCHIVE/whimsy-net/` and other archived folders are earlier idea or scaffold folders. Leave all non-`slopularity/` folders alone unless the user explicitly asks to work on one.
 - Do not merge subprojects into one app unless the user explicitly asks for that.
 
 ## Primary Project Direction
@@ -25,7 +26,7 @@ The earlier top-level projects were built to figure out the direction. Treat the
 ## Development Workflow
 
 - Work inside `slopularity/` by default.
-- Work inside another subproject folder only when the user explicitly targets that subproject.
+- Work inside an archived subproject folder only when the user explicitly targets that subproject.
 - Do root-only changes at the repository root.
 - For Vite subprojects, use their local scripts from inside that folder:
   - `npm install`

@@ -1,5 +1,13 @@
 # History
 
+## [2026-05-02 14:16] Archive Previous Project Folders
+
+- Created `ARCHIVE/` and moved `365 buttons/`, `fun-internet-museum/`, `pixel-pop-arcade/`, `pocket-zoo/`, `quiet-collapse/`, `scrollbreak/`, `slopternet/`, `time-capsules/`, and `whimsy-net/` into it.
+- Left `slopularity/` at the repository root as the active project and left root support files in place.
+- Updated root `index.html` links so the archived published builds still point to their `dist/` pages under `ARCHIVE/`.
+- Updated root `AGENTS.md` so future work treats `ARCHIVE/` as the home for previous demos and references.
+- Validation run: confirmed the root now contains `ARCHIVE/` and `slopularity/`, checked archived package locations, and verified root hub links target existing archived `dist/index.html` files.
+
 ## [2026-05-02 14:13] Add Claude Instruction Pointer
 
 - Created `CLAUDE.md` as a short pointer telling Claude to refer to `AGENTS.md`.

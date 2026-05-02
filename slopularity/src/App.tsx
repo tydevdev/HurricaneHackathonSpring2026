@@ -6,7 +6,6 @@ import { AssistantPage } from './pages/AssistantPage'
 import { FeedPage } from './pages/FeedPage'
 import { FriendsPage } from './pages/FriendsPage'
 import { GamesPage } from './pages/GamesPage'
-import { LandingPage } from './pages/LandingPage'
 import { ProfilePage } from './pages/ProfilePage'
 import { SearchPage } from './pages/SearchPage'
 import { ShopPage } from './pages/ShopPage'
@@ -15,8 +14,6 @@ import { stageFor } from './utils'
 
 const storageKey = 'slopularity-state-v1'
 const enteredKey = 'slopularity-entered-v1'
-
-type View = 'landing' | 'app'
 
 function loadScore() {
   if (typeof window === 'undefined') return 0
@@ -29,13 +26,7 @@ function loadScore() {
   return Number.isFinite(value) ? value : 0
 }
 
-function loadView(): View {
-  if (typeof window === 'undefined') return 'landing'
-  return window.localStorage.getItem(enteredKey) === '1' ? 'app' : 'landing'
-}
-
 function App() {
-  const [view, setView] = useState<View>(loadView)
   const [activeTab, setActiveTab] = useState<TabId>('feed')
   const [score, setScore] = useState(loadScore)
   const [popups, setPopups] = useState<Popup[]>([])
@@ -95,19 +86,24 @@ function App() {
 
   useEffect(() => {
     document.documentElement.dataset.stage = String(visibleStage)
-    document.documentElement.dataset.view = view
-    document.title = view === 'landing'
-      ? 'The Singularity — everything you need'
-      : visibleStage >= 4
-        ? 'The Singularity // source uncertain'
-        : 'The Singularity'
-  }, [visibleStage, view])
+    document.title =
+      visibleStage >= 4 ? 'The Singularity // source uncertain' : 'The Singularity'
+  }, [visibleStage])
+
+  // First arrival into the workspace (no entered flag yet) gets a single
+  // welcome popup ~1.1s in to demo the friend pattern. The flag is normally
+  // set by the landing page; we re-arm it here for direct app links too.
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (!interruptionMode) return
+    if (window.localStorage.getItem(enteredKey) === '1') return
+    window.localStorage.setItem(enteredKey, '1')
+    const id = window.setTimeout(() => spawnPopup('manual'), 1100)
+    return () => window.clearTimeout(id)
+  }, [interruptionMode, spawnPopup])
 
   useEffect(() => {
     if (!interruptionMode) {
-      return undefined
-    }
-    if (view !== 'app') {
       return undefined
     }
 
@@ -143,19 +139,7 @@ function App() {
       window.clearTimeout(timer)
       events.forEach((eventName) => window.removeEventListener(eventName, markActive))
     }
-  }, [addInstability, interruptionMode, spawnPopup, view])
-
-  function enterApp() {
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem(enteredKey, '1')
-    }
-    setView('app')
-    // First-time visitors get a warm welcome popup ~1s in to demonstrate the
-    // friend-check-in pattern without making the landing feel haunted.
-    if (interruptionMode) {
-      window.setTimeout(() => spawnPopup('manual'), 1100)
-    }
-  }
+  }, [addInstability, interruptionMode, spawnPopup])
 
   function dismissPopup(id: number) {
     setPopups((current) => current.filter((popup) => popup.id !== id))
@@ -200,6 +184,9 @@ function App() {
     if (typeof window !== 'undefined') {
       window.localStorage.removeItem(storageKey)
       window.localStorage.removeItem(enteredKey)
+      // Real navigation back to the landing entry page.
+      window.location.href = '../'
+      return
     }
     setScore(0)
     setActiveTab('feed')
@@ -210,7 +197,6 @@ function App() {
     setQuery('')
     setCompletedTasks([])
     followupArmedRef.current = true
-    setView('landing')
   }
 
   function handleTab(tabId: TabId) {
@@ -233,10 +219,6 @@ function App() {
   function completeTask(title: string) {
     setCompletedTasks((current) => (current.includes(title) ? current : [...current, title]))
     addInstability(2)
-  }
-
-  if (view === 'landing') {
-    return <LandingPage onEnter={enterApp} />
   }
 
   return (

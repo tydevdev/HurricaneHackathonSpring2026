@@ -322,6 +322,7 @@ p {
   z-index: 7;
   display: flex;
   gap: 6px;
+  justify-content: center;
   margin-top: 10px;
   padding: 8px 4px;
   overflow-x: auto;
@@ -333,16 +334,9 @@ p {
 .tabbar::-webkit-scrollbar { height: 4px; }
 .tabbar::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.1); border-radius: 999px; }
 
-.tab-feed .tabbar {
-  justify-content: center;
-}
-
-.tab-feed .tabbar button {
-  min-width: 78px;
-}
-
 .tabbar button {
   flex: 0 0 auto;
+  min-width: 78px;
   min-height: 34px;
   padding: 0 14px;
   color: var(--muted);

@@ -1,5 +1,11 @@
 # History
 
+## [2026-05-03 00:02] Fix Modal Layer Clickability
+
+- Updated `slopularity/src/index.css` so viewport dialogs render above the newer idle, popup, page-warp, and repair overlays instead of sharing an older low modal layer.
+- Isolated the modal stacking context and kept the double-scroll card explicitly pointer-active so its action button remains the top hit target.
+- Validation run: headless Chrome/CDP reproduced the double-scroll unlock path at desktop and phone sizes, stage 1 and stage 4, confirmed the button is the hit target, clicked via real pointer events, and verified the prompt closes with scroll mode stored.
+
 ## [2026-05-02 23:57] Refresh Pages Build Artifacts
 
 - Regenerated `slopularity/dist/` from the current Slopularity source so GitHub Pages route pages reference the current hashed app bundle and published asset names.

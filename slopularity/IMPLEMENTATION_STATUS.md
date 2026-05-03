@@ -2,6 +2,13 @@
 
 Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESIGN_BIBLE.md` stays the product/design execution guide. This file records what is actively intentional in the app right now, what is still a skeleton, and which feature flags are keeping unfinished mechanics out of the way.
 
+## [2026-05-03 00:02] Viewport Modal Layer Repair
+
+- Active focus: keeping Feed/News scroll-unlock dialogs interactive even when the app has active idle, popup, page-warp, or repair layers.
+- Behavior fixed: `.modal-backdrop` now sits above the interruption/repair overlay stack and isolates its own confetti/card layering, so the double-scroll trial card appears as the actual top dialog instead of landing under later transient UI.
+- Behavior fixed: `.double-scroll-modal` is explicitly pointer-active, preserving the one-button unlock target across desktop and phone viewports.
+- Validation run: headless Chrome/CDP against `npm run dev` forced clean and stage-4 Feed sessions at 1280x900 and 390x844, scrolled to the DOUBLE SCROLL unlock, confirmed the button was `elementFromPoint`, clicked via real pointer events, and verified the modal closed with stored `scrollMode: "double"`.
+
 ## [2026-05-02 23:50] Final-Stage Crack Delay
 
 - Active focus: making page cracks rare enough to feel like a late-stage event instead of a constant interruption.

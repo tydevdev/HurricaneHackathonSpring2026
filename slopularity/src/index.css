@@ -1816,7 +1816,7 @@ p {
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 60;
+  z-index: 10080;
   display: grid;
   place-items: center;
   padding: 18px;
@@ -1824,6 +1824,7 @@ p {
   pointer-events: auto;
   background: rgba(5, 5, 5, 0.66);
   backdrop-filter: blur(10px);
+  isolation: isolate;
   overscroll-behavior: contain;
   touch-action: none;
 }
@@ -2198,6 +2199,7 @@ p {
   border: 1px solid rgba(255, 255, 255, 0.72);
   border-radius: 24px;
   box-shadow: 0 28px 90px rgba(0, 0, 0, 0.32);
+  pointer-events: auto;
 }
 
 .double-scroll-kicker {

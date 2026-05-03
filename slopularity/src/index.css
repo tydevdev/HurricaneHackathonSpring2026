@@ -5222,8 +5222,10 @@ p {
   border-radius: 20px;
   border: 1px solid var(--line);
   background: #fff;
-  min-height: 72vh;
-  max-height: 82vh;
+  /* Fit between the appbar+tabbar and the bottom of the viewport so that
+     the inner panes own the scroll instead of the whole page. */
+  height: clamp(420px, calc(100svh - 180px), 760px);
+  min-height: 0;
 }
 
 /* ── Brand tone system ── */
@@ -5887,8 +5889,10 @@ p {
 @media (max-width: 720px) {
   .dm-layout {
     grid-template-columns: 1fr;
-    min-height: 80vh;
-    max-height: 90vh;
+    /* On phone, leave room for the sticky appbar (~64px) AND the
+       bottom-fixed tabbar (~78px) so the input bar isn't covered. */
+    height: calc(100svh - 168px);
+    min-height: 0;
     border-radius: 16px;
   }
 

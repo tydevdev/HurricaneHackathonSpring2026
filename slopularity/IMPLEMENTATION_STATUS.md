@@ -2,6 +2,14 @@
 
 Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESIGN_BIBLE.md` stays the product/design execution guide. This file records what is actively intentional in the app right now, what is still a skeleton, and which feature flags are keeping unfinished mechanics out of the way.
 
+## [2026-05-02 20:12] Page Fracture Decay
+
+- Active focus: stage-driven physical damage in `src/components/PageFracture.tsx`, `src/App.tsx`, and `src/index.css`.
+- Behavior changed: stage 3 now shows hairline page cracks, and stage 4 adds larger branching cracks plus sparse UI shards that tear loose and fall down off screen. The fracture layer remounts by active tab so navigation feels like a fresh break without blocking controls.
+- Behavior preserved: the scanline overlay remains removed; existing stage-4 ghost duplicates, chromatic text, title leaks, tab drift, popup leaks, and bug crawl remain intact.
+- Files changed: `src/components/PageFracture.tsx`, `src/App.tsx`, `src/index.css`, `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` forced stage 4 at 1280x900 and 390x844, confirmed `.page-fracture-layer`, 10 crack paths, 4 falling shards, fixed pointer-events-none overlay, `fracture-shard-fall` animation, and no horizontal overflow.
+
 ## [2026-05-02 19:52] Feed Quadruple Scroll
 
 - Active focus: extending Feed/News shared scroll escalation in `FeedPage.tsx`.

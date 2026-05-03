@@ -1,5 +1,12 @@
 # History
 
+## [2026-05-02 20:12] Add Page Fracture Decay
+
+- Added `slopularity/src/components/PageFracture.tsx` and wired it into `slopularity/src/App.tsx` so stage 3+ decay can render physical page damage.
+- Updated `slopularity/src/index.css` with spreading crack paths and stage-4 paper-like shards that fall off screen without blocking controls.
+- Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the fracture mechanic and preserve reduced-motion expectations.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` forced stage 4 at 1280x900 and 390x844, confirmed `.page-fracture-layer`, 10 crack paths, 4 falling shards, fixed pointer-events-none overlay, `fracture-shard-fall` animation, and no horizontal overflow.
+
 ## [2026-05-02 19:52] Add Feed Quadruple Scroll
 
 - Updated `slopularity/src/pages/FeedPage.tsx` so the shared Feed/News scroll escalation continues from single to double to triple to `QUADRUPLE SCROLL`.

@@ -111,6 +111,7 @@ Each entry includes:
 | Phase pill leak | Reach stage 4 | Phase indicator shows leaked internal string | 4 | implemented |
 | Click-driven tab shuffle | Click a different app tab | App tabs reshuffle into a new order immediately after the page switch. The Landing escape link stays fixed before the shuffled app tabs | all | implemented |
 | Ambient bug crawl | Reach stage 4 and stay in the app | A bug emoji occasionally crawls diagonally from off one side of the screen to the other on a random 30-second to 5-minute timer | 4 | implemented |
+| Page fracture overlay | Reach stage 3+, then switch tabs or advance to stage 4 | Hairline cracks spread across the page; at stage 4 larger cracks appear and paper-like UI shards break loose and fall off screen | 3-4 | implemented |
 | Profile decay demo controls | Click Profile's `Increase decay` or `Stage 4` demo controls | Manually advances the same instability score that drives every decay threshold, for demos | all | implemented |
 
 ## Popups / Chat Swarm

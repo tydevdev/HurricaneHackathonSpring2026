@@ -3,6 +3,7 @@ import { pushActivity } from './activityLog'
 import { BugScatter } from './components/BugScatter'
 import { IdleEye } from './components/IdleEye'
 import { LonelinessPopup, type IdleNudgeDestination } from './components/LonelinessPopup'
+import { PageFracture } from './components/PageFracture'
 import { PopupSwarm } from './components/PopupSwarm'
 import { fragmentLeaks, newsPosts, popupSeeds, tabs as defaultTabs } from './content'
 import { featureFlags } from './featureFlags'
@@ -631,6 +632,8 @@ function App() {
           )}
         </div>
       </section>
+
+      <PageFracture stage={visibleStage} surfaceKey={activeTab} />
 
       {interruptionMode && (
         <PopupSwarm

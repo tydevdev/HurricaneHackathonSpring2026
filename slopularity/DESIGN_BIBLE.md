@@ -111,7 +111,7 @@ The user should be able to understand the major arc in 5 to 10 minutes.
 
 4. Source leakage
 
-   Prompt fragments, synthetic citations, duplicate panels, impossible metrics, last-human-developer comments, and recovery controls break through the product surface.
+   Prompt fragments, synthetic citations, duplicate panels, impossible metrics, last-human-developer comments, physical page fractures, and recovery controls break through the product surface.
 
 The app can look compromised, but it should remain navigable. The user should feel trapped inside a working system, not blocked by a nonfunctional page.
 
@@ -124,6 +124,7 @@ The app can look compromised, but it should remain navigable. The user should fe
 - Noisy mechanics should be feature-flagged while they are still skeletons. Popups, idle reactions, visible degradation, and other interruption layers may be disabled during focused surface work, but they should remain easy to re-enable from a clear flag and reconnect to the same planned interaction model.
 - Reset and recovery controls may exist, but they should feel like product controls, not developer debug buttons.
 - Collapse should be deterministic enough for demos. Avoid random-only progression that makes a presentation miss the best beats.
+- Physical damage should feel like the app surface itself is failing: cracks can spread globally, but falling chunks should be sparse, short-lived, noninteractive, and never cover critical controls for long.
 - Respect reduced motion. If motion is reduced, preserve the narrative through content, layout, state, and labels.
 
 ## Copy Rules

@@ -1,5 +1,11 @@
 # History
 
+## [2026-05-03 10:08] Expand Slopularity README
+
+- Replaced `slopularity/README.md` with a full project README that starts with the requested Slopularity description.
+- Documented the project concept, why it exists, the shared decay loop, main app surfaces, local development commands, demo path, process, design principles, current status, and supporting docs.
+- Validation run: `npm run lint`; `npm run build`.
+
 ## [2026-05-03 00:11] Refresh GitHub Pages Build
 
 - Pulled `main` and confirmed it was already current with `origin/main`.

@@ -2,6 +2,15 @@
 
 Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESIGN_BIBLE.md` stays the product/design execution guide. This file records what is actively intentional in the app right now, what is still a skeleton, and which feature flags are keeping unfinished mechanics out of the way.
 
+## [2026-05-02 23:23] Responsive Navigation And Tap Targets
+
+- Active focus: making every primary page and game route look and behave correctly on desktop and phone-sized screens.
+- Behavior changed: `src/App.tsx` now scrolls active app tabs into view after route changes and runs a delayed alignment pass for the phone Feed/News switcher that mounts inside the feed surface.
+- Behavior changed: `src/App.tsx` maps current multi-mode page-warp values through `pageWarpModeClassNames`, so the expanded warp system builds cleanly and can apply all implemented workspace classes.
+- Styling changed: `src/index.css` makes mobile tabbars use flex-start overflow, keeps active tabs visible, and gives appbar search/demo controls, feed comment controls, and Friends conversation actions practical hit areas without changing their compact visual language.
+- Documentation updated: `DESIGN_BIBLE.md` and root `HISTORY.md`.
+- Validation run: `npm run lint`; `node --experimental-strip-types --test tests/*.test.ts`; `npm run build`; headless Chrome/CDP sweep against `vite preview` checked Landing, app root, Feed, News, Friends, Games, all five game routes, Shop, Search, Assistant, and Profile at 1280x900 and 390x844 with zero body-level horizontal overflow, no undersized interactive targets, and visible active tabs on every mobile app route.
+
 ## [2026-05-02 23:02] Feed And News Comment Expansion
 
 - Active focus: making Feed and News comment threads feel fuller, more varied, and more tied to the specific post/article being shown.

@@ -1,3 +1,7 @@
+@import './styles/page-warp-physics.css';
+@import './styles/page-warp-visual.css';
+@import './styles/page-warp-system.css';
+
 :root {
   color: #111318;
   background: #f5f5f7;
@@ -142,9 +146,12 @@ button {
 .appbar-search-btn {
   flex: 1;
   appearance: none;
+  display: inline-flex;
+  align-items: center;
   background: transparent;
   border: 0;
   padding: 4px 0;
+  min-height: 32px;
   font-size: 0.88rem;
   color: var(--muted);
   text-align: left;
@@ -226,9 +233,12 @@ button {
 
 .appbar-quiet {
   appearance: none;
+  display: inline-flex;
+  align-items: center;
   background: transparent;
   border: 0;
   padding: 5px 10px;
+  min-height: 32px;
   color: var(--muted);
   font-size: 0.8rem;
   font-weight: 600;
@@ -343,6 +353,7 @@ p {
   margin-top: 10px;
   padding: 8px 4px;
   overflow-x: auto;
+  scroll-padding-inline: 14px;
   background: linear-gradient(180deg, rgba(245, 245, 247, 0.96), rgba(245, 245, 247, 0.72));
   backdrop-filter: blur(14px);
   border-radius: 14px;
@@ -403,10 +414,13 @@ p {
 }
 
 .workspace {
+  --page-warp-mirror-x: 1;
+  --page-warp-rotate: 0deg;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 16px;
   align-items: start;
+  transform: scaleX(var(--page-warp-mirror-x)) rotate(var(--page-warp-rotate));
   transform-origin: center center;
   transition:
     filter 0.22s ease,
@@ -418,7 +432,11 @@ p {
 }
 
 .workspace.is-upside-down {
-  transform: rotate(180deg);
+  --page-warp-rotate: 180deg;
+}
+
+.workspace.is-mirror-mode {
+  --page-warp-mirror-x: -1;
 }
 
 .workspace.is-zero-gravity {
@@ -1501,8 +1519,11 @@ p {
 }
 
 .ig-comments {
+  display: inline-flex;
+  align-items: center;
   width: fit-content;
-  padding: 0;
+  min-height: 32px;
+  padding: 0 2px;
   color: #737373;
   background: transparent;
   border: 0;
@@ -1562,9 +1583,11 @@ p {
 }
 
 .comment-expand {
+  display: inline-flex;
+  align-items: center;
   width: fit-content;
-  min-height: 0;
-  padding: 0;
+  min-height: 32px;
+  padding: 0 2px;
   color: #737373;
   background: transparent;
   border: 0;
@@ -5134,7 +5157,7 @@ p {
     position: sticky;
     top: 70px;
     z-index: 30;
-    justify-content: space-around;
+    justify-content: flex-start;
     gap: 0;
     margin: 8px 0 10px;
     padding: 6px max(8px, env(safe-area-inset-right)) 6px max(8px, env(safe-area-inset-left));
@@ -5142,6 +5165,11 @@ p {
     background: rgba(255, 255, 255, 0.94);
     border: 1px solid #efefef;
     border-radius: 16px;
+  }
+
+  .tab-feed .tabbar,
+  .tab-news .tabbar {
+    justify-content: flex-start;
   }
 
   .feed-mobile-tabbar-slot {
@@ -5480,6 +5508,7 @@ p {
   outline: none;
   background: transparent;
   flex: 1;
+  min-height: 32px;
   font-family: inherit;
   font-size: 0.84rem;
   color: var(--ink);
@@ -5583,11 +5612,15 @@ p {
 .dm-header-action {
   pointer-events: auto;
   appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid rgba(226, 232, 240, 0.92);
   background: rgba(255, 255, 255, 0.78);
   color: var(--muted);
   border-radius: 999px;
-  padding: 4px 9px;
+  min-height: 32px;
+  padding: 4px 10px;
   font: inherit;
   font-size: 0.68rem;
   font-weight: 760;

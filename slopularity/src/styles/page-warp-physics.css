@@ -1,0 +1,330 @@
+.workspace:is(.is-melt-mode, .is-jelly-mode, .is-loose-screws-mode) {
+  --page-warp-ease: cubic-bezier(0.37, 0, 0.22, 1);
+}
+
+.workspace:is(.is-melt-mode, .is-jelly-mode, .is-loose-screws-mode) .tab-panel {
+  transform-style: preserve-3d;
+}
+
+.workspace.is-melt-mode .tab-panel :where(
+  section,
+  article,
+  aside,
+  header,
+  footer,
+  form,
+  figure,
+  li,
+  img,
+  button,
+  a,
+  input,
+  textarea,
+  .surface,
+  .surface-heading,
+  .metric-card,
+  .post-card,
+  .friend-card,
+  .shop-card,
+  .result-card,
+  .game-card,
+  .profile-card,
+  .dm-convo-row,
+  .dm-msg-bubble,
+  .dm-product-card,
+  .slop-shop-card,
+  .games-lobby-card,
+  .product-card,
+  .story-chip
+) {
+  --melt-drop: clamp(6px, 1.25vw, 18px);
+  --melt-lean: -0.45deg;
+  --melt-squish-x: 1.01;
+  --melt-squish-y: 0.985;
+  animation: page-warp-melt-slump 8.6s var(--page-warp-ease) infinite alternate;
+  transform-origin: 50% 100%;
+  will-change: translate, rotate, scale, filter;
+}
+
+.workspace.is-melt-mode .tab-panel :where(button, a, input, textarea) {
+  --melt-drop: clamp(3px, 0.75vw, 10px);
+  --melt-lean: 0.28deg;
+}
+
+.workspace.is-melt-mode .tab-panel :where(img, figure, .deal-image, .games-lobby-card-art, .post-image) {
+  --melt-drop: clamp(8px, 1.65vw, 24px);
+  --melt-squish-x: 1.025;
+  --melt-squish-y: 0.972;
+}
+
+.workspace.is-melt-mode .tab-panel :where(section, article, aside, li, .surface, .post-card, .friend-card, .shop-card, .result-card, .game-card, .profile-card):nth-child(3n) {
+  --melt-drop: clamp(10px, 1.9vw, 28px);
+  --melt-lean: 0.72deg;
+  animation-duration: 10.8s;
+  animation-delay: -3.8s;
+}
+
+.workspace.is-melt-mode .tab-panel :where(section, article, aside, li, .surface, .post-card, .friend-card, .shop-card, .result-card, .game-card, .profile-card):nth-child(4n) {
+  --melt-drop: clamp(4px, 1vw, 15px);
+  --melt-lean: -0.86deg;
+  animation-duration: 12.2s;
+  animation-delay: -6.1s;
+}
+
+.workspace.is-jelly-mode .tab-panel :where(
+  section,
+  article,
+  aside,
+  header,
+  footer,
+  nav,
+  form,
+  figure,
+  li,
+  img,
+  button,
+  a,
+  input,
+  textarea,
+  .surface,
+  .surface-heading,
+  .metric-card,
+  .post-card,
+  .friend-card,
+  .shop-card,
+  .result-card,
+  .game-card,
+  .profile-card,
+  .dm-convo-row,
+  .dm-msg-bubble,
+  .dm-product-card,
+  .slop-shop-card,
+  .games-lobby-card,
+  .product-card,
+  .story-chip
+) {
+  --jelly-x: clamp(1px, 0.28vw, 4px);
+  --jelly-y: clamp(1px, 0.22vw, 3px);
+  --jelly-tilt: 0.38deg;
+  animation: page-warp-jelly-wobble 2.9s cubic-bezier(0.28, 0.72, 0.22, 1.18) infinite;
+  transform-origin: 50% 52%;
+  will-change: translate, rotate, scale;
+}
+
+.workspace.is-jelly-mode .tab-panel :where(button, a, input, textarea) {
+  --jelly-x: clamp(0.5px, 0.18vw, 2px);
+  --jelly-y: clamp(0.5px, 0.14vw, 2px);
+  --jelly-tilt: 0.22deg;
+  animation-duration: 2.2s;
+}
+
+.workspace.is-jelly-mode .tab-panel :where(img, figure, .deal-image, .games-lobby-card-art, .post-image) {
+  --jelly-x: clamp(2px, 0.42vw, 6px);
+  --jelly-y: clamp(1px, 0.34vw, 5px);
+  animation-duration: 3.4s;
+}
+
+.workspace.is-jelly-mode .tab-panel :where(section, article, aside, li, .surface, .post-card, .friend-card, .shop-card, .result-card, .game-card, .profile-card):nth-child(2n) {
+  animation-delay: -0.9s;
+}
+
+.workspace.is-jelly-mode .tab-panel :where(section, article, aside, li, .surface, .post-card, .friend-card, .shop-card, .result-card, .game-card, .profile-card):nth-child(3n) {
+  --jelly-tilt: -0.42deg;
+  animation-duration: 3.7s;
+  animation-delay: -1.8s;
+}
+
+.workspace.is-loose-screws-mode .tab-panel :where(
+  section,
+  article,
+  aside,
+  header,
+  footer,
+  form,
+  figure,
+  li,
+  img,
+  button,
+  a,
+  input,
+  textarea,
+  .surface,
+  .surface-heading,
+  .metric-card,
+  .post-card,
+  .friend-card,
+  .shop-card,
+  .result-card,
+  .game-card,
+  .profile-card,
+  .dm-convo-row,
+  .dm-msg-bubble,
+  .dm-product-card,
+  .slop-shop-card,
+  .games-lobby-card,
+  .product-card,
+  .story-chip
+) {
+  --loose-x: clamp(1px, 0.42vw, 7px);
+  --loose-y: clamp(1px, 0.35vw, 6px);
+  --loose-rotate: 0.75deg;
+  animation: page-warp-loose-screws-drift 11s ease-in-out infinite alternate;
+  transform-origin: 48% 52%;
+  will-change: translate, rotate;
+}
+
+.workspace.is-loose-screws-mode .tab-panel :where(button, a, input, textarea) {
+  --loose-x: clamp(0.5px, 0.2vw, 3px);
+  --loose-y: clamp(0.5px, 0.18vw, 3px);
+  --loose-rotate: 0.36deg;
+}
+
+.workspace.is-loose-screws-mode .tab-panel :where(img, figure, .deal-image, .games-lobby-card-art, .post-image) {
+  --loose-x: clamp(2px, 0.55vw, 9px);
+  --loose-y: clamp(1px, 0.5vw, 8px);
+  --loose-rotate: -0.92deg;
+}
+
+.workspace.is-loose-screws-mode .tab-panel :where(section, article, aside, li, .surface, .post-card, .friend-card, .shop-card, .result-card, .game-card, .profile-card):nth-child(2n) {
+  --loose-x: clamp(-7px, -0.42vw, -1px);
+  --loose-rotate: -0.88deg;
+  animation-duration: 13s;
+  animation-delay: -4.2s;
+}
+
+.workspace.is-loose-screws-mode .tab-panel :where(section, article, aside, li, .surface, .post-card, .friend-card, .shop-card, .result-card, .game-card, .profile-card):nth-child(3n) {
+  --loose-y: clamp(-6px, -0.35vw, -1px);
+  --loose-rotate: 1.15deg;
+  animation-duration: 15.5s;
+  animation-delay: -7s;
+}
+
+@keyframes page-warp-melt-slump {
+  0% {
+    translate: 0 0;
+    rotate: 0deg;
+    scale: 1;
+    filter: none;
+  }
+
+  42% {
+    translate: 0 calc(var(--melt-drop) * 0.55);
+    rotate: calc(var(--melt-lean) * 0.7);
+    scale: calc((var(--melt-squish-x) + 1) / 2) calc((var(--melt-squish-y) + 1) / 2);
+    filter: blur(0.1px);
+  }
+
+  100% {
+    translate: 0 var(--melt-drop);
+    rotate: var(--melt-lean);
+    scale: var(--melt-squish-x) var(--melt-squish-y);
+    filter: blur(0.22px);
+  }
+}
+
+@keyframes page-warp-jelly-wobble {
+  0%,
+  100% {
+    translate: 0 0;
+    rotate: 0deg;
+    scale: 1;
+  }
+
+  22% {
+    translate: var(--jelly-x) calc(var(--jelly-y) * -1);
+    rotate: var(--jelly-tilt);
+    scale: 1.012 0.99;
+  }
+
+  48% {
+    translate: calc(var(--jelly-x) * -0.72) var(--jelly-y);
+    rotate: calc(var(--jelly-tilt) * -0.72);
+    scale: 0.992 1.01;
+  }
+
+  72% {
+    translate: calc(var(--jelly-x) * 0.32) calc(var(--jelly-y) * -0.42);
+    rotate: calc(var(--jelly-tilt) * 0.32);
+    scale: 1.005 0.997;
+  }
+}
+
+@keyframes page-warp-loose-screws-drift {
+  0% {
+    translate: 0 0;
+    rotate: 0deg;
+  }
+
+  35% {
+    translate: calc(var(--loose-x) * -0.55) calc(var(--loose-y) * 0.45);
+    rotate: calc(var(--loose-rotate) * -0.5);
+  }
+
+  70% {
+    translate: calc(var(--loose-x) * 0.36) calc(var(--loose-y) * -0.65);
+    rotate: calc(var(--loose-rotate) * 0.62);
+  }
+
+  100% {
+    translate: var(--loose-x) var(--loose-y);
+    rotate: var(--loose-rotate);
+  }
+}
+
+@media (max-width: 720px) {
+  .workspace.is-melt-mode .tab-panel :where(section, article, aside, header, footer, form, figure, li, img, button, a, input, textarea, .surface, .metric-card, .post-card, .friend-card, .shop-card, .result-card, .game-card, .profile-card, .dm-convo-row, .dm-msg-bubble, .dm-product-card, .slop-shop-card, .games-lobby-card, .product-card, .story-chip) {
+    --melt-drop: clamp(3px, 1.4vw, 12px);
+  }
+
+  .workspace.is-jelly-mode .tab-panel :where(section, article, aside, header, footer, nav, form, figure, li, img, button, a, input, textarea, .surface, .metric-card, .post-card, .friend-card, .shop-card, .result-card, .game-card, .profile-card, .dm-convo-row, .dm-msg-bubble, .dm-product-card, .slop-shop-card, .games-lobby-card, .product-card, .story-chip) {
+    --jelly-x: clamp(0.5px, 0.35vw, 2.5px);
+    --jelly-y: clamp(0.5px, 0.3vw, 2px);
+  }
+
+  .workspace.is-loose-screws-mode .tab-panel :where(section, article, aside, header, footer, form, figure, li, img, button, a, input, textarea, .surface, .metric-card, .post-card, .friend-card, .shop-card, .result-card, .game-card, .profile-card, .dm-convo-row, .dm-msg-bubble, .dm-product-card, .slop-shop-card, .games-lobby-card, .product-card, .story-chip) {
+    --loose-x: clamp(0.5px, 0.35vw, 3px);
+    --loose-y: clamp(0.5px, 0.28vw, 2.5px);
+    --loose-rotate: 0.42deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workspace:is(.is-melt-mode, .is-jelly-mode, .is-loose-screws-mode) .tab-panel :where(
+    section,
+    article,
+    aside,
+    header,
+    footer,
+    nav,
+    form,
+    figure,
+    li,
+    img,
+    button,
+    a,
+    input,
+    textarea,
+    .surface,
+    .surface-heading,
+    .metric-card,
+    .post-card,
+    .friend-card,
+    .shop-card,
+    .result-card,
+    .game-card,
+    .profile-card,
+    .dm-convo-row,
+    .dm-msg-bubble,
+    .dm-product-card,
+    .slop-shop-card,
+    .games-lobby-card,
+    .product-card,
+    .story-chip
+  ) {
+    animation: none;
+    filter: none;
+    translate: 0 0;
+    rotate: 0deg;
+    scale: 1;
+  }
+}

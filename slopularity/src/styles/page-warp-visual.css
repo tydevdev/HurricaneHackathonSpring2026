@@ -1,0 +1,338 @@
+.workspace {
+  --page-warp-mirror-x: 1;
+  --page-warp-rotate: 0deg;
+  --page-warp-echo-x: clamp(2px, 0.52vw, 8px);
+  --page-warp-echo-y: clamp(2px, 0.42vw, 7px);
+  --page-warp-font-skew: 0deg;
+  --page-warp-font-track: 0em;
+}
+
+.workspace:is(.is-mirror-mode, .is-upside-down) {
+  transform:
+    scaleX(var(--page-warp-mirror-x))
+    rotate(var(--page-warp-rotate));
+}
+
+.workspace.is-mirror-mode.is-upside-down {
+  transform:
+    scaleX(var(--page-warp-mirror-x))
+    rotate(var(--page-warp-rotate));
+}
+
+.workspace.is-upside-down {
+  --page-warp-rotate: 180deg;
+}
+
+.workspace.is-mirror-mode {
+  --page-warp-mirror-x: -1;
+  transform-origin: center center;
+}
+
+.workspace.is-mirror-mode .tab-panel {
+  transform-origin: center center;
+}
+
+.workspace.is-duplicate-echo-mode .tab-panel :where(
+  section,
+  article,
+  header,
+  form,
+  figure,
+  .surface,
+  .feature-card,
+  .post-card,
+  .friend-card,
+  .shop-card,
+  .result-card,
+  .game-card,
+  .profile-card,
+  .product-card,
+  .dm-message
+) {
+  position: relative;
+  isolation: isolate;
+  z-index: 0;
+}
+
+.workspace.is-duplicate-echo-mode .tab-panel :where(
+  section,
+  article,
+  header,
+  form,
+  figure,
+  .surface,
+  .feature-card,
+  .post-card,
+  .friend-card,
+  .shop-card,
+  .result-card,
+  .game-card,
+  .profile-card,
+  .product-card,
+  .dm-message
+)::before,
+.workspace.is-duplicate-echo-mode .tab-panel :where(
+  section,
+  article,
+  header,
+  form,
+  figure,
+  .surface,
+  .feature-card,
+  .post-card,
+  .friend-card,
+  .shop-card,
+  .result-card,
+  .game-card,
+  .profile-card,
+  .product-card,
+  .dm-message
+)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.workspace.is-duplicate-echo-mode .tab-panel :where(
+  section,
+  article,
+  header,
+  form,
+  figure,
+  .surface,
+  .feature-card,
+  .post-card,
+  .friend-card,
+  .shop-card,
+  .result-card,
+  .game-card,
+  .profile-card,
+  .product-card,
+  .dm-message
+)::before {
+  background: color-mix(in srgb, currentColor 7%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, currentColor 10%, transparent);
+  opacity: 0.42;
+  transform: translate(var(--page-warp-echo-x), var(--page-warp-echo-y));
+  animation: page-warp-echo-primary 4.8s ease-in-out infinite;
+}
+
+.workspace.is-duplicate-echo-mode .tab-panel :where(
+  section,
+  article,
+  header,
+  form,
+  figure,
+  .surface,
+  .feature-card,
+  .post-card,
+  .friend-card,
+  .shop-card,
+  .result-card,
+  .game-card,
+  .profile-card,
+  .product-card,
+  .dm-message
+)::after {
+  border: 1px solid color-mix(in srgb, #22d3ee 28%, transparent);
+  opacity: 0.28;
+  transform: translate(calc(var(--page-warp-echo-x) * -0.72), calc(var(--page-warp-echo-y) * 0.92));
+  animation: page-warp-echo-secondary 6.2s ease-in-out infinite;
+}
+
+.workspace.is-duplicate-echo-mode .tab-panel :where(
+  button,
+  a,
+  input,
+  textarea,
+  select,
+  .story-chip,
+  .phase-pill,
+  .chat-actions button
+) {
+  filter:
+    drop-shadow(var(--page-warp-echo-x) var(--page-warp-echo-y) 0 color-mix(in srgb, currentColor 14%, transparent))
+    drop-shadow(calc(var(--page-warp-echo-x) * -0.55) calc(var(--page-warp-echo-y) * 0.35) 0 color-mix(in srgb, #ec4899 16%, transparent));
+}
+
+.workspace.is-duplicate-echo-mode .tab-panel :where(
+  h1,
+  h2,
+  h3,
+  h4,
+  strong,
+  label,
+  button,
+  a
+) {
+  text-shadow:
+    var(--page-warp-echo-x) 0 0 color-mix(in srgb, #22d3ee 18%, transparent),
+    calc(var(--page-warp-echo-x) * -0.5) 1px 0 color-mix(in srgb, #ec4899 14%, transparent);
+}
+
+.workspace.is-font-infection-mode .tab-panel :where(
+  h1,
+  h2,
+  h3,
+  h4,
+  label,
+  button,
+  summary,
+  legend,
+  .surface-heading,
+  .post-title,
+  .friend-id,
+  .profile-id,
+  .product-title,
+  .game-card-title,
+  .result-title,
+  .story-chip
+) {
+  --page-warp-font-skew: -0.45deg;
+  --page-warp-font-track: 0.018em;
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-kerning: none;
+  letter-spacing: var(--page-warp-font-track);
+  text-rendering: geometricPrecision;
+  transform: skewX(var(--page-warp-font-skew));
+}
+
+.workspace.is-font-infection-mode .tab-panel :where(
+  h1,
+  h2,
+  h3,
+  h4,
+  .surface-heading,
+  .post-title,
+  .product-title,
+  .result-title
+):nth-child(odd),
+.workspace.is-font-infection-mode .tab-panel :where(
+  button,
+  label,
+  summary,
+  .story-chip
+):nth-child(even) {
+  --page-warp-font-skew: 0.62deg;
+  --page-warp-font-track: -0.006em;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.workspace.is-font-infection-mode .tab-panel :where(button, a, label, .story-chip) {
+  text-shadow:
+    0.5px 0 0 color-mix(in srgb, #111318 32%, transparent),
+    -0.5px 0 0 color-mix(in srgb, #f97316 24%, transparent);
+}
+
+.workspace.is-font-infection-mode .tab-panel :where(h1, h2, h3, h4, .surface-heading) {
+  line-height: 1.08;
+  text-shadow:
+    -0.7px 0 0 color-mix(in srgb, #22d3ee 26%, transparent),
+    0.8px 0 0 color-mix(in srgb, #ec4899 22%, transparent);
+}
+
+@keyframes page-warp-echo-primary {
+  0%,
+  100% {
+    opacity: 0.16;
+    transform: translate(calc(var(--page-warp-echo-x) * 0.5), calc(var(--page-warp-echo-y) * 0.5));
+  }
+
+  42% {
+    opacity: 0.44;
+    transform: translate(var(--page-warp-echo-x), var(--page-warp-echo-y));
+  }
+
+  68% {
+    opacity: 0.26;
+    transform: translate(calc(var(--page-warp-echo-x) * 1.45), calc(var(--page-warp-echo-y) * 0.8));
+  }
+}
+
+@keyframes page-warp-echo-secondary {
+  0%,
+  100% {
+    opacity: 0.08;
+    transform: translate(calc(var(--page-warp-echo-x) * -0.35), calc(var(--page-warp-echo-y) * 0.5));
+  }
+
+  50% {
+    opacity: 0.3;
+    transform: translate(calc(var(--page-warp-echo-x) * -0.9), calc(var(--page-warp-echo-y) * 1.05));
+  }
+}
+
+@media (max-width: 640px) {
+  .workspace {
+    --page-warp-echo-x: 3px;
+    --page-warp-echo-y: 2px;
+  }
+
+  .workspace.is-font-infection-mode .tab-panel :where(
+    h1,
+    h2,
+    h3,
+    h4,
+    label,
+    button,
+    summary,
+    legend,
+    .surface-heading,
+    .post-title,
+    .friend-id,
+    .profile-id,
+    .product-title,
+    .game-card-title,
+    .result-title,
+    .story-chip
+  ) {
+    --page-warp-font-track: 0.01em;
+    --page-warp-font-skew: -0.28deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workspace:is(.is-mirror-mode, .is-duplicate-echo-mode, .is-font-infection-mode) {
+    transition-duration: 0.01ms;
+  }
+
+  .workspace.is-duplicate-echo-mode .tab-panel :where(
+    section,
+    article,
+    header,
+    form,
+    figure,
+    .surface,
+    .feature-card,
+    .post-card,
+    .friend-card,
+    .shop-card,
+    .result-card,
+    .game-card,
+    .profile-card,
+    .product-card,
+    .dm-message
+  )::before,
+  .workspace.is-duplicate-echo-mode .tab-panel :where(
+    section,
+    article,
+    header,
+    form,
+    figure,
+    .surface,
+    .feature-card,
+    .post-card,
+    .friend-card,
+    .shop-card,
+    .result-card,
+    .game-card,
+    .profile-card,
+    .product-card,
+    .dm-message
+  )::after {
+    animation: none;
+  }
+}

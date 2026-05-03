@@ -1,5 +1,13 @@
 # History
 
+## [2026-05-02 23:23] Polish Responsive Navigation And Tap Targets
+
+- Updated `slopularity/src/App.tsx` so every app tabbar scrolls the active route into view after route changes, including a delayed pass for the phone Feed/News switcher that renders inside the feed surface.
+- Updated `slopularity/src/index.css` so mobile tabbars use predictable flex-start scrolling, appbar search/demo controls have real hit areas, and Feed/Friends text controls keep their compact look while meeting tap-target checks.
+- Updated the page-warp workspace class mapping in `slopularity/src/App.tsx` so the current multi-mode `PageWarp` shape builds cleanly and all implemented warp classes can apply.
+- Updated `slopularity/DESIGN_BIBLE.md` and `slopularity/IMPLEMENTATION_STATUS.md` to record the responsive navigation contract.
+- Validation run: `npm run lint`; `node --experimental-strip-types --test tests/*.test.ts`; `npm run build`; headless Chrome/CDP sweep against `vite preview` checked 15 routes at 1280x900 and 390x844 with zero body-level horizontal overflow, no undersized interactive targets, and visible active tabs on every mobile app route.
+
 ## [2026-05-02 22:45] Start Ambient Bugs At Phase 3
 
 - Updated `slopularity/src/components/BugScatter.tsx` so crawling bug scheduling and rendering begin at phase 3 instead of phase 4.

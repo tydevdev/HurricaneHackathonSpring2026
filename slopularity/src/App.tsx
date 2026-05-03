@@ -10,7 +10,7 @@ import { PopupSwarm } from './components/PopupSwarm'
 import { fragmentLeaks, newsPosts, popupSeeds, tabs as defaultTabs } from './content'
 import { recoveryScore } from './decayRecovery'
 import { featureFlags } from './featureFlags'
-import { choosePageWarp, type PageWarp } from './pageWarp'
+import { choosePageWarp, pageWarpModeClassNames, pageWarpStartStage, type PageWarp } from './pageWarp'
 import { AssistantPage } from './pages/AssistantPage'
 import { FeedPage } from './pages/FeedPage'
 import { FriendsPage } from './pages/FriendsPage'
@@ -255,7 +255,30 @@ function App() {
   }, [activeTab, dismissScreenPopups, visibleStage])
 
   useEffect(() => {
-    if (visibleStage < maxDecayStage) {
+    const alignActiveTabs = () => {
+      document.querySelectorAll<HTMLElement>('.tabbar').forEach((tabbar) => {
+        const activeLink = tabbar.querySelector<HTMLElement>('[aria-current="page"]')
+        if (!activeLink) {
+          return
+        }
+
+        const centeredLeft = activeLink.offsetLeft - ((tabbar.clientWidth - activeLink.offsetWidth) / 2)
+        const maxLeft = Math.max(0, tabbar.scrollWidth - tabbar.clientWidth)
+        tabbar.scrollLeft = Math.min(maxLeft, Math.max(0, centeredLeft))
+      })
+    }
+
+    const frameId = window.requestAnimationFrame(alignActiveTabs)
+    const timeoutId = window.setTimeout(alignActiveTabs, 120)
+
+    return () => {
+      window.cancelAnimationFrame(frameId)
+      window.clearTimeout(timeoutId)
+    }
+  }, [activeTab, tabOrder])
+
+  useEffect(() => {
+    if (visibleStage < pageWarpStartStage) {
       const frameId = window.requestAnimationFrame(() => setPageWarp(null))
       return () => window.cancelAnimationFrame(frameId)
     }
@@ -743,9 +766,7 @@ function App() {
 
   const workspaceClasses = [
     'workspace',
-    pageWarp?.inverted ? 'is-color-inverted' : '',
-    pageWarp?.upsideDown ? 'is-upside-down' : '',
-    pageWarp?.zeroGravity ? 'is-zero-gravity' : '',
+    ...(pageWarp?.modes.map((mode) => pageWarpModeClassNames[mode]) ?? []),
   ]
     .filter(Boolean)
     .join(' ')

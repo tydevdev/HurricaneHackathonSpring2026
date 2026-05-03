@@ -1,41 +1,94 @@
 import { maxDecayStage } from './utils.ts'
 
+export const pageWarpModes = [
+  'colorInverted',
+  'upsideDown',
+  'zeroGravity',
+  'melt',
+  'mirror',
+  'duplicateEcho',
+  'fontInfection',
+  'jelly',
+  'translationFailure',
+  'looseScrews',
+  'notFoundBleed',
+  'autofillHallucination',
+] as const
+
+export type PageWarpMode = (typeof pageWarpModes)[number]
+
 export type PageWarp = {
-  inverted: boolean
-  upsideDown: boolean
-  zeroGravity: boolean
+  modes: PageWarpMode[]
 }
 
-const warpChance = 0.3
-const zeroGravityChance = 0.2
-const lateWarpStage = maxDecayStage - 1
+export const pageWarpModeClassNames: Record<PageWarpMode, string> = {
+  colorInverted: 'is-color-inverted',
+  upsideDown: 'is-upside-down',
+  zeroGravity: 'is-zero-gravity',
+  melt: 'is-melt-mode',
+  mirror: 'is-mirror-mode',
+  duplicateEcho: 'is-duplicate-echo-mode',
+  fontInfection: 'is-font-infection-mode',
+  jelly: 'is-jelly-mode',
+  translationFailure: 'is-translation-failure-mode',
+  looseScrews: 'is-loose-screws-mode',
+  notFoundBleed: 'is-404-bleed-mode',
+  autofillHallucination: 'is-autofill-hallucination-mode',
+}
 
-function chanceMultiplierForStage(stage: number) {
-  if (stage >= maxDecayStage) {
-    return 1
+export const pageWarpStartStage = maxDecayStage - 2
+const pageWarpEventChanceByStage: Record<number, number> = {
+  [maxDecayStage - 2]: 0.2,
+  [maxDecayStage - 1]: 0.3,
+  [maxDecayStage]: 0.4,
+}
+
+function eventChanceForStage(stage: number) {
+  return pageWarpEventChanceByStage[Math.min(maxDecayStage, Math.max(pageWarpStartStage, stage))] ?? 0
+}
+
+function modeCountForRoll(roll: number) {
+  if (roll >= 0.94) {
+    return 3
   }
 
-  if (stage >= lateWarpStage) {
-    return 0.5
+  if (roll >= 0.72) {
+    return 2
   }
 
-  return 0
+  return 1
+}
+
+function chooseModes(count: number, random: () => number) {
+  const candidates = [...pageWarpModes]
+  const modes: PageWarpMode[] = []
+
+  while (modes.length < count && candidates.length > 0) {
+    const index = Math.min(candidates.length - 1, Math.floor(random() * candidates.length))
+    const [mode] = candidates.splice(index, 1)
+    if (mode) {
+      modes.push(mode)
+    }
+  }
+
+  return modes
 }
 
 export function choosePageWarp(stage: number, random = Math.random): PageWarp | null {
-  const chanceMultiplier = chanceMultiplierForStage(stage)
-
-  if (chanceMultiplier === 0) {
+  if (stage < pageWarpStartStage) {
     return null
   }
 
-  const inverted = random() < warpChance * chanceMultiplier
-  const upsideDown = random() < warpChance * chanceMultiplier
-  const zeroGravity = random() < zeroGravityChance * chanceMultiplier
-
-  if (!inverted && !upsideDown && !zeroGravity) {
+  if (random() >= eventChanceForStage(stage)) {
     return null
   }
 
-  return { inverted, upsideDown, zeroGravity }
+  const modeCount = modeCountForRoll(random())
+  const modes = chooseModes(modeCount, random)
+
+  if (modes.length === 0) {
+    return null
+  }
+
+  return { modes }
 }

@@ -119,6 +119,7 @@ The app can look compromised, but it should remain navigable. The user should fe
 
 - Every meaningful user action should either reveal a new contradiction, increase instability, or create a data trail the app can later misuse.
 - Clicking into a different app tab should reshuffle the app tab order as a subtle navigation decay. The user gets where they clicked, but the map changes behind them. Keep the Landing link outside the shuffle so it remains a stable way back to onboarding.
+- Horizontally scrolling tabbars are allowed, but the active tab must be visible after direct loads, route changes, and phone Feed/News renders. The map can shift; the user should not have to hunt for the current page.
 - Dismissal is a signal. Closing, ignoring, rejecting, pausing, or opting out should still affect the system, but dismiss follow-ups should queue behind the idle gate rather than appearing immediately.
 - Idle time matters. Stillness should eventually trigger check-ins, guesses, optimizations, or profile changes.
 - Noisy mechanics should be feature-flagged while they are still skeletons. Popups, idle reactions, visible degradation, and other interruption layers may be disabled during focused surface work, but they should remain easy to re-enable from a clear flag and reconnect to the same planned interaction model.
@@ -168,6 +169,8 @@ The feed must stay smooth even when the user scrolls aggressively. Keep the cano
 On phone-sized viewports, `DOUBLE SCROLL` and `TRIPLE SCROLL` must still work in portrait. Do not compress posts into side-by-side lanes or shrink reaction/comment surfaces; instead, interleave the extra scroll lanes vertically so phone users get primary, bonus, and extra posts as stacked full-width feed moments.
 
 On the phone feed, keep the global app switcher near the top of the feed surface. It belongs below the Slopularity/Feed topbar and make-post actions, and above the story strip. The switcher should include a Landing link immediately to the left of Feed so visitors can get back to the onboarding page without hunting for Reset. Do not return it to a bottom-fixed mobile dock on the feed.
+
+The phone feed switcher may scroll horizontally, but its active Feed or News tab must load visibly inside the viewport. Preserve the compact familiar-feed rhythm, while keeping search links, comment openers, and conversation actions large enough to tap without changing them into bulky buttons.
 
 Interaction hooks:
 

@@ -1,0 +1,443 @@
+.workspace.is-translation-failure-mode,
+.workspace.is-404-bleed-mode,
+.workspace.is-autofill-hallucination-mode {
+  position: relative;
+}
+
+.workspace.is-translation-failure-mode::before,
+.workspace.is-translation-failure-mode::after,
+.workspace.is-404-bleed-mode::before,
+.workspace.is-404-bleed-mode::after,
+.workspace.is-autofill-hallucination-mode::before {
+  position: absolute;
+  z-index: 30;
+  pointer-events: none;
+  user-select: none;
+}
+
+.workspace.is-translation-failure-mode::before {
+  content: "language pack: close enough";
+  top: clamp(8px, 1.6vw, 18px);
+  right: clamp(10px, 2vw, 24px);
+  max-width: min(28ch, calc(100% - 32px));
+  padding: 5px 8px;
+  color: #274060;
+  font-size: clamp(0.62rem, 1.5vw, 0.74rem);
+  font-weight: 760;
+  line-height: 1.15;
+  background: rgba(238, 246, 255, 0.9);
+  border: 1px solid rgba(39, 64, 96, 0.22);
+  border-radius: 999px;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+  animation: page-warp-caption-drift 7s ease-in-out infinite;
+}
+
+.workspace.is-translation-failure-mode::after {
+  content: "sync of feelings completed";
+  left: clamp(12px, 3vw, 30px);
+  bottom: clamp(12px, 2.5vw, 26px);
+  max-width: min(30ch, calc(100% - 32px));
+  padding: 6px 9px;
+  color: #5b3415;
+  font-size: clamp(0.62rem, 1.4vw, 0.72rem);
+  font-weight: 740;
+  line-height: 1.2;
+  background: rgba(255, 248, 224, 0.92);
+  border: 1px solid rgba(178, 109, 31, 0.24);
+  border-radius: 12px;
+  transform: rotate(-1.4deg);
+}
+
+.workspace.is-translation-failure-mode .tab-panel :where(h1, h2, h3, h4, label, button, [role="button"], .search-result-body small) {
+  position: relative;
+}
+
+.workspace.is-translation-failure-mode .tab-panel :where(.surface, article, form) {
+  position: relative;
+}
+
+.workspace.is-translation-failure-mode .tab-panel :where(h1, h2, h3, h4, label, button, [role="button"], .search-result-body small)::after {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  color: #0f766e;
+  font-size: clamp(0.58rem, 1.35vw, 0.7rem);
+  font-weight: 760;
+  line-height: 1.1;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.88);
+  opacity: 0.78;
+}
+
+.workspace.is-translation-failure-mode .tab-panel :where(h1, h2, h3, h4)::after {
+  content: " / title is mostly correct";
+  left: min(100%, calc(100vw - 280px));
+  top: 0.16em;
+  transform: translateX(8px) rotate(-1deg);
+}
+
+.workspace.is-translation-failure-mode .tab-panel :where(label, .search-result-body small)::after {
+  content: " (best word)";
+  left: 100%;
+  top: 50%;
+  transform: translate(6px, -50%);
+}
+
+.workspace.is-translation-failure-mode .tab-panel :where(button, [role="button"])::after {
+  content: " / do it maybe";
+  right: 8px;
+  bottom: -0.82em;
+  max-width: 18ch;
+  overflow: hidden;
+  color: #7c2d12;
+  text-overflow: ellipsis;
+}
+
+.workspace.is-translation-failure-mode .tab-panel :where(button, [role="button"]):nth-of-type(2n)::after {
+  content: " / yes adjacent";
+}
+
+.workspace.is-translation-failure-mode .tab-panel :where(h2, h3, label, button):nth-of-type(3n)::after {
+  content: " / meaning imported";
+}
+
+.workspace.is-translation-failure-mode .tab-panel :where(.surface, article, form):nth-child(4n + 1)::before {
+  content: "saved as: perhaps";
+  position: absolute;
+  z-index: 3;
+  top: 10px;
+  left: 12px;
+  padding: 4px 7px;
+  pointer-events: none;
+  color: #334155;
+  font-size: 0.62rem;
+  font-weight: 780;
+  line-height: 1.1;
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px dashed rgba(51, 65, 85, 0.26);
+  border-radius: 9px;
+  transform: rotate(1.2deg);
+}
+
+.workspace.is-404-bleed-mode::before {
+  content: "404\A this panel has no registered parent\A /app/current/real-ish";
+  top: clamp(14px, 3vw, 34px);
+  right: clamp(10px, 3vw, 38px);
+  width: min(220px, calc(100% - 34px));
+  padding: 9px 10px;
+  color: rgba(30, 41, 59, 0.76);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: clamp(0.62rem, 1.45vw, 0.72rem);
+  line-height: 1.28;
+  white-space: pre-line;
+  background:
+    linear-gradient(90deg, rgba(239, 68, 68, 0.12), transparent 44%),
+    rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-left-width: 3px;
+  border-radius: 10px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1);
+  transform: rotate(0.7deg);
+  animation: page-warp-error-peek 8.5s ease-in-out infinite;
+}
+
+.workspace.is-404-bleed-mode::after {
+  content: "return home  |  report route  |  refresh memory";
+  right: clamp(12px, 3vw, 40px);
+  bottom: clamp(12px, 2.5vw, 28px);
+  max-width: min(42ch, calc(100% - 32px));
+  padding: 5px 8px;
+  color: rgba(127, 29, 29, 0.72);
+  font-size: clamp(0.56rem, 1.35vw, 0.68rem);
+  font-weight: 760;
+  line-height: 1.15;
+  background: rgba(254, 242, 242, 0.86);
+  border: 1px solid rgba(248, 113, 113, 0.28);
+  border-radius: 999px;
+}
+
+.workspace.is-404-bleed-mode .tab-panel :where(.surface, article, section, form, nav) {
+  position: relative;
+}
+
+.workspace.is-404-bleed-mode .tab-panel :where(.surface, article, section):nth-child(odd)::before,
+.workspace.is-404-bleed-mode .tab-panel :where(form, nav):nth-child(3n)::after {
+  position: absolute;
+  z-index: 4;
+  pointer-events: none;
+  user-select: none;
+  color: rgba(127, 29, 29, 0.7);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: clamp(0.54rem, 1.25vw, 0.66rem);
+  font-weight: 700;
+  line-height: 1.1;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(248, 113, 113, 0.24);
+  box-shadow: 0 6px 16px rgba(127, 29, 29, 0.08);
+}
+
+.workspace.is-404-bleed-mode .tab-panel :where(.surface, article, section):nth-child(odd)::before {
+  content: "not found";
+  top: -7px;
+  right: clamp(10px, 2vw, 22px);
+  padding: 4px 7px;
+  border-radius: 8px;
+  transform: rotate(-1.8deg);
+}
+
+.workspace.is-404-bleed-mode .tab-panel :where(form, nav):nth-child(3n)::after {
+  content: "missing /index";
+  left: clamp(10px, 3vw, 28px);
+  bottom: -8px;
+  padding: 3px 6px;
+  border-radius: 7px;
+  transform: rotate(1.4deg);
+}
+
+.workspace.is-404-bleed-mode .tab-panel :where(a, button):focus-visible {
+  outline-offset: 5px;
+}
+
+.workspace.is-autofill-hallucination-mode {
+  --autofill-ghost: #0f766e;
+  --autofill-wash: rgba(20, 184, 166, 0.1);
+  --autofill-line: rgba(13, 148, 136, 0.28);
+}
+
+.workspace.is-autofill-hallucination-mode::before {
+  content: "autofill learned you incorrectly";
+  top: clamp(10px, 2vw, 22px);
+  left: clamp(12px, 3vw, 34px);
+  max-width: min(34ch, calc(100% - 32px));
+  padding: 5px 8px;
+  color: #115e59;
+  font-size: clamp(0.6rem, 1.4vw, 0.72rem);
+  font-weight: 800;
+  line-height: 1.15;
+  background: rgba(240, 253, 250, 0.92);
+  border: 1px solid var(--autofill-line);
+  border-radius: 999px;
+  box-shadow: 0 10px 24px rgba(15, 118, 110, 0.1);
+  animation: page-warp-autofill-pulse 5.8s ease-in-out infinite;
+}
+
+.workspace.is-autofill-hallucination-mode .tab-panel :where(
+  .search-command-box,
+  .search-box,
+  .assistant-composer-row,
+  .assistant-composer,
+  .comment-composer,
+  .comment-drawer form,
+  .dm-search,
+  .dm-input-bar,
+  .helpy-field,
+  .friend-chat-input
+) {
+  position: relative;
+}
+
+.workspace.is-autofill-hallucination-mode .tab-panel :where(input, textarea) {
+  background-image:
+    linear-gradient(90deg, var(--autofill-wash), transparent 68%),
+    repeating-linear-gradient(90deg, rgba(13, 148, 136, 0.12) 0 1px, transparent 1px 9px);
+  border-color: var(--autofill-line);
+  caret-color: var(--autofill-ghost);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.62),
+    0 0 0 3px rgba(20, 184, 166, 0.08);
+}
+
+.workspace.is-autofill-hallucination-mode .tab-panel :where(input, textarea)::placeholder {
+  color: rgba(15, 118, 110, 0.54);
+}
+
+.workspace.is-autofill-hallucination-mode .tab-panel :where(
+  .search-command-box,
+  .search-box,
+  .assistant-composer-row,
+  .comment-composer,
+  .dm-search,
+  .dm-input-bar,
+  .helpy-field,
+  .friend-chat-input
+)::after {
+  position: absolute;
+  z-index: 5;
+  left: clamp(42px, 8vw, 72px);
+  top: 50%;
+  max-width: min(44ch, calc(100% - 118px));
+  overflow: hidden;
+  pointer-events: none;
+  color: rgba(15, 118, 110, 0.7);
+  font-size: clamp(0.68rem, 1.8vw, 0.84rem);
+  font-weight: 680;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transform: translateY(-50%);
+  animation: page-warp-autofill-type 6.4s steps(2, end) infinite;
+}
+
+.workspace.is-autofill-hallucination-mode .tab-panel .search-command-box::after,
+.workspace.is-autofill-hallucination-mode .tab-panel .search-box::after {
+  content: "probably search: why did I buy confidence storage";
+}
+
+.workspace.is-autofill-hallucination-mode .tab-panel .assistant-composer-row::after {
+  content: "draft: say yes but ask for fewer tabs";
+  left: clamp(82px, 15vw, 136px);
+}
+
+.workspace.is-autofill-hallucination-mode .tab-panel .comment-composer::after,
+.workspace.is-autofill-hallucination-mode .tab-panel .comment-drawer form::after {
+  content: "comment: this is normal enough";
+}
+
+.workspace.is-autofill-hallucination-mode .tab-panel .dm-search::after {
+  content: "find: the person who already agreed";
+  left: clamp(34px, 7vw, 54px);
+}
+
+.workspace.is-autofill-hallucination-mode .tab-panel .dm-input-bar::after,
+.workspace.is-autofill-hallucination-mode .tab-panel .friend-chat-input::after {
+  content: "reply: sounds good, add it to my life";
+  left: clamp(76px, 16vw, 108px);
+  max-width: min(34ch, calc(100% - 150px));
+}
+
+.workspace.is-autofill-hallucination-mode .tab-panel .helpy-field::after {
+  content: "field guess: urgent, flattering, slightly wrong";
+  left: 14px;
+  top: 26px;
+  transform: none;
+}
+
+@keyframes page-warp-caption-drift {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(0.4deg);
+  }
+
+  48% {
+    transform: translate3d(-7px, 3px, 0) rotate(-1deg);
+  }
+}
+
+@keyframes page-warp-error-peek {
+  0%, 100% {
+    opacity: 0.72;
+    transform: translate3d(0, 0, 0) rotate(0.7deg);
+  }
+
+  42% {
+    opacity: 0.94;
+    transform: translate3d(-5px, 4px, 0) rotate(-0.5deg);
+  }
+}
+
+@keyframes page-warp-autofill-pulse {
+  0%, 100% {
+    opacity: 0.72;
+  }
+
+  50% {
+    opacity: 0.95;
+  }
+}
+
+@keyframes page-warp-autofill-type {
+  0%, 100% {
+    opacity: 0.42;
+    clip-path: inset(0 34% 0 0);
+  }
+
+  46%, 76% {
+    opacity: 0.82;
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@media (max-width: 720px) {
+  .workspace.is-translation-failure-mode .tab-panel :where(h1, h2, h3, h4)::after {
+    left: 0;
+    top: 100%;
+    max-width: min(28ch, 80vw);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transform: translateY(2px) rotate(-0.5deg);
+  }
+
+  .workspace.is-translation-failure-mode .tab-panel :where(label, .search-result-body small)::after {
+    left: 0;
+    top: 100%;
+    transform: translateY(1px);
+  }
+
+  .workspace.is-translation-failure-mode .tab-panel :where(button, [role="button"])::after {
+    right: 6px;
+    bottom: -0.72em;
+    max-width: 12ch;
+  }
+
+  .workspace.is-404-bleed-mode::before {
+    width: min(190px, calc(100% - 28px));
+  }
+
+  .workspace.is-404-bleed-mode::after {
+    content: "return  |  refresh";
+  }
+
+  .workspace.is-autofill-hallucination-mode .tab-panel :where(
+    .search-command-box,
+    .search-box,
+    .assistant-composer-row,
+    .comment-composer,
+    .dm-search,
+    .dm-input-bar,
+    .helpy-field,
+    .friend-chat-input
+  )::after {
+    left: 16px;
+    right: 16px;
+    max-width: calc(100% - 32px);
+    font-size: 0.68rem;
+  }
+
+  .workspace.is-autofill-hallucination-mode .tab-panel .dm-input-bar::after,
+  .workspace.is-autofill-hallucination-mode .tab-panel .friend-chat-input::after {
+    left: 52px;
+    max-width: calc(100% - 106px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workspace.is-translation-failure-mode::before,
+  .workspace.is-404-bleed-mode::before,
+  .workspace.is-autofill-hallucination-mode::before,
+  .workspace.is-autofill-hallucination-mode .tab-panel :where(
+    .search-command-box,
+    .search-box,
+    .assistant-composer-row,
+    .comment-composer,
+    .dm-search,
+    .dm-input-bar,
+    .helpy-field,
+    .friend-chat-input
+  )::after {
+    animation: none;
+  }
+
+  .workspace.is-autofill-hallucination-mode .tab-panel :where(
+    .search-command-box,
+    .search-box,
+    .assistant-composer-row,
+    .comment-composer,
+    .dm-search,
+    .dm-input-bar,
+    .helpy-field,
+    .friend-chat-input
+  )::after {
+    clip-path: none;
+  }
+}

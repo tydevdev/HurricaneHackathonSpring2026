@@ -764,6 +764,13 @@
 - Regenerated `slopularity/dist/` so the published build includes the wired popup actions.
 - Validation run: `npm run lint`; `npm run build`; headless Chrome smoke against `vite preview` confirmed the "Open post" idle nudge routes to `/app/feed/` and highlights `glass-ledger`, and a friend popup reply routes to `/app/friends/` with Messages open and an active conversation.
 
+## [2026-05-02 21:49] Fix Friends DM Action Hit Targets
+
+- Updated `slopularity/src/index.css` so the DM conversation action row no longer intercepts pointer events outside its actual buttons.
+- Preserved button interactivity by restoring pointer events on `.dm-convo-actions button` and `.dm-header-action`.
+- Regenerated `slopularity/dist/` so the published Pages build uses the repaired hit targets.
+- Validation run: `npm run lint`; `npm run build`; both clean.
+
 ## [2026-05-02 20:37] Fix Friends DM Thread Opening
 
 - Updated `slopularity/src/pages/FriendsPage.tsx` so human DM threads use stable original friend indexes instead of row positions from the currently visible friend list.

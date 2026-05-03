@@ -5379,10 +5379,12 @@ p {
   flex-wrap: wrap;
   padding: 0 16px 10px 79px;
   margin-top: -4px;
+  pointer-events: none;
 }
 
 .dm-convo-actions button,
 .dm-header-action {
+  pointer-events: auto;
   appearance: none;
   border: 1px solid rgba(226, 232, 240, 0.92);
   background: rgba(255, 255, 255, 0.78);

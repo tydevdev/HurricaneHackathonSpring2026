@@ -1,5 +1,14 @@
 # History
 
+## [2026-05-02 19:52] Add Feed Quadruple Scroll
+
+- Updated `slopularity/src/pages/FeedPage.tsx` so the shared Feed/News scroll escalation continues from single to double to triple to `QUADRUPLE SCROLL`.
+- Added the fourth lane render path on desktop/tablet and a fourth full-width interleaved post in phone vertical multi-scroll.
+- Updated `slopularity/src/index.css` for four-lane shell sizing, grid layout, and phone lane accenting.
+- Updated `slopularity/src/App.tsx` with a minimal tabbar click-handler cleanup so the current React lint rule stays green.
+- Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the fourth scroll behavior.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP against `vite preview` at 1280x900 forced `scrollMode: "quadruple"` and confirmed four desktop lanes, 96 live post cards, correct `Quadruple Scroll feed` label, and no horizontal overflow; 390x844 forced quadruple mode confirmed 24 vertical stacks with four full-width posts each, no `.double-scroll-lane` nodes, and no horizontal overflow; a fresh desktop session scrolled and accepted DOUBLE, TRIPLE, then QUADRUPLE unlock modals in sequence, ending with stored mode `quadruple` and four rendered lanes.
+
 ## [2026-05-02 19:56] Remove CRT Scanline Overlays
 
 - Removed the fixed root-page `body::before` scanline overlay from `styles.css`.

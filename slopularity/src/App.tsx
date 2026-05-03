@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react'
 import { pushActivity } from './activityLog'
 import { BugScatter } from './components/BugScatter'
 import { IdleEye } from './components/IdleEye'
@@ -477,6 +477,14 @@ function App() {
     handleTab(destination)
   }
 
+  function handleTabbarClick(event: MouseEvent<HTMLAnchorElement>) {
+    event.preventDefault()
+    const tabId = event.currentTarget.dataset.tabId as TabId | undefined
+    if (tabId) {
+      handleTab(tabId)
+    }
+  }
+
   function renderTabbar(placement: 'global' | 'feed-mobile') {
     return (
       <nav className={`tabbar tabbar-${placement}`} aria-label="Everything app tabs">
@@ -488,11 +496,9 @@ function App() {
             key={tab.id}
             className={activeTab === tab.id ? 'is-active' : ''}
             href={pathForTab(tab.id)}
+            data-tab-id={tab.id}
             aria-current={activeTab === tab.id ? 'page' : undefined}
-            onClick={(event) => {
-              event.preventDefault()
-              handleTab(tab.id)
-            }}
+            onClick={handleTabbarClick}
           >
             {tab.label}
           </a>

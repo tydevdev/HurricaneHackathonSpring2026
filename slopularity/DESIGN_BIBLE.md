@@ -171,7 +171,7 @@ Interaction hooks:
 - compare, envy, cancel, offended reactions
 - stories that behave like a familiar phone-native carousel: the top line fills over three seconds, auto-advances, accepts left/right image taps, lets dragging the image move between posts, and closes when the user clicks outside the viewer
 - repeated scrolls that mutate captions or counts
-- after the user has seen at least ten posts, a forced celebratory subscription modal may unlock `DOUBLE SCROLL`: two simultaneous feed lanes that make the feed feel like a feature and a threat at the same time. After another ten-post-equivalent scroll depth, the same celebration can unlock `TRIPLE SCROLL`, adding a third lane and making the upsell escalation feel earned by the user's own momentum.
+- after the user has seen at least ten posts, a forced celebratory subscription modal may unlock `DOUBLE SCROLL`: two simultaneous feed lanes that make the feed feel like a feature and a threat at the same time. Another ten-post-equivalent scroll depth can unlock `TRIPLE SCROLL`, and a third interval can unlock `QUADRUPLE SCROLL`, pushing the same post universe into four simultaneous lanes on wide screens or four interleaved full-width posts on phones.
 - comments that preview inline but open into a focused modal/bottom sheet with post context, sorting controls, quick replies, per-comment trust actions, and human input converted into brand-safe testimonial replies
 - sponsor disclosures that move, soften, or rename themselves
 - posts that reappear with tiny differences
@@ -188,7 +188,7 @@ Current testing posture:
 
 Intention: curiosity as a conversion funnel.
 
-News is an exact feed-shaped clone of Feed, not a separate publication layout. Preserve the same topbar anatomy, app switcher placement, story strip, post stack, reaction chips, comments sheet, photo viewer, and `DOUBLE SCROLL` / `TRIPLE SCROLL` behavior. The section should feel like the product simply renamed the feed and swapped the source material underneath.
+News is an exact feed-shaped clone of Feed, not a separate publication layout. Preserve the same topbar anatomy, app switcher placement, story strip, post stack, reaction chips, comments sheet, photo viewer, and `DOUBLE SCROLL` / `TRIPLE SCROLL` / `QUADRUPLE SCROLL` behavior. The section should feel like the product simply renamed the feed and swapped the source material underneath.
 
 The canonical news pool contains 30 image-backed clickbait articles. Keep the article language short, highly clickable, and product-native: headlines should sound like sponsored internet panic in 2030 without visible meta-explanation. Images should remain square editorial thumbnails with no embedded text so the code-native headline and comment surfaces carry the article voice.
 

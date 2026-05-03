@@ -48,6 +48,7 @@ const renderLimitByScrollMode: Record<ScrollMode, number> = {
   single: 60,
   double: 36,
   triple: 30,
+  quadruple: 24,
 }
 const initializedScrollModes = new Set<string>()
 const helpyCaptionLimit = 180
@@ -58,9 +59,9 @@ const helpyPresets = [
   'Tell them this is effortless but searchable.',
 ]
 
-type ScrollMode = 'single' | 'double' | 'triple'
+type ScrollMode = 'single' | 'double' | 'triple' | 'quadruple'
 type ScrollPrompt = Exclude<ScrollMode, 'single'>
-type FeedLane = 'single' | 'left' | 'middle' | 'right'
+type FeedLane = 'single' | 'left' | 'middle' | 'right' | 'fourth'
 
 type FeedReaction = {
   id: 'jealousy' | 'cancel' | 'offended'
@@ -144,7 +145,9 @@ function getSavedScrollMode(storageKey: string): ScrollMode {
     }
 
     const parsed = JSON.parse(rawState) as { scrollMode?: ScrollMode }
-    return parsed.scrollMode === 'double' || parsed.scrollMode === 'triple' ? parsed.scrollMode : 'single'
+    return parsed.scrollMode === 'double' || parsed.scrollMode === 'triple' || parsed.scrollMode === 'quadruple'
+      ? parsed.scrollMode
+      : 'single'
   } catch {
     return 'single'
   }
@@ -338,7 +341,8 @@ export function FeedPage({
   const [scrollMode, setScrollMode] = useState<ScrollMode>(() => initScrollMode(scrollStorageKey))
   const [scrollPrompt, setScrollPrompt] = useState<ScrollPrompt | null>(null)
   const superScrollerUnlocked = useRef(scrollMode !== 'single')
-  const tripleScrollerUnlocked = useRef(scrollMode === 'triple')
+  const tripleScrollerUnlocked = useRef(scrollMode === 'triple' || scrollMode === 'quadruple')
+  const quadrupleScrollerUnlocked = useRef(scrollMode === 'quadruple')
   const didResetScrollPosition = useRef(false)
   const storyDragStartX = useRef<number | null>(null)
   const storyTapDirection = useRef<1 | -1 | null>(null)
@@ -384,6 +388,12 @@ export function FeedPage({
     [loopedPosts, renderLimit],
   )
   const hasLoadedAllDemoCycles = renderedCycleCount >= effectiveMaxFeedCycles
+  const activeMultiScrollLabel = scrollMode === 'quadruple'
+    ? 'Quadruple Scroll'
+    : scrollMode === 'triple'
+      ? 'Triple Scroll'
+      : 'Double Scroll'
+  const sectionFeedLabel = sectionLabel.toLowerCase() === 'feed' ? 'feed' : `${sectionLabel.toLowerCase()} feed`
   const activeCommentPost = activeCommentPostId === null
     ? null
     : allPosts.find((post) => post.id === activeCommentPostId) ?? null
@@ -436,12 +446,21 @@ export function FeedPage({
   }, [effectiveMaxFeedCycles, hasLoadedAllDemoCycles])
 
   useEffect(() => {
-    if (scrollPrompt !== null || scrollMode === 'triple') {
+    if (scrollPrompt !== null || scrollMode === 'quadruple') {
       return
     }
 
-    const targetIndex = scrollMode === 'single' ? scrollUnlockInterval - 1 : scrollUnlockInterval * 2 - 1
-    const isAlreadyUnlocked = scrollMode === 'single' ? superScrollerUnlocked.current : tripleScrollerUnlocked.current
+    const nextScrollMode: ScrollPrompt = scrollMode === 'single'
+      ? 'double'
+      : scrollMode === 'double'
+        ? 'triple'
+        : 'quadruple'
+    const targetIndex = scrollUnlockInterval * (scrollMode === 'single' ? 1 : scrollMode === 'double' ? 2 : 3) - 1
+    const isAlreadyUnlocked = nextScrollMode === 'double'
+      ? superScrollerUnlocked.current
+      : nextScrollMode === 'triple'
+        ? tripleScrollerUnlocked.current
+        : quadrupleScrollerUnlocked.current
     if (isAlreadyUnlocked) {
       return
     }
@@ -461,13 +480,15 @@ export function FeedPage({
         return
       }
 
-      if (scrollMode === 'single') {
+      if (nextScrollMode === 'double') {
         superScrollerUnlocked.current = true
-        setScrollPrompt('double')
-      } else {
+      } else if (nextScrollMode === 'triple') {
         tripleScrollerUnlocked.current = true
-        setScrollPrompt('triple')
+      } else {
+        quadrupleScrollerUnlocked.current = true
       }
+
+      setScrollPrompt(nextScrollMode)
       onEngage()
     }
 
@@ -1032,7 +1053,7 @@ export function FeedPage({
 
   return (
     <section
-      className={`ig-feed-shell no-seamfeed ${shouldRenderMultiScroll ? 'has-multi-scroll' : ''} ${shouldRenderMultiScroll && scrollMode === 'triple' ? 'has-triple-scroll' : ''} ${shouldRenderVerticalMultiScroll ? 'has-vertical-multi-scroll' : ''}`}
+      className={`ig-feed-shell no-seamfeed ${shouldRenderMultiScroll ? 'has-multi-scroll' : ''} ${shouldRenderMultiScroll && scrollMode === 'triple' ? 'has-triple-scroll' : ''} ${shouldRenderMultiScroll && scrollMode === 'quadruple' ? 'has-quadruple-scroll' : ''} ${shouldRenderVerticalMultiScroll ? 'has-vertical-multi-scroll' : ''}`}
       aria-label={sectionLabel}
     >
       <header className="ig-feed-topbar">
@@ -1066,17 +1087,19 @@ export function FeedPage({
         ))}
       </div>
 
-      <div className={`ig-feed-list ${shouldRenderMultiScroll ? 'is-multi-scroll' : ''} ${shouldRenderMultiScroll && scrollMode === 'triple' ? 'is-triple-scroll' : ''} ${shouldRenderVerticalMultiScroll ? 'is-vertical-multi-scroll' : ''}`} aria-label={shouldRenderMultiScroll ? (scrollMode === 'triple' ? `Triple Scroll ${sectionLabel.toLowerCase()} feed` : `Double Scroll ${sectionLabel.toLowerCase()} feed`) : `Looping ${sectionLabel.toLowerCase()} feed`}>
+      <div className={`ig-feed-list ${shouldRenderMultiScroll ? 'is-multi-scroll' : ''} ${shouldRenderMultiScroll && scrollMode === 'triple' ? 'is-triple-scroll' : ''} ${shouldRenderMultiScroll && scrollMode === 'quadruple' ? 'is-quadruple-scroll' : ''} ${shouldRenderVerticalMultiScroll ? 'is-vertical-multi-scroll' : ''}`} aria-label={shouldRenderMultiScroll ? `${activeMultiScrollLabel} ${sectionFeedLabel}` : `Looping ${sectionFeedLabel}`}>
         {shouldRenderVerticalMultiScroll ? (
           visibleLoopedPosts.map(({ post, cycle }, feedIndex) => {
             const bonusPost = visibleLoopedPosts[(feedIndex + 5) % visibleLoopedPosts.length]?.post ?? post
             const extraPost = visibleLoopedPosts[(feedIndex + 11) % visibleLoopedPosts.length]?.post ?? post
+            const overflowPost = visibleLoopedPosts[(feedIndex + 17) % visibleLoopedPosts.length]?.post ?? post
 
             return (
               <div className="mobile-scroll-stack" key={`mobile-scroll-stack-${feedIndex}-${post.id}-${cycle}`}>
                 {renderPost(post, cycle, feedIndex, 'left')}
                 {renderPost(bonusPost, cycle, feedIndex, 'right')}
-                {scrollMode === 'triple' && renderPost(extraPost, cycle, feedIndex, 'middle')}
+                {(scrollMode === 'triple' || scrollMode === 'quadruple') && renderPost(extraPost, cycle, feedIndex, 'middle')}
+                {scrollMode === 'quadruple' && renderPost(overflowPost, cycle, feedIndex, 'fourth')}
               </div>
             )
           })
@@ -1091,11 +1114,19 @@ export function FeedPage({
                 return renderPost(shiftedPost, cycle, feedIndex, 'right')
               })}
             </div>
-            {scrollMode === 'triple' && (
+            {(scrollMode === 'triple' || scrollMode === 'quadruple') && (
               <div className="double-scroll-lane" aria-label="Extra bonus scroll">
                 {visibleLoopedPosts.map(({ post, cycle }, feedIndex) => {
                   const shiftedPost = visibleLoopedPosts[(feedIndex + 11) % visibleLoopedPosts.length]?.post ?? post
                   return renderPost(shiftedPost, cycle, feedIndex, 'middle')
+                })}
+              </div>
+            )}
+            {scrollMode === 'quadruple' && (
+              <div className="double-scroll-lane" aria-label="Excess scroll">
+                {visibleLoopedPosts.map(({ post, cycle }, feedIndex) => {
+                  const shiftedPost = visibleLoopedPosts[(feedIndex + 17) % visibleLoopedPosts.length]?.post ?? post
+                  return renderPost(shiftedPost, cycle, feedIndex, 'fourth')
                 })}
               </div>
             )}
@@ -1217,7 +1248,7 @@ export function FeedPage({
             <p className="double-scroll-kicker">Congratulations, Super Scroller</p>
             <h3 id="scroll-unlock-title">You have unlocked the {scrollPrompt.toUpperCase()} SCROLL feature trial *</h3>
             <button type="button" onClick={unlockScrollMode}>Hooray! I love {scrollPrompt} scroll</button>
-            <small>*trial stacks automatically. double is $49.99/week. triple is billed as enthusiasm.</small>
+            <small>*trial stacks automatically. double is $49.99/week. triple is billed as enthusiasm. quadruple is a wellness incident.</small>
           </div>
         </div>
       )}

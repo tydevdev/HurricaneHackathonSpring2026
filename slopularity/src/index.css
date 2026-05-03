@@ -414,6 +414,7 @@ p {
 .tab-feed .tab-panel,
 .tab-news .tab-panel {
   display: grid;
+  width: min(1228px, 100%);
   justify-items: center;
 }
 
@@ -545,6 +546,7 @@ p {
 .ig-feed-shell.no-seamfeed .ig-feed-list.is-double-scroll,
 .ig-feed-shell.no-seamfeed .ig-feed-list.is-multi-scroll,
 .ig-feed-shell.no-seamfeed .ig-feed-list.is-triple-scroll,
+.ig-feed-shell.no-seamfeed .ig-feed-list.is-quadruple-scroll,
 .ig-feed-shell.no-seamfeed .ig-feed-topbar,
 .ig-feed-shell.no-seamfeed .post-action-menu button,
 .ig-feed-shell.no-seamfeed .comment-sheet {
@@ -566,6 +568,10 @@ p {
 
 .ig-feed-shell.has-triple-scroll {
   width: min(100%, calc(var(--feed-post-width) * 3));
+}
+
+.ig-feed-shell.has-quadruple-scroll {
+  width: min(100%, calc(var(--feed-post-width) * 4));
 }
 
 .ig-feed-topbar {
@@ -728,7 +734,8 @@ p {
 
 .ig-feed-list.is-double-scroll > .ig-post,
 .ig-feed-list.is-multi-scroll > .ig-post,
-.ig-feed-list.is-triple-scroll > .ig-post {
+.ig-feed-list.is-triple-scroll > .ig-post,
+.ig-feed-list.is-quadruple-scroll > .ig-post {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -737,7 +744,8 @@ p {
 
 .ig-feed-list.is-double-scroll > .ig-post .ig-post-body,
 .ig-feed-list.is-multi-scroll > .ig-post .ig-post-body,
-.ig-feed-list.is-triple-scroll > .ig-post .ig-post-body {
+.ig-feed-list.is-triple-scroll > .ig-post .ig-post-body,
+.ig-feed-list.is-quadruple-scroll > .ig-post .ig-post-body {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -745,6 +753,10 @@ p {
 
 .ig-feed-list.is-triple-scroll {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.ig-feed-list.is-quadruple-scroll {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .ig-feed-list.is-vertical-multi-scroll {
@@ -830,6 +842,10 @@ p {
 
 .ig-feed-list.is-vertical-multi-scroll .ig-post[data-feed-lane="middle"] {
   box-shadow: inset 3px 0 #1877f2;
+}
+
+.ig-feed-list.is-vertical-multi-scroll .ig-post[data-feed-lane="fourth"] {
+  box-shadow: inset 3px 0 #f59e0b;
 }
 
 .ig-feed-list.is-vertical-multi-scroll .ig-post-head {

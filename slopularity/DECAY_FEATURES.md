@@ -33,6 +33,7 @@ Each entry includes:
 | Reaction language | Engage with post reactions | Reaction buttons are "Jealousy", "Cancel", "This offends me" instead of normal social reactions | 0+ | implemented |
 | Double Scroll unlock | Scroll past 10 posts | Confetti modal offers "Super Scroller" trial, enables two simultaneous feed lanes on wide screens or interleaved full-width posts on phones | 0+ | implemented |
 | Triple Scroll unlock | Scroll past 20 posts (after double) | Same celebration modal, adds a third lane on wide screens or a third interleaved full-width post on phones | 0+ | implemented |
+| Quadruple Scroll unlock | Scroll past 30 posts (after triple) | Same celebration modal, adds a fourth lane on wide screens or a fourth interleaved full-width post on phones | 0+ | implemented |
 | Repeated post loop | Keep scrolling | Canonical 50 posts repeat in rendered cycles, loop instances get unique labels | 0+ | implemented |
 | Post overflow menu | Tap three-dot menu | Menu options include "cancel", "envision as yourself with AI", product-oriented actions | 0+ | implemented |
 
@@ -41,7 +42,7 @@ Each entry includes:
 | Feature | Trigger | What Degrades | Stage | Status |
 |---------|---------|---------------|-------|--------|
 | Clickbait article feed | Open News | Feed UI is cloned into a news surface, but every canonical post is a clickable-looking article headline with generated editorial imagery | 0+ | implemented |
-| Separate news scroll state | Scroll News | News keeps its own double/triple scroll unlocks and local generated posts separate from Feed | 0+ | implemented |
+| Separate news scroll state | Scroll News | News keeps its own double/triple/quadruple scroll unlocks and local generated posts separate from Feed | 0+ | implemented |
 
 ## Friends
 

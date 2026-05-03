@@ -2,6 +2,14 @@
 
 Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESIGN_BIBLE.md` stays the product/design execution guide. This file records what is actively intentional in the app right now, what is still a skeleton, and which feature flags are keeping unfinished mechanics out of the way.
 
+## [2026-05-02 19:52] Feed Quadruple Scroll
+
+- Active focus: extending Feed/News shared scroll escalation in `FeedPage.tsx`.
+- Behavior changed: scroll progression now continues from `single` to `double` to `triple` to `quadruple`; the fourth unlock appears after the third ten-post interval and accepts through the same Super Scroller modal.
+- Responsive intent: desktop/tablet widths render four simultaneous lanes, while phone-sized viewports keep four full-width posts interleaved vertically instead of squeezing columns.
+- Files changed: `src/pages/FeedPage.tsx`, `src/index.css`, `src/App.tsx`, `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP against `vite preview` at 1280x900 forced `scrollMode: "quadruple"` and confirmed four desktop lanes, 96 live post cards, correct `Quadruple Scroll feed` label, and no horizontal overflow; 390x844 forced quadruple mode confirmed 24 vertical stacks with four full-width posts each, no `.double-scroll-lane` nodes, and no horizontal overflow; a fresh desktop session scrolled and accepted DOUBLE, TRIPLE, then QUADRUPLE unlock modals in sequence, ending with stored mode `quadruple` and four rendered lanes.
+
 ## [2026-05-02 19:04] News Feed Clone
 
 - Active focus: adding `News` as a feed-shaped app section.

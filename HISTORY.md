@@ -956,3 +956,11 @@
 - Updated `slopularity/src/pages/FeedPage.tsx` so Feed and News preview three inline comments before opening the focused comment sheet.
 - Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the richer comment behavior.
 - Validation run: `npm run lint`; `npm run build`; Playwright smoke against `vite preview` confirmed `/app/feed/` and `/app/news/` each render three inline comments and eight comments in the opened sheet on desktop, and 390x844 Feed renders the same counts with no horizontal overflow.
+
+## [2026-05-02 23:09] Remove iCloud Duplicate Assets
+
+- Removed ignored iCloud duplicate build files matching `slopularity/dist/**/* [0-9].*` while preserving the canonical hashed Vite assets.
+- Removed duplicate source remnants `slopularity/src/content 2.ts`, `slopularity/src/index 2.css`, and `slopularity/src/pages/FeedPage 2.tsx` after confirming their base files exist.
+- Removed tracked duplicate asset `slopularity/src/assets/news/news-35 2.jpg` after confirming `slopularity/src/assets/news/news-35.jpg` exists and no source/docs references pointed at the duplicate filename.
+- Updated `.gitignore` so nested Slopularity source assets with iCloud conflict suffixes stay ignored.
+- Validation run: confirmed no remaining `* [0-9].*` duplicate files under `slopularity/src` or `slopularity/dist`.

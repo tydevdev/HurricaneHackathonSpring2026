@@ -35,6 +35,7 @@ test-results/
 # iCloud conflict duplicates
 slopularity/src/* 2.*
 slopularity/src/pages/* 2.*
+slopularity/src/assets/**/* [0-9].*
 slopularity/dist/* [0-9].html
 slopularity/dist/assets/* [0-9].*
 

@@ -9,7 +9,7 @@ Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESI
 - Behavior changed: News articles now expand their clickbait comment pairs into up to eight topic-aware replies that mention the headline hook, publisher, section, sponsor, and curiosity funnel.
 - Behavior changed: `src/pages/FeedPage.tsx` now previews three inline comments per post/article before the focused comment sheet.
 - Documentation updated: `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, and root `HISTORY.md`.
-- Validation run: pending.
+- Validation run: `npm run lint`; `npm run build`; Playwright smoke against `vite preview` confirmed `/app/feed/` and `/app/news/` each render three inline comments and eight comments in the opened sheet on desktop, and 390x844 Feed renders the same counts with no horizontal overflow.
 
 ## [2026-05-02 22:58] Human Dev Trivia Rescue
 

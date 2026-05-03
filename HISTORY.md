@@ -955,4 +955,4 @@
 - Updated `slopularity/src/content.ts` so News articles now expand their clickbait comment pairs into article-specific panic threads keyed to the headline topic, publisher, section, and sponsor pressure.
 - Updated `slopularity/src/pages/FeedPage.tsx` so Feed and News preview three inline comments before opening the focused comment sheet.
 - Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the richer comment behavior.
-- Validation run: pending.
+- Validation run: `npm run lint`; `npm run build`; Playwright smoke against `vite preview` confirmed `/app/feed/` and `/app/news/` each render three inline comments and eight comments in the opened sheet on desktop, and 390x844 Feed renders the same counts with no horizontal overflow.

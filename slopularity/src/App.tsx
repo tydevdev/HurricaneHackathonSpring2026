@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react'
 import { pushActivity } from './activityLog'
 import { BugScatter } from './components/BugScatter'
+import { CrackRepairAssistant } from './components/CrackRepairAssistant'
 import { IdleEye } from './components/IdleEye'
 import { LonelinessPopup, type IdleNudgeAction } from './components/LonelinessPopup'
 import { PageFracture } from './components/PageFracture'
@@ -16,7 +17,7 @@ import { appBasePath, pathForTab, tabFromLocation } from './routes'
 import { SearchPage } from './pages/SearchPage'
 import { ShopPage } from './pages/ShopPage'
 import type { Popup, ScrollStats, TabId } from './types'
-import { stageFor } from './utils'
+import { maxDecayScore, maxDecayStage, scoreForStage, stageFor } from './utils'
 
 const storageKey = 'slopularity-state-v1'
 const enteredKey = 'slopularity-entered-v1'
@@ -156,7 +157,7 @@ function App() {
   }, [])
 
   const addInstability = useCallback((amount = 1) => {
-    setScore((current) => Math.min(30, current + amount))
+    setScore((current) => Math.min(maxDecayScore, current + amount))
   }, [])
 
   const choosePopup = useCallback(
@@ -489,12 +490,11 @@ function App() {
 
   function handleDemoPulse() {
     setScore((current) => {
-      const nextStage = Math.min(4, stageFor(current) + 1)
-      const nextStageThreshold = (nextStage - 1) * 6
-      return Math.min(30, Math.max(current + 1, nextStageThreshold))
+      const nextStage = Math.min(maxDecayStage, stageFor(current) + 1)
+      return Math.min(maxDecayScore, Math.max(current + 1, scoreForStage(nextStage)))
     })
     spawnPopup('manual')
-    pushActivity('system', 'demo_pulse', `stage_${Math.min(4, stageFor(score) + 1)}`)
+    pushActivity('system', 'demo_pulse', `stage_${Math.min(maxDecayStage, stageFor(score) + 1)}`)
   }
 
   function completeTask(title: string) {
@@ -506,18 +506,23 @@ function App() {
   function increaseDecayFromProfile() {
     setScore((current) => {
       const currentStage = stageFor(current)
-      if (currentStage >= 4) {
-        return Math.min(30, current + 3)
+      if (currentStage >= maxDecayStage) {
+        return Math.min(maxDecayScore, current + 3)
       }
 
-      return Math.min(30, Math.max(current + 1, currentStage * 6))
+      return Math.min(maxDecayScore, Math.max(current + 1, scoreForStage(currentStage + 1)))
     })
     pushActivity('profile', 'demo_decay', 'increase')
   }
 
   function maximizeDecayFromProfile() {
-    setScore((current) => Math.max(current, 18))
-    pushActivity('profile', 'demo_decay', 'stage_4')
+    setScore((current) => Math.max(current, scoreForStage(maxDecayStage)))
+    pushActivity('profile', 'demo_decay', `stage_${maxDecayStage}`)
+  }
+
+  function handleRepairCracks() {
+    setScore(0)
+    pushActivity('system', 'spackle_repair', 'stage_0')
   }
 
   function handleLonelinessDismiss() {
@@ -624,9 +629,9 @@ function App() {
         </div>
 
         <div className="appbar-status" aria-label="System status">
-          <span className={`phase-pill phase-${visibleStage}`} title={`phase ${visibleStage} of 4`}>
+          <span className={`phase-pill phase-${visibleStage}`} title={`phase ${visibleStage} of ${maxDecayStage}`}>
             <span className="phase-dot" aria-hidden="true" />
-            {visibleStage >= 4 ? fragmentLeaks.phasePill : `phase ${visibleStage}/4`}
+            {visibleStage >= 4 ? fragmentLeaks.phasePill : `phase ${visibleStage}/${maxDecayStage}`}
           </span>
           {interruptionMode && (
             <button
@@ -733,6 +738,7 @@ function App() {
       </section>
 
       <PageFracture stage={visibleStage} surfaceKey={activeTab} />
+      <CrackRepairAssistant key={`repair-${visibleStage}`} stage={visibleStage} onRepair={handleRepairCracks} />
 
       {interruptionMode && (
         <PopupSwarm

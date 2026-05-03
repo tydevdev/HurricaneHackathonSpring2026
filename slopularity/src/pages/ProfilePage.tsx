@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react'
 import { discoveries, humanFragments } from '../content'
 import type { ScrollStats } from '../types'
+import { maxDecayScore, maxDecayStage } from '../utils'
 
 type ProfilePageProps = {
   completedTaskCount: number
@@ -55,7 +56,7 @@ const LEADERBOARD_GHOSTS = [
   { name: 'WellnessAunt2049', seconds: 144 },
 ]
 
-const DECAY_STAGES = [1, 2, 3, 4]
+const DECAY_STAGES = Array.from({ length: maxDecayStage }, (_, index) => index + 1)
 
 function loadProfileProgress(): ProfileProgress {
   if (typeof window === 'undefined') {
@@ -416,11 +417,11 @@ export function ProfilePage({
             <header className="profile-panel-head">
               <div>
                 <h3 id="demo-decay-title">Decay demo</h3>
-                <small>instability {score}/30 · stage {stage}/4</small>
+                <small>instability {score}/{maxDecayScore} · stage {stage}/{maxDecayStage}</small>
               </div>
               <span>Manual</span>
             </header>
-            <div className="profile-decay-meter" aria-label={`Current decay stage ${stage} of 4`}>
+            <div className="profile-decay-meter" aria-label={`Current decay stage ${stage} of ${maxDecayStage}`}>
               {DECAY_STAGES.map((step) => (
                 <span
                   key={step}
@@ -432,10 +433,10 @@ export function ProfilePage({
             </div>
             <div className="profile-demo-actions">
               <button type="button" onClick={onIncreaseDecay}>
-                {stage >= 4 ? 'Add pressure' : 'Increase decay'}
+                {stage >= maxDecayStage ? 'Add pressure' : 'Increase decay'}
               </button>
-              <button type="button" onClick={onMaxDecay} disabled={stage >= 4}>
-                Stage 4
+              <button type="button" onClick={onMaxDecay} disabled={stage >= maxDecayStage}>
+                Stage {maxDecayStage}
               </button>
             </div>
             <p>{stage >= 4 ? 'Source leakage is active across the shell.' : 'Advance the same decay score used by every surface.'}</p>

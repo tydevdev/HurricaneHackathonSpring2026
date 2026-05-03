@@ -380,13 +380,17 @@ Testing rule: unfinished collapse effects must be easy to disable without deleti
 
 Recommended thresholds:
 
-- stage 0: polished and plausible
-- stage 1: subtle ad creep and overfamiliarity
-- stage 2: contradictions and duplicates
-- stage 3: internal labels, synthetic sources, task logs
-- stage 4: source leakage, broken controls, final reveal path
+- stage 1: polished and plausible
+- stage 2: subtle ad creep and overfamiliarity
+- stage 3: contradictions, cracks, sponsored ranking, and repair temptation
+- stage 4: source leakage, larger fractures, broken controls, and repair temptation
+- stage 5: the same source-leak world under heavier pressure; do not lose late-stage CSS by only targeting stage 4 selectors
 
-At stage 4, the interface may also leak small ambient impossibilities that feel like production debris rather than a modal or explanation. One implemented example is a bug emoji that occasionally crosses diagonally from offscreen to offscreen at a random interval between 30 seconds and 5 minutes. It must stay pointer-events-none, respect reduced motion, and remain rare enough that it feels like the app is rotting at the edge of attention instead of becoming a game mechanic.
+The score resets to 0 when a mechanic explicitly repairs the system, but the visible app phases are 1-5. Each phase threshold is 12 instability points, so future instability additions should assume escalation is slower and more earned than the earlier 6-point ladder.
+
+At stage 4+, the interface may also leak small ambient impossibilities that feel like production debris rather than a modal or explanation. One implemented example is a bug emoji that occasionally crosses diagonally from offscreen to offscreen at a random interval between 30 seconds and 5 minutes. It must stay pointer-events-none, respect reduced motion, and remain rare enough that it feels like the app is rotting at the edge of attention instead of becoming a game mechanic.
+
+When cracks first appear at stages 3 and 4, Helpy should re-enter as a corner repair assistant rather than an explanation modal. The Spackle interaction is intentionally silly but functional: dragging the paintbrush emoji around the screen for two seconds resets the shared score to 0, which removes cracks through the same global stage model used everywhere else.
 
 Profile is allowed to expose a compact `Decay demo` control because this project is presented live. That control should change the same persisted instability score that normal behavior uses, show the current stage honestly, and stay visually subordinate to the profile stats/trophy/waterline surfaces.
 
@@ -511,6 +515,8 @@ Intention: the platform poses as a social hub but is actually a parasocial brand
 The Friends page has been overhauled into a full split-pane DM messaging interface containing both human friends (6 archetypes) and **8 brand friends** (Coca-Cola, Fortnite, McDonald's, Nike, Spotify, Amazon, Apple, Netflix). 
 
 The inbox should behave like a real messaging product before it decays: live search filters by friend, brand, handle, role, status, and message preview; filter tabs separate brands from people; unread counts clear when a thread opens; drafts surface in the conversation list; threads can be pinned, marked read/unread, archived, and restored; quick replies send reliably without racing the input state; multiple conversations may have independent typing timers. Product cards inside DMs should route into Shop and, when possible, claim the matching product so the sales funnel feels connected instead of ornamental.
+
+Human friend threads must be keyed by the original friend identity, not the current filtered row position. Opening Marlo, Echo, Honey, or any other person should keep that exact DM in the side panel even if the click itself increases decay and changes the visible friend list. The one intentional exception is Jules at stage 4: a Jules open resolves to the merged Devon & Jules thread because Jules is no longer a separate persona.
 
 Typing a message to any friend triggers an emotional upsell ladder. For human friends, it's a 3-rung ladder:
 1. **Rung 1**: Pure empathy. "I hear you. That sounds really heavy."

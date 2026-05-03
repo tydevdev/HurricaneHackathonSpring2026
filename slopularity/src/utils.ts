@@ -1,5 +1,14 @@
+export const maxDecayStage = 5
+export const decayStageStep = 12
+export const maxDecayScore = (maxDecayStage - 1) * decayStageStep
+
+export function scoreForStage(stage: number) {
+  const clampedStage = Math.min(maxDecayStage, Math.max(1, stage))
+  return (clampedStage - 1) * decayStageStep
+}
+
 export function stageFor(score: number) {
-  return Math.min(4, Math.max(1, Math.floor(score / 6) + 1))
+  return Math.min(maxDecayStage, Math.max(1, Math.floor(score / decayStageStep) + 1))
 }
 
 export function getEngagementLabels(stage: number) {

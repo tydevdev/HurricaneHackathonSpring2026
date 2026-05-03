@@ -163,19 +163,34 @@ export function FriendsPage({ stage, onReply, onShopIntent, focusFriendName, foc
   const timeoutRefs = useRef<ReturnType<typeof setTimeout>[]>([])
   const [nowTick, setNowTick] = useState(0)
 
-  // At stage 4 Jules disappears entirely; at stage 3+ Devon + Jules merge
-  const visibleFriends = useMemo(
-    () => friendSeeds.filter((_, i) => !(stage >= 4 && i === 3)),
+  // At stage 4 Jules disappears as a separate row; keep original indexes as
+  // thread IDs so opening a DM cannot drift when the decay stage changes.
+  const visibleFriendEntries = useMemo(
+    () => friendSeeds
+      .map((friend, index) => ({ friend, index }))
+      .filter(({ index }) => !(stage >= 4 && index === 3)),
     [stage],
   )
 
-  const activeKey = convoKey(activeConvo)
+  const resolveConversationId = useCallback(
+    (id: ConversationId): ConversationId => {
+      if (id.kind === 'person' && stage >= 4 && id.index === 3) {
+        return { kind: 'person', index: 2 }
+      }
+
+      return id
+    },
+    [stage],
+  )
+
+  const activeConvoId = resolveConversationId(activeConvo)
+  const activeKey = convoKey(activeConvoId)
   const activeMessageCount = chats[activeKey]?.length ?? 0
 
   // Scroll to bottom on new messages
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [activeMessageCount])
+  }, [activeKey, activeMessageCount])
 
   useEffect(() => {
     const updateNow = () => setNowTick(Date.now())
@@ -227,30 +242,30 @@ export function FriendsPage({ stage, onReply, onShopIntent, focusFriendName, foc
         return
       }
 
-      const personIndex = visibleFriends.findIndex((friend) => friend.name.toLowerCase() === normalizedName)
-      if (personIndex >= 0) {
+      const personEntry = visibleFriendEntries.find(({ friend }) => friend.name.toLowerCase() === normalizedName)
+      if (personEntry) {
         setFilter('all')
-        setActiveConvo({ kind: 'person', index: personIndex })
+        setActiveConvo({ kind: 'person', index: personEntry.index })
         setMobileShowChat(true)
-        markRead(`person-${personIndex}`)
-        pushActivity('friends', 'notification_open', visibleFriends[personIndex]!.name)
+        markRead(`person-${personEntry.index}`)
+        pushActivity('friends', 'notification_open', personEntry.friend.name)
         return
       }
 
       if (normalizedName === 'jules') {
-        const devonIndex = visibleFriends.findIndex((friend) => friend.name === 'Devon')
-        if (devonIndex >= 0) {
+        const devonEntry = visibleFriendEntries.find(({ friend }) => friend.name === 'Devon')
+        if (devonEntry) {
           setFilter('all')
-          setActiveConvo({ kind: 'person', index: devonIndex })
+          setActiveConvo({ kind: 'person', index: devonEntry.index })
           setMobileShowChat(true)
-          markRead(`person-${devonIndex}`)
+          markRead(`person-${devonEntry.index}`)
           pushActivity('friends', 'notification_open', 'Devon & Jules')
         }
       }
     })
 
     return () => window.cancelAnimationFrame(frameId)
-  }, [focusFriendName, focusToken, visibleFriends])
+  }, [focusFriendName, focusToken, visibleFriendEntries])
 
   // ── Build the conversation list ──
   const brandConvos: ConversationSummary[] = brandFriends.map((brand, i) => {
@@ -276,8 +291,7 @@ export function FriendsPage({ stage, onReply, onShopIntent, focusFriendName, foc
     }
   })
 
-  const personConvos = visibleFriends.map((friend, idx) => {
-    const originalIndex = friendSeeds.indexOf(friend)
+  const personConvos = visibleFriendEntries.map(({ friend, index: originalIndex }) => {
     const isDevon = originalIndex === 2
     const showMerge = stage >= 3 && (isDevon || originalIndex === 3)
     const displayName = stage >= 4 && isDevon
@@ -287,8 +301,8 @@ export function FriendsPage({ stage, onReply, onShopIntent, focusFriendName, foc
         : friend.name
 
     return {
-      id: { kind: 'person' as const, index: idx },
-      key: `person-${idx}`,
+      id: { kind: 'person' as const, index: originalIndex },
+      key: `person-${originalIndex}`,
       name: displayName,
       handle: '',
       emoji: '',
@@ -299,14 +313,14 @@ export function FriendsPage({ stage, onReply, onShopIntent, focusFriendName, foc
       initial: stage >= 4 && isDevon ? 'D+J'
         : showMerge && isDevon ? 'D/J'
           : friend.name.slice(0, 1),
-      lastMsg: (inputs[`person-${idx}`] ?? '').trim()
-        ? `Draft: ${(inputs[`person-${idx}`] ?? '').trim()}`
-        : chats[`person-${idx}`]?.at(-1)?.text ?? `${friend.voice.slice(0, 60)}...`,
-      lastTime: chats[`person-${idx}`]?.at(-1)?.ts,
-      unread: unreadFor(`person-${idx}`, (idx % 3) + 1),
-      pinned: Boolean(pinned[`person-${idx}`]),
-      archived: Boolean(archived[`person-${idx}`]),
-      drafted: Boolean((inputs[`person-${idx}`] ?? '').trim()),
+      lastMsg: (inputs[`person-${originalIndex}`] ?? '').trim()
+        ? `Draft: ${(inputs[`person-${originalIndex}`] ?? '').trim()}`
+        : chats[`person-${originalIndex}`]?.at(-1)?.text ?? `${friend.voice.slice(0, 60)}...`,
+      lastTime: chats[`person-${originalIndex}`]?.at(-1)?.ts,
+      unread: unreadFor(`person-${originalIndex}`, (originalIndex % 3) + 1),
+      pinned: Boolean(pinned[`person-${originalIndex}`]),
+      archived: Boolean(archived[`person-${originalIndex}`]),
+      drafted: Boolean((inputs[`person-${originalIndex}`] ?? '').trim()),
     }
   })
 
@@ -335,7 +349,8 @@ export function FriendsPage({ stage, onReply, onShopIntent, focusFriendName, foc
 
   const sendMessage = useCallback(
     (convoId: ConversationId, overrideText?: string) => {
-      const key = convoKey(convoId)
+      const resolvedConvoId = resolveConversationId(convoId)
+      const key = convoKey(resolvedConvoId)
       const text = (overrideText ?? inputs[key] ?? '').trim()
       if (!text) return
 
@@ -344,12 +359,12 @@ export function FriendsPage({ stage, onReply, onShopIntent, focusFriendName, foc
       const now = Date.now()
 
       let response: string
-      if (convoId.kind === 'brand') {
-        const brand = brandFriends[convoId.index]!
+      if (resolvedConvoId.kind === 'brand') {
+        const brand = brandFriends[resolvedConvoId.index]!
         response = brandLadderResponse(brand, rungIndex)
         pushActivity('friends', 'brand_chat', brand.name)
       } else {
-        const friend = visibleFriends[convoId.index]!
+        const friend = friendSeeds[resolvedConvoId.index]!
         response = ladderResponse(friend.product, rungIndex)
         pushActivity('friends', 'chat', friend.name)
       }
@@ -368,7 +383,7 @@ export function FriendsPage({ stage, onReply, onShopIntent, focusFriendName, foc
 
       // Simulate typing delay, then add response
       setTypingByKey((prev) => ({ ...prev, [key]: true }))
-      const delay = convoId.kind === 'brand'
+      const delay = resolvedConvoId.kind === 'brand'
         ? 800 + Math.random() * 600 // brands respond fast
         : 1200 + Math.random() * 800
       addThreadTimeout(() => {
@@ -387,8 +402,8 @@ export function FriendsPage({ stage, onReply, onShopIntent, focusFriendName, foc
         markRead(key)
 
         // At stage 3+, brands send unsolicited follow-up after a pause
-        if (stage >= 3 && convoId.kind === 'brand') {
-          const brand = brandFriends[convoId.index]!
+        if (stage >= 3 && resolvedConvoId.kind === 'brand') {
+          const brand = brandFriends[resolvedConvoId.index]!
           const followupDelay = 2000 + Math.random() * 1500
           addThreadTimeout(() => {
             const crossRef = stage >= 3
@@ -407,7 +422,7 @@ export function FriendsPage({ stage, onReply, onShopIntent, focusFriendName, foc
         }
       }, delay)
     },
-    [chats, inputs, onReply, stage, visibleFriends],
+    [chats, inputs, onReply, resolveConversationId, stage],
   )
 
   function sendQuickReply(convoId: ConversationId, text: string) {
@@ -417,8 +432,9 @@ export function FriendsPage({ stage, onReply, onShopIntent, focusFriendName, foc
   }
 
   function openConversation(id: ConversationId) {
-    markRead(convoKey(id))
-    setActiveConvo(id)
+    const resolvedId = resolveConversationId(id)
+    markRead(convoKey(resolvedId))
+    setActiveConvo(resolvedId)
     setMobileShowChat(true)
     onReply()
   }
@@ -459,20 +475,35 @@ export function FriendsPage({ stage, onReply, onShopIntent, focusFriendName, foc
   }
 
   // Get active conversation data
-  const activeBrand = activeConvo.kind === 'brand' ? brandFriends[activeConvo.index] : null
-  const activePerson = activeConvo.kind === 'person' ? visibleFriends[activeConvo.index] : null
+  const activeBrand = activeConvoId.kind === 'brand' ? brandFriends[activeConvoId.index] : null
+  const activePerson = activeConvoId.kind === 'person' ? friendSeeds[activeConvoId.index] : null
+  const activePersonIsDevon = activeConvoId.kind === 'person' && activeConvoId.index === 2
+  const activePersonName = activePerson
+    ? stage >= 4 && activePersonIsDevon
+      ? 'Devon & Jules'
+      : stage >= 3 && activePersonIsDevon
+        ? 'Devon · Jules'
+        : activePerson.name
+    : null
+  const activePersonInitial = activePerson
+    ? stage >= 4 && activePersonIsDevon
+      ? 'D+J'
+      : stage >= 3 && activePersonIsDevon
+        ? 'D/J'
+        : activePerson.name.slice(0, 1)
+    : null
   const activeChatHistory = chats[activeKey] ?? []
   const activeRung = activeChatHistory.filter((m) => m.from === 'friend').length
   const inputValue = inputs[activeKey] ?? ''
   const isTyping = Boolean(typingByKey[activeKey])
 
-  const quickReplies = activeConvo.kind === 'brand' ? QUICK_REPLIES_BRAND : QUICK_REPLIES_PERSON
+  const quickReplies = activeConvoId.kind === 'brand' ? QUICK_REPLIES_BRAND : QUICK_REPLIES_PERSON
 
   // Memory line for active conversation
-  const activeMemory = activeConvo.kind === 'brand'
+  const activeMemory = activeConvoId.kind === 'brand'
     ? brandMemoryLine(activeBrand!, stage)
-    : memoryLine(activeConvo.index, stage)
-  const fallbackMemory = activeConvo.kind === 'brand'
+    : memoryLine(activeConvoId.index, stage)
+  const fallbackMemory = activeConvoId.kind === 'brand'
     ? activeBrand!.memory
     : activePerson?.memory ?? null
 
@@ -624,13 +655,13 @@ export function FriendsPage({ stage, onReply, onShopIntent, focusFriendName, foc
             </span>
           ) : activePerson ? (
             <span className={`dm-avatar dm-person-avatar tone-${activePerson.tone}`} aria-hidden="true">
-              {activePerson.name.slice(0, 1)}
+              {activePersonInitial}
               <em className={`friend-presence is-${activePerson.status}`} />
             </span>
           ) : null}
           <div className="dm-chat-header-text">
             <div className="dm-chat-header-name">
-              <strong>{activeBrand?.name ?? activePerson?.name ?? 'Select a conversation'}</strong>
+              <strong>{activeBrand?.name ?? activePersonName ?? 'Select a conversation'}</strong>
               {activeBrand && <span className="dm-verified-badge" aria-label="Verified brand">✓</span>}
             </div>
             <small>
@@ -701,11 +732,11 @@ export function FriendsPage({ stage, onReply, onShopIntent, focusFriendName, foc
               </span>
               {stage >= 4 && msg.from === 'friend' && (
                 <code className="dm-intent-leak">
-                  {intentJson(Math.floor(i / 2), activeConvo.kind === 'brand')}
+                  {intentJson(Math.floor(i / 2), activeConvoId.kind === 'brand')}
                 </code>
               )}
               <small className="dm-msg-time">
-                {msg.from === 'user' ? `Seen by ${activeBrand?.name ?? activePerson?.name ?? 'friend'} ✓✓` : formatTime(msg.ts)}
+                {msg.from === 'user' ? `Seen by ${activeBrand?.name ?? activePersonName ?? 'friend'} ✓✓` : formatTime(msg.ts)}
               </small>
             </div>
           ))}
@@ -765,7 +796,7 @@ export function FriendsPage({ stage, onReply, onShopIntent, focusFriendName, foc
               key={text}
               type="button"
               className="dm-quick-chip"
-              onClick={() => sendQuickReply(activeConvo, text)}
+              onClick={() => sendQuickReply(activeConvoId, text)}
             >
               {text}
             </button>
@@ -775,20 +806,20 @@ export function FriendsPage({ stage, onReply, onShopIntent, focusFriendName, foc
         {/* Input bar */}
         <form
           className="dm-input-bar"
-          onSubmit={(e) => { e.preventDefault(); sendMessage(activeConvo) }}
+          onSubmit={(e) => { e.preventDefault(); sendMessage(activeConvoId) }}
         >
           <button type="button" className="dm-input-emoji" aria-label="Emoji" onClick={onReply}>☺</button>
           <input
             type="text"
             placeholder={
-              activeRung === 0 ? `Message ${activeBrand?.name ?? activePerson?.name ?? 'friend'}…`
+              activeRung === 0 ? `Message ${activeBrand?.name ?? activePersonName ?? 'friend'}…`
                 : activeRung <= 2 ? 'Say anything…'
                   : activeRung <= 3 ? 'They\'re waiting…'
                     : 'Just say yes…'
             }
             value={inputValue}
             onChange={(e) => setInputs((prev) => ({ ...prev, [activeKey]: e.target.value }))}
-            aria-label={`Message ${activeBrand?.name ?? activePerson?.name ?? 'friend'}`}
+            aria-label={`Message ${activeBrand?.name ?? activePersonName ?? 'friend'}`}
           />
           <button type="submit" className="dm-input-send" disabled={!inputValue.trim()}>
             Send

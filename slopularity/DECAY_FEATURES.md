@@ -55,7 +55,7 @@ Each entry includes:
 | Brand cross-tab memory | Chat with a brand friend at stage 2+ | Brands reference specific things you clicked/searched/played on other tabs | 2+ | implemented |
 | Brand cross-reference | Chat with a brand friend at stage 3+ | Brands start mentioning other brands who "were talking about you" to create pressure | 3+ | implemented |
 | Memory too good | Browse any other tab, then chat with human friend | Friends reference specific things you clicked/searched/played on other tabs ("Saw you looking at that hiking post!") | 2+ | implemented |
-| Friend merge | Reach stage 3+ | Devon and Jules start saying the same messages, their avatar initials blend (D/J, J/D), at stage 4 Jules disappears and Devon becomes "Devon & Jules" | 3–4 | implemented |
+| Friend merge | Reach stage 3+ | Devon and Jules start saying the same messages, their avatar initials blend (D/J, J/D), at stage 4 Jules disappears and Devon becomes "Devon & Jules"; open DM threads stay pinned to the clicked friend through the stage change, with Jules resolving to the merged Devon & Jules thread only once she disappears | 3–4 | implemented |
 | Emotional upsell ladder | Chat with a human friend | Friend replies in a 3-rung ladder: empathy → product mention → full sales pitch. Triggered by message count, not content parsing | all | implemented |
 | Functional inbox controls | Search, pin, archive, restore, mark read/unread, or draft messages | Friends page behaves like a usable inbox while preserving the brand/person split and seeded unread pressure | all | implemented |
 | Connected DM checkout | Click a product card inside a DM | Friends records an offer click, routes into Shop, and claims the matched product when the product exists in the shop catalog | all | implemented |
@@ -117,9 +117,11 @@ Each entry includes:
 | Phase pill leak | Reach stage 4 | Phase indicator shows leaked internal string | 4 | implemented |
 | Click-driven tab shuffle | Click a different app tab | App tabs reshuffle into a new order immediately after the page switch. The Landing escape link stays fixed before the shuffled app tabs | all | implemented |
 | Ambient bug crawl | Reach stage 4 and stay in the app | A bug emoji occasionally crawls diagonally from off one side of the screen to the other on a random 30-second to 5-minute timer | 4 | implemented |
-| Page fracture overlay | Reach stage 3+, then switch tabs or advance to stage 4 | Hairline cracks spread across the page; at stage 4 larger cracks appear and paper-like UI shards break loose and fall off screen | 3-4 | implemented |
+| Page fracture overlay | Reach stage 3+, then switch tabs or advance into later stages | Hairline cracks spread across the page; stage 4+ grows larger cracks and paper-like UI shards break loose and fall off screen | 3-5 | implemented |
+| Helpy Spackle repair | Reach stage 3 or 4 | Helpy returns in the corner with Spackle; dragging the paintbrush emoji for 2 seconds seals the cracks and resets the decay score to 0 | 3-4 | implemented |
+| Five-stage decay ladder | Trigger ordinary instability events or demo controls | Decay now has five visible stages, with 12 score points required per stage instead of 6, so escalation takes twice as much interaction | all | implemented |
 | Appbar demo pulse | Click `Demo pulse` in the appbar | Advances to the next real decay-stage threshold and immediately summons one friend-queue popup for live demos | all | implemented |
-| Profile decay demo controls | Click Profile's `Increase decay` or `Stage 4` demo controls | Manually advances the same instability score that drives every decay threshold, for demos | all | implemented |
+| Profile decay demo controls | Click Profile's `Increase decay` or `Stage 5` demo controls | Manually advances the same instability score that drives every decay threshold, for demos | all | implemented |
 
 ## Popups / Chat Swarm
 

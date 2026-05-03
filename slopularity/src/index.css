@@ -194,9 +194,14 @@ button {
 }
 .phase-pill.phase-2 .phase-dot { background: #fbbf24; }
 .phase-pill.phase-3 .phase-dot { background: #f97316; }
-.phase-pill.phase-4 .phase-dot {
+.phase-pill.phase-4 .phase-dot,
+.phase-pill.phase-5 .phase-dot {
   background: #ef4444;
   box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12);
+}
+.phase-pill.phase-5 {
+  border-color: rgba(127, 29, 29, 0.32);
+  color: #7f1d1d;
 }
 
 .appbar-toggle {
@@ -3781,21 +3786,25 @@ p {
 }
 
 [data-stage="3"] .search-source-chain,
-[data-stage="4"] .search-source-chain {
+[data-stage="4"] .search-source-chain,
+[data-stage="5"] .search-source-chain {
   border-color: #fed7aa;
 }
 
 [data-stage="3"] .search-source-chain em,
-[data-stage="4"] .search-source-chain em {
+[data-stage="4"] .search-source-chain em,
+[data-stage="5"] .search-source-chain em {
   background: #f97316;
 }
 
-[data-stage="4"] .search-result-sources {
+[data-stage="4"] .search-result-sources,
+[data-stage="5"] .search-result-sources {
   background: #fff7f7;
   border-color: #fecaca;
 }
 
-[data-stage="4"] .search-result-sources .search-result-body strong {
+[data-stage="4"] .search-result-sources .search-result-body strong,
+[data-stage="5"] .search-result-sources .search-result-body strong {
   color: #b91c1c;
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-size: 0.88rem;
@@ -4230,7 +4239,10 @@ p {
 }
 [data-stage="4"] .chat-meta small,
 [data-stage="4"] .chat-queue-row small,
-[data-stage="4"] .chat-signal {
+[data-stage="4"] .chat-signal,
+[data-stage="5"] .chat-meta small,
+[data-stage="5"] .chat-queue-row small,
+[data-stage="5"] .chat-signal {
   color: #b91c1c;
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   letter-spacing: 0;
@@ -4482,7 +4494,8 @@ p {
    ───────────────────────────────────────────────────────────────────── */
 
 [data-stage="3"] .post-card:nth-child(2),
-[data-stage="4"] .post-card:nth-child(2) {
+[data-stage="4"] .post-card:nth-child(2),
+[data-stage="5"] .post-card:nth-child(2) {
   transform: translateY(calc(var(--decay) * 1px));
 }
 
@@ -4507,14 +4520,19 @@ p {
 
 [data-stage="4"] .surface,
 [data-stage="4"] .friends-surface .friend-card,
-[data-stage="4"] .shop-surface .shop-card {
+[data-stage="4"] .shop-surface .shop-card,
+[data-stage="5"] .surface,
+[data-stage="5"] .friends-surface .friend-card,
+[data-stage="5"] .shop-surface .shop-card {
   box-shadow:
     0 12px 32px rgba(15, 23, 42, 0.06),
     0 0 0 1px rgba(239, 68, 68, 0.18);
 }
 
 [data-stage="4"] .post-card:nth-child(3),
-[data-stage="4"] .friend-card:nth-child(2) {
+[data-stage="4"] .friend-card:nth-child(2),
+[data-stage="5"] .post-card:nth-child(3),
+[data-stage="5"] .friend-card:nth-child(2) {
   transform: rotate(-0.35deg) translateY(2px);
 }
 
@@ -4523,7 +4541,11 @@ p {
 [data-stage="4"] .surface-heading h2,
 [data-stage="4"] .landing-headline,
 [data-stage="4"] .profile-id strong,
-[data-stage="4"] .friend-id strong {
+[data-stage="4"] .friend-id strong,
+[data-stage="5"] .surface-heading h2,
+[data-stage="5"] .landing-headline,
+[data-stage="5"] .profile-id strong,
+[data-stage="5"] .friend-id strong {
   animation: decay-chromatic 3.6s ease-in-out infinite;
 }
 
@@ -4544,14 +4566,24 @@ p {
 [data-stage="4"] .friend-card,
 [data-stage="4"] .shop-card,
 [data-stage="4"] .games-stage,
-[data-stage="4"] .feature-card {
+[data-stage="4"] .feature-card,
+[data-stage="5"] .surface,
+[data-stage="5"] .friend-card,
+[data-stage="5"] .shop-card,
+[data-stage="5"] .games-stage,
+[data-stage="5"] .feature-card {
   position: relative;
 }
 [data-stage="4"] .surface::after,
 [data-stage="4"] .friend-card::after,
 [data-stage="4"] .shop-card::after,
 [data-stage="4"] .games-stage::after,
-[data-stage="4"] .feature-card::after {
+[data-stage="4"] .feature-card::after,
+[data-stage="5"] .surface::after,
+[data-stage="5"] .friend-card::after,
+[data-stage="5"] .shop-card::after,
+[data-stage="5"] .games-stage::after,
+[data-stage="5"] .feature-card::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -4569,7 +4601,8 @@ p {
 }
 
 /* Stage 4 phase pill goes red-pulse. */
-[data-stage="4"] .phase-pill .phase-dot {
+[data-stage="4"] .phase-pill .phase-dot,
+[data-stage="5"] .phase-pill .phase-dot {
   animation: decay-pulse 1.4s ease-in-out infinite;
 }
 @keyframes decay-pulse {
@@ -4578,15 +4611,18 @@ p {
 }
 
 /* The popup dock header rebrands itself at stage 4. */
-[data-stage="4"] .popup-dock-head strong {
+[data-stage="4"] .popup-dock-head strong,
+[data-stage="5"] .popup-dock-head strong {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   color: #b91c1c;
   letter-spacing: 0;
 }
 
 /* Slight tabbar misalignment at stage 4. Each tab is a hair off. */
-[data-stage="4"] .tabbar a:nth-child(2n) { transform: translateY(-1px); }
-[data-stage="4"] .tabbar a:nth-child(3n) { transform: translateY(1px); }
+[data-stage="4"] .tabbar a:nth-child(2n),
+[data-stage="5"] .tabbar a:nth-child(2n) { transform: translateY(-1px); }
+[data-stage="4"] .tabbar a:nth-child(3n),
+[data-stage="5"] .tabbar a:nth-child(3n) { transform: translateY(1px); }
 
 .page-fracture-layer {
   position: fixed;
@@ -4635,27 +4671,39 @@ p {
   opacity: 0;
 }
 
-.fracture-stage-4 .page-fracture-cracks {
+.fracture-stage-4 .page-fracture-cracks,
+.fracture-stage-5 .page-fracture-cracks {
   opacity: 0.86;
   transform: scale(1);
   animation-duration: 1.8s;
 }
 
-.fracture-stage-4 .page-fracture-cracks path {
+.fracture-stage-4 .page-fracture-cracks path,
+.fracture-stage-5 .page-fracture-cracks path {
   stroke: rgba(17, 19, 24, 0.58);
 }
 
-.fracture-stage-4 .fracture-main {
+.fracture-stage-4 .fracture-main,
+.fracture-stage-5 .fracture-main {
   stroke-width: 2.1;
 }
 
-.fracture-stage-4 .fracture-branch {
+.fracture-stage-4 .fracture-branch,
+.fracture-stage-5 .fracture-branch {
   stroke-width: 1.22;
 }
 
-.fracture-stage-4 .fracture-stage-four {
+.fracture-stage-4 .fracture-stage-four,
+.fracture-stage-5 .fracture-stage-four {
   opacity: 1;
   animation-delay: 0.4s;
+}
+
+.fracture-stage-5 .page-fracture-cracks {
+  opacity: 0.95;
+  filter:
+    drop-shadow(0 1px 0 rgba(255, 255, 255, 0.72))
+    drop-shadow(0 12px 22px rgba(127, 29, 29, 0.18));
 }
 
 .page-fracture-shards {
@@ -4791,6 +4839,16 @@ p {
   [data-stage="4"] .games-stage::after,
   [data-stage="4"] .feature-card::after,
   [data-stage="4"] .phase-pill .phase-dot,
+  [data-stage="5"] .surface-heading h2,
+  [data-stage="5"] .landing-headline,
+  [data-stage="5"] .profile-id strong,
+  [data-stage="5"] .friend-id strong,
+  [data-stage="5"] .surface::after,
+  [data-stage="5"] .friend-card::after,
+  [data-stage="5"] .shop-card::after,
+  [data-stage="5"] .games-stage::after,
+  [data-stage="5"] .feature-card::after,
+  [data-stage="5"] .phase-pill .phase-dot,
   .page-fracture-cracks,
   .page-fracture-cracks path,
   .page-fracture-shard,
@@ -10577,6 +10635,94 @@ p {
   color: #4338ca;
 }
 
+.crack-repair {
+  position: fixed;
+  inset: 0;
+  z-index: 10020;
+  pointer-events: none;
+}
+
+.crack-repair-card {
+  pointer-events: auto;
+}
+
+.crack-repair-card .helpy-rescue-bubble {
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
+.spackle-meter {
+  position: relative;
+  height: 5px;
+  margin-top: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.12);
+}
+
+.spackle-meter span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--repair-progress) * 100%);
+  border-radius: inherit;
+  background: linear-gradient(90deg, #818cf8, #f9fafb 58%, #c4b5fd);
+  transition: width 0.08s linear;
+}
+
+.spackle-brush {
+  position: fixed;
+  left: var(--brush-x);
+  top: var(--brush-y);
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgba(26, 29, 46, 0.16);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 30% 18%, rgba(255, 255, 255, 0.95), transparent 32%),
+    linear-gradient(135deg, #fff, #eef2ff 56%, #ddd6fe);
+  box-shadow:
+    0 18px 40px rgba(26, 29, 46, 0.2),
+    0 0 0 calc(var(--repair-progress) * 7px) rgba(99, 102, 241, 0.11);
+  color: #1a1d2e;
+  cursor: grab;
+  font-size: 1.85rem;
+  line-height: 1;
+  pointer-events: auto;
+  touch-action: none;
+  transform: translate(-50%, -50%) rotate(calc(var(--repair-progress) * -10deg));
+  transition:
+    box-shadow 0.12s ease,
+    transform 0.12s ease;
+  user-select: none;
+}
+
+.spackle-brush:active,
+.crack-repair.is-dragging .spackle-brush {
+  cursor: grabbing;
+  transform: translate(-50%, -50%) rotate(-13deg) scale(1.04);
+}
+
+.spackle-brush:focus-visible {
+  outline: 3px solid rgba(99, 102, 241, 0.34);
+  outline-offset: 4px;
+}
+
+.spackle-wash {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at var(--brush-x) var(--brush-y),
+      rgba(255, 255, 255, calc(0.35 + var(--repair-progress) * 0.28)) 0 42px,
+      rgba(199, 210, 254, 0.28) 43px 74px,
+      transparent 96px
+    );
+  mix-blend-mode: screen;
+}
+
 /* Helpy responsive */
 @media (max-width: 640px) {
   .helpy-rescue {
@@ -10586,6 +10732,12 @@ p {
   }
   .helpy-rescue-bubble {
     max-width: 100%;
+  }
+
+  .spackle-brush {
+    width: 54px;
+    height: 54px;
+    font-size: 1.7rem;
   }
 }
 

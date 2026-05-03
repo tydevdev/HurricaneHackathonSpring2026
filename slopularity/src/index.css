@@ -1821,6 +1821,7 @@ p {
   place-items: center;
   padding: 18px;
   overflow: hidden;
+  pointer-events: auto;
   background: rgba(5, 5, 5, 0.66);
   backdrop-filter: blur(10px);
   overscroll-behavior: contain;
@@ -2164,6 +2165,7 @@ p {
 }
 
 .double-scroll-backdrop {
+  pointer-events: auto;
   background:
     radial-gradient(circle at 18% 18%, rgba(255, 218, 77, 0.3), transparent 22%),
     radial-gradient(circle at 82% 26%, rgba(24, 119, 242, 0.22), transparent 24%),
@@ -4197,7 +4199,7 @@ p {
   display: grid;
   gap: 8px;
   width: min(390px, calc(100vw - 24px));
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 .popup-swarm.tone-hype,
@@ -9775,6 +9777,7 @@ p {
   place-items: center;
   padding: 16px;
   overflow: hidden;
+  pointer-events: auto;
   background: rgba(17, 19, 24, 0.46);
   backdrop-filter: blur(8px);
   overscroll-behavior: contain;

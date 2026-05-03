@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { feedPosts, shopProducts } from '../content'
+import { shopProducts } from '../content'
 import type { ShopProduct } from '../content'
 
 type ShopPageProps = {
@@ -85,43 +85,18 @@ const urgencyCopy = [
   'Price memory unstable',
 ]
 
-const dealRemixes = [
-  { suffix: 'Travel Size', shelf: 'Micro need', priceShift: -12, tagline: 'Smaller, faster, easier to justify.' },
-  { suffix: 'Family Pack', shelf: 'Volume calm', priceShift: 34, tagline: 'Enough to make restraint look inefficient.' },
-  { suffix: 'Auto Bundle', shelf: 'One-tap loop', priceShift: 22, tagline: 'Ships again before the feeling has a name.' },
-]
-
+// One deal entry per shopProduct. Earlier the catalog doubled every product
+// into a hero + remix pair, which read as "the same item twice side by side"
+// because both inherited the same image and base name. Each product now has
+// its own card; the "Cart bait" filter surfaces the discounted entries
+// instead of the duplicated remixes.
 function dealCatalog(stage: number): DealProduct[] {
-  const remixedProducts = shopProducts.flatMap((product, index) => {
-    const remix = dealRemixes[index % dealRemixes.length]
-    const remixedPrice = Math.max(5, product.price + remix.priceShift + (index % 2) * 7)
-
-    return [
-      {
-        ...product,
-        id: `${product.id}-hero`,
-        baseId: product.id,
-        shelf: stage >= 3 ? 'Price adapting' : 'For you',
-        featured: index < 2,
-      },
-      {
-        ...product,
-        id: `${product.id}-remix-${index}`,
-        baseId: product.id,
-        name: `${product.name} ${remix.suffix}`,
-        tagline: remix.tagline,
-        category: remix.shelf,
-        price: remixedPrice,
-        oldPrice: Math.max(product.oldPrice ?? product.price + 20, remixedPrice + 37),
-        urgency: `Reserved because ${product.name.toLowerCase()} held your attention.`,
-        reason: `Matched from ${product.category.toLowerCase()} and cart math.`,
-        internal: `${product.internal} · remix:${remix.suffix.toLowerCase().replaceAll(' ', '_')}`,
-        shelf: remix.shelf,
-      },
-    ]
-  })
-
-  return remixedProducts
+  return shopProducts.map((product, index) => ({
+    ...product,
+    baseId: product.id,
+    shelf: stage >= 3 ? 'Price adapting' : 'For you',
+    featured: index < 2,
+  }))
 }
 
 function gemPrice(product: Pick<ShopProduct, 'price'>, index: number, stage: number) {
@@ -218,7 +193,9 @@ export function ShopPage({ stage, onBuy, claimProductId, claimToken }: ShopPageP
         case 'cheap':
           return gems < 5000
         case 'remix':
-          return product.id.includes('-remix-')
+          // "Cart bait" surfaces products that are visibly discounted —
+          // the ones the system most wants you to grab right now.
+          return Boolean(product.oldPrice)
         case 'inferred':
           return !product.featured
         default:
@@ -416,7 +393,9 @@ export function ShopPage({ stage, onBuy, claimProductId, claimToken }: ShopPageP
             ) : null}
             {visibleDeals.map(({ product, index, gems, remaining }) => {
               const inflatedGems = gems * 100
-              const image = product.imageSrc || feedPosts[(index * 7) % feedPosts.length]?.imageSrc
+              // Each shop product owns its own imageSrc. No more borrowing
+              // unrelated lifestyle photos from the Feed.
+              const image = product.imageSrc
               const soldCount = 900 + index * 311 + timerTick * (index + 1)
 
               return (

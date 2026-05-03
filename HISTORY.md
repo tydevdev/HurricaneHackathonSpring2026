@@ -1,5 +1,19 @@
 # History
 
+## [2026-05-02 23:31] Delay Human Dev Rescue
+
+- Updated `slopularity/src/components/HumanDevRescue.tsx` so the stage-5 developer waits 30-60 seconds before appearing and the red `Ignore` button dismisses him for another 30-60 seconds.
+- Updated `slopularity/src/decayRecovery.ts` so each rescue appearance draws three unique questions from a 30-question trivia pool.
+- Updated `slopularity/src/index.css` with the watcher eye strip, red ignore action, pulse animation, and mobile-safe rescue spacing.
+- Updated `slopularity/DECAY_FEATURES.md`, `slopularity/DESIGN_BIBLE.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the delayed rescue loop.
+- Validation run: `node --experimental-strip-types --test tests/decayRecovery.test.ts`; `node --experimental-strip-types --test tests/utils.test.ts tests/pageWarp.test.ts tests/decayRecovery.test.ts`; `node --experimental-strip-types --test tests/*.test.ts`; `npm run lint`; `npm run build`; generated bundle check for the watcher/ignore copy and 30-question pool.
+
+## [2026-05-02 23:31] Slow Crack Replay Frequency
+
+- Updated `slopularity/src/App.tsx` so final-stage page fractures use a 120-second cooldown, making crack replays half as common as the previous 60-second cadence.
+- Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the 120-second crack cooldown contract.
+- Validation run: `node --experimental-strip-types --test tests/utils.test.ts tests/pageWarp.test.ts tests/decayRecovery.test.ts`; `npm run lint`; `npm run build`.
+
 ## [2026-05-02 23:23] Polish Responsive Navigation And Tap Targets
 
 - Updated `slopularity/src/App.tsx` so every app tabbar scrolls the active route into view after route changes, including a delayed pass for the phone Feed/News switcher that renders inside the feed surface.
@@ -972,3 +986,12 @@
 - Removed tracked duplicate asset `slopularity/src/assets/news/news-35 2.jpg` after confirming `slopularity/src/assets/news/news-35.jpg` exists and no source/docs references pointed at the duplicate filename.
 - Updated `.gitignore` so nested Slopularity source assets with iCloud conflict suffixes stay ignored.
 - Validation run: confirmed no remaining `* [0-9].*` duplicate files under `slopularity/src` or `slopularity/dist`.
+
+## [2026-05-02 23:31] Stacked Page Warp Modes
+
+- Updated `slopularity/src/pageWarp.ts` so stage 3/4/5 tab switches roll a single 20%/30%/40% page-warp event chance, with one mode usually, two modes uncommonly, and three modes rarely.
+- Added new recoverable modes for melt, mirror, duplicate echo, font infection, jelly, translation failure, loose screws, 404 bleed, and autofill hallucination across `slopularity/src/styles/page-warp-physics.css`, `slopularity/src/styles/page-warp-visual.css`, and `slopularity/src/styles/page-warp-system.css`.
+- Updated `slopularity/src/App.tsx`, `slopularity/src/index.css`, and `slopularity/tests/pageWarp.test.ts` so all page-warp classes map into the workspace, stacked mirror/upside-down transforms compose, and Helpy repair still clears only the active warp.
+- Updated `slopularity/DECAY_FEATURES.md`, `slopularity/DESIGN_BIBLE.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the new lottery odds and mode pool.
+- Regenerated `slopularity/dist/` so the published build includes the stacked page-warp modes.
+- Validation run: `node --experimental-strip-types --test tests/pageWarp.test.ts`; `npm run lint`; `npm run build`; headless Chromium/Playwright smoke against `vite preview` forced stage 3, stage 4, and stage 5 page switches, confirmed Helpy appeared, repair cleared the workspace warp while preserving stage/score, and desktop/phone overflow stayed at 0.

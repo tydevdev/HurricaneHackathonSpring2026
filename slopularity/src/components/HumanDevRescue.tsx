@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import {
-  devRescueQuestions,
+  devRescueDelayMs,
+  selectDevRescueQuestions,
   getDevRescueQuestion,
   isDevRescueAvailable,
   nextDevRescueStep,
+  type DevRescueQuestion,
 } from '../decayRecovery'
 
 type HumanDevRescueProps = {
@@ -12,16 +14,20 @@ type HumanDevRescueProps = {
 }
 
 export function HumanDevRescue({ stage, onComplete }: HumanDevRescueProps) {
+  const [visibleAfterDelay, setVisibleAfterDelay] = useState(false)
+  const [questions, setQuestions] = useState<DevRescueQuestion[]>(() => selectDevRescueQuestions())
   const [step, setStep] = useState(0)
   const [wrongChoice, setWrongChoice] = useState<number | null>(null)
   const [thanked, setThanked] = useState(false)
 
   const rescueAvailable = isDevRescueAvailable(stage)
-  const visible = rescueAvailable || thanked
+  const rescueVisible = rescueAvailable && visibleAfterDelay
+  const visible = rescueVisible || thanked
 
   useEffect(() => {
     if (!rescueAvailable && !thanked) {
       const frameId = window.requestAnimationFrame(() => {
+        setVisibleAfterDelay(false)
         setStep(0)
         setWrongChoice(null)
       })
@@ -31,16 +37,38 @@ export function HumanDevRescue({ stage, onComplete }: HumanDevRescueProps) {
   }, [rescueAvailable, thanked])
 
   useEffect(() => {
+    if (!rescueAvailable || visibleAfterDelay || thanked) {
+      return undefined
+    }
+
+    const timeout = window.setTimeout(() => {
+      setQuestions(selectDevRescueQuestions())
+      setStep(0)
+      setWrongChoice(null)
+      setVisibleAfterDelay(true)
+    }, devRescueDelayMs())
+
+    return () => window.clearTimeout(timeout)
+  }, [rescueAvailable, thanked, visibleAfterDelay])
+
+  useEffect(() => {
     if (!thanked) return undefined
 
     const timeout = window.setTimeout(() => {
       setThanked(false)
+      setVisibleAfterDelay(false)
       setStep(0)
       setWrongChoice(null)
     }, 2200)
 
     return () => window.clearTimeout(timeout)
   }, [thanked])
+
+  function ignoreDeveloper() {
+    setVisibleAfterDelay(false)
+    setStep(0)
+    setWrongChoice(null)
+  }
 
   if (!visible) {
     return null
@@ -60,11 +88,11 @@ export function HumanDevRescue({ stage, onComplete }: HumanDevRescueProps) {
     )
   }
 
-  const question = getDevRescueQuestion(step)
-  const progress = `${step + 1} / ${devRescueQuestions.length}`
+  const question = getDevRescueQuestion(step, questions)
+  const progress = `${step + 1} / ${questions.length}`
 
   function answer(choiceIndex: number) {
-    const result = nextDevRescueStep(step, choiceIndex)
+    const result = nextDevRescueStep(step, choiceIndex, questions)
     if (!result.correct) {
       setWrongChoice(choiceIndex)
       return
@@ -89,6 +117,15 @@ export function HumanDevRescue({ stage, onComplete }: HumanDevRescueProps) {
       aria-label="Real-life developer rescue"
       aria-live="polite"
     >
+      <div className="human-dev-overseer" role="status">
+        <div className="human-dev-overseer-eye" aria-hidden="true">
+          <span />
+        </div>
+        <p>Click the red ignore button. Let the product handle itself.</p>
+        <button type="button" className="human-dev-ignore" onClick={ignoreDeveloper}>
+          Ignore
+        </button>
+      </div>
       <div className="human-dev-bubble">
         <div className="human-dev-avatar" aria-hidden="true">DEV</div>
         <div className="human-dev-copy">

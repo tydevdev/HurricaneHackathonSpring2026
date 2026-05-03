@@ -25,7 +25,7 @@ import { maxDecayScore, maxDecayStage, scoreForStage, shouldShowPageFractures, s
 const storageKey = 'slopularity-state-v1'
 const enteredKey = 'slopularity-entered-v1'
 const scrollStatsKey = 'slopularity-scroll-stats-v1'
-const CRACK_EXPERIENCE_COOLDOWN_MS = 60_000
+const CRACK_EXPERIENCE_COOLDOWN_MS = 120_000
 type PopupReason = 'manual' | 'idle' | 'dismiss'
 type ActivePageWarp = PageWarp & {
   tabId: TabId

@@ -2,6 +2,27 @@
 
 Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESIGN_BIBLE.md` stays the product/design execution guide. This file records what is actively intentional in the app right now, what is still a skeleton, and which feature flags are keeping unfinished mechanics out of the way.
 
+## [2026-05-02 23:31] Stacked Page Warp Modes
+
+- Active focus: expanding recoverable page-switch damage into a broader stage-3/4/5 lottery with rare stacking.
+- Behavior changed: `src/pageWarp.ts` now rolls one overall page-warp event chance per real tab switch: 20% at stage 3, 30% at stage 4, and 40% at stage 5. On a hit, it chooses one mode most of the time, two modes uncommonly, and three modes rarely.
+- Behavior changed: the mode pool now includes color invert, upside down, zero gravity, melt, mirror, duplicate echo, font infection, jelly, translation failure, loose screws, 404 bleed, and autofill hallucination.
+- Styling changed: `src/styles/page-warp-physics.css`, `src/styles/page-warp-visual.css`, and `src/styles/page-warp-system.css` hold the new mode families, while `src/index.css` imports them and composes mirror/upside-down transforms safely.
+- Repair path preserved: the existing bottom-right Helpy page repair clears all active page-warp classes without changing the shared decay score, current stage, crack state, or app chrome.
+- Documentation updated: `DECAY_FEATURES.md`, `DESIGN_BIBLE.md`, `IMPLEMENTATION_STATUS.md`, and root `HISTORY.md`.
+- Validation run: `node --experimental-strip-types --test tests/pageWarp.test.ts`; `npm run lint`; `npm run build`; headless Chromium/Playwright smoke against `vite preview` forced stage 3, stage 4, and stage 5 page switches, confirmed Helpy appeared, confirmed repair cleared the workspace warp while preserving each stage/score, and confirmed zero horizontal overflow on desktop and phone.
+
+## [2026-05-02 23:31] Delayed Human Dev Rescue Loop
+
+- Active focus: making the final-stage human developer feel like a delayed intervention instead of an instant escape hatch.
+- Behavior changed: `src/components/HumanDevRescue.tsx` now waits a randomized 30-60 seconds after stage 5 becomes eligible before showing Nico, and the red `Ignore` button dismisses him and schedules another randomized 30-60 second wait.
+- Behavior changed: the rescue bubble now includes a watching-eye pressure strip above the developer that tells the user to click the ignore button, while the actual trivia path still resets decay only after three correct answers.
+- Behavior changed: `src/decayRecovery.ts` now owns a 30-question trivia pool, a three-question sampler for each rescue appearance, and the delay helper.
+- Styling changed: `src/index.css` adds the watcher strip, red ignore button, pulse animation, and mobile-safe spacing above the developer bubble.
+- Test updated: `tests/decayRecovery.test.ts` covers the 30-question pool, unique three-question selection, selected-run progression, and 30-60 second delay bounds.
+- Documentation updated: `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, and root `HISTORY.md`.
+- Validation run: `node --experimental-strip-types --test tests/decayRecovery.test.ts`; `node --experimental-strip-types --test tests/utils.test.ts tests/pageWarp.test.ts tests/decayRecovery.test.ts`; `node --experimental-strip-types --test tests/*.test.ts`; `npm run lint`; `npm run build`; generated bundle check for the watcher/ignore copy and 30-question pool.
+
 ## [2026-05-02 23:23] Responsive Navigation And Tap Targets
 
 - Active focus: making every primary page and game route look and behave correctly on desktop and phone-sized screens.
@@ -41,7 +62,7 @@ Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESI
 ## [2026-05-02 22:53] Crack Experience Cooldown
 
 - Active focus: making final-stage cracks feel rarer instead of replaying on every navigation.
-- Behavior changed: `src/App.tsx` now owns a 60-second crack-experience cooldown and only remounts `PageFracture` when the cooldown has cleared; tab switches inside the cooldown keep the current fracture state instead of restarting the spread and shard fall.
+- Behavior changed: `src/App.tsx` now owns a 120-second crack-experience cooldown and only remounts `PageFracture` when the cooldown has cleared; tab switches inside the cooldown keep the current fracture state instead of restarting the spread and shard fall.
 - Behavior changed: `src/components/PageFracture.tsx` no longer keys its root by the active surface, so the app-level cooldown controls replay timing.
 - Documentation updated: `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, `IMPLEMENTATION_STATUS.md`, and root `HISTORY.md`.
 - Validation run: `npm run lint`; `npm run build`.

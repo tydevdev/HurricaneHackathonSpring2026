@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { choosePageWarp, pageWarpModes } from '../src/pageWarp.ts'
+import { choosePageWarp, pageWarpModeClassNames, pageWarpModes } from '../src/pageWarp.ts'
 import { maxDecayStage } from '../src/utils.ts'
 
 function seededRandom(values: number[]) {
@@ -61,4 +61,25 @@ test('page warp exposes all implemented modes', () => {
     'notFoundBleed',
     'autofillHallucination',
   ])
+
+  assert.deepEqual(pageWarpModeClassNames, {
+    colorInverted: 'is-color-inverted',
+    upsideDown: 'is-upside-down',
+    zeroGravity: 'is-zero-gravity',
+    melt: 'is-melt-mode',
+    mirror: 'is-mirror-mode',
+    duplicateEcho: 'is-duplicate-echo-mode',
+    fontInfection: 'is-font-infection-mode',
+    jelly: 'is-jelly-mode',
+    translationFailure: 'is-translation-failure-mode',
+    looseScrews: 'is-loose-screws-mode',
+    notFoundBleed: 'is-404-bleed-mode',
+    autofillHallucination: 'is-autofill-hallucination-mode',
+  })
+})
+
+test('page warp can stack newly added deep modes', () => {
+  assert.deepEqual(choosePageWarp(maxDecayStage, seededRandom([0.01, 0.94, 0.67, 0.82, 0.95])), {
+    modes: ['translationFailure', 'notFoundBleed', 'autofillHallucination'],
+  })
 })

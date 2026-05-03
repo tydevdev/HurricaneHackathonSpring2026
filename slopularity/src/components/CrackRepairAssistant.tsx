@@ -7,7 +7,6 @@ type CrackRepairAssistantProps = {
 
 const repairStages = new Set([3, 4])
 const requiredDragMs = 2000
-const requiredMinDistance = 60
 
 export function CrackRepairAssistant({ stage, onRepair }: CrackRepairAssistantProps) {
   const [dragging, setDragging] = useState(false)
@@ -52,7 +51,10 @@ export function CrackRepairAssistant({ stage, onRepair }: CrackRepairAssistantPr
       const next = Math.min(1, elapsed / requiredDragMs)
       setProgress(next)
 
-      if (elapsed >= requiredDragMs && drag.distance >= requiredMinDistance) {
+      // Complete on time alone — the gesture itself proves intent. The
+      // earlier distance requirement made it possible to fill the bar
+      // visually without ever firing completion.
+      if (elapsed >= requiredDragMs) {
         finishRepair()
         return
       }

@@ -41,7 +41,15 @@ const exchangePacks = [
   { id: 'cascade', dollars: 79, gems: 7900, bonus: 3160, label: 'cart calm' },
 ]
 
-const quickFilters = ['For you', 'Ending', 'Under 5k gems', 'Cart bait', 'Recently inferred']
+const quickFilters = [
+  { id: 'all', label: 'For you' },
+  { id: 'ending', label: 'Ending' },
+  { id: 'cheap', label: 'Under 5k gems' },
+  { id: 'remix', label: 'Cart bait' },
+  { id: 'inferred', label: 'Recently inferred' },
+] as const
+
+type FilterId = typeof quickFilters[number]['id']
 
 const pressureSignals = [
   { label: 'Deal rank', value: '#44', detail: 'rises when you hesitate' },
@@ -173,6 +181,7 @@ export function ShopPage({ stage, onBuy, claimProductId, claimToken }: ShopPageP
   const [purchasedGems, setPurchasedGems] = useState(0)
   const [spentDollars, setSpentDollars] = useState(0)
   const [activeUpsell, setActiveUpsell] = useState<{ product: ShopProduct; index: number } | null>(null)
+  const [activeFilter, setActiveFilter] = useState<FilterId>('all')
   const lastClaimTokenRef = useRef<number | undefined>(undefined)
 
   useEffect(() => {
@@ -191,6 +200,38 @@ export function ShopPage({ stage, onBuy, claimProductId, claimToken }: ShopPageP
   const remainingForChallenge = Math.max(0, challengeTarget - earnedGems)
   const activeBonusOffers = activeUpsell ? bonusOffersFor(activeUpsell.product, activeUpsell.index) : []
   const deals = useMemo(() => dealCatalog(stage), [stage])
+
+  // Filtered deal list driven by the quick-filter pill row. Filters use the
+  // same gemPrice / timer math as the cards so the visible state matches.
+  const visibleDeals = useMemo(() => {
+    const decorated = deals.map((product, index) => {
+      const gems = gemPrice(product, index, stage)
+      const seed = timerSeeds[index % timerSeeds.length] ?? 300
+      const remaining = Math.max(1, seed - (timerTick % seed))
+      return { product, index, gems, remaining }
+    })
+
+    const filtered = decorated.filter(({ product, gems, remaining }) => {
+      switch (activeFilter) {
+        case 'ending':
+          return remaining < 120
+        case 'cheap':
+          return gems < 5000
+        case 'remix':
+          return product.id.includes('-remix-')
+        case 'inferred':
+          return !product.featured
+        default:
+          return true
+      }
+    })
+
+    if (activeFilter === 'ending') {
+      filtered.sort((a, b) => a.remaining - b.remaining)
+    }
+
+    return filtered
+  }, [deals, activeFilter, stage, timerTick])
 
   function addProduct(product: ShopProduct, index: number) {
     const gems = gemPrice(product, index, stage)
@@ -355,19 +396,27 @@ export function ShopPage({ stage, onBuy, claimProductId, claimToken }: ShopPageP
       <div className="slop-shop-market">
         <main className="slop-shop-main" aria-label="Deal feed">
           <div className="deal-strip" aria-label="Deal filters">
-            {quickFilters.map((filter, index) => (
-              <button type="button" key={filter} className={index === 0 ? 'is-active' : ''}>
-                {filter}
+            {quickFilters.map((filter) => (
+              <button
+                type="button"
+                key={filter.id}
+                className={activeFilter === filter.id ? 'is-active' : ''}
+                onClick={() => setActiveFilter(filter.id)}
+              >
+                {filter.label}
               </button>
             ))}
           </div>
 
           <div className="slop-shop-grid">
-            {deals.map((product, index) => {
-              const gems = gemPrice(product, index, stage)
+            {visibleDeals.length === 0 ? (
+              <p className="empty-cart" style={{ gridColumn: '1 / -1' }}>
+                No deals matched. Even the timers slowed down.
+              </p>
+            ) : null}
+            {visibleDeals.map(({ product, index, gems, remaining }) => {
               const inflatedGems = gems * 100
               const image = feedPosts[(index * 7) % feedPosts.length]?.imageSrc
-              const remaining = Math.max(1, timerSeeds[index % timerSeeds.length] - (timerTick % timerSeeds[index % timerSeeds.length]))
               const soldCount = 900 + index * 311 + timerTick * (index + 1)
 
               return (

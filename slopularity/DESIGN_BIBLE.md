@@ -260,12 +260,14 @@ Interaction hooks:
 
 Current implementation:
 
-- Five playable mini-games are wired up under `src/games/`. Each is a real interaction (drag-to-classify, click-to-find, A/B preference, multi-class annotation, pointer-trace segmentation) wrapped in cozy CSS / SVG art.
+- Five playable mini-games are wired up under `src/games/`. Each is a real interaction (drag-to-classify, click-to-find, A/B preference, multi-class annotation, pointer-trace segmentation) wrapped in cozy generated art, responsive play surfaces, and game-specific UI texture.
+- The Games surface is now a lobby, not the play surface itself. `/app/games/` should feel like a cutesy arcade shelf with image-led cover art, while each game opens at `/app/games/<game-id>/` as its own focused playroom. Preserve this split: lobby for choosing, nested pages for playing.
+- The current art system uses generated raster assets under `src/assets/games/`: a lobby background and icon, plus per-game hero/cover art, square icon, sticker/accent image, and subtle UI pattern. Future game additions should provide the same four-asset set so the shelf and playroom stay image-led.
 - Per-game state is local; submission goes through the shared `onComplete(title)` so the App's `completedTasks` list and instability score keep advancing.
 - Each game ends in a sticker receipt that flips at stage 3 from "reward: sticker pack" to the training pipeline string (`vision_label_queue.snack_v41`, `hallucination_dataset.cottage_v12`, `rlhf_preference_batch.helpful_kind_safe`, `emotion_annotation.soft_face_v3`, `segmentation_seed.path_v9`).
-- The Games surface footer ("Today's training queue") mirrors the same flip across all queues at once and exposes a leaked AutoSprint TODO at stage 4.
+- The Games queue footer appears on both the lobby and each playroom. It mirrors the same flip across all queues at once and exposes a leaked AutoSprint TODO at stage 4.
 - Stage 4 also leaks per-cell debug labels (e.g. the truth tag inside a sorted basket chip, the `inferred:` confidence under a cloud) so the visitor can see what the system was already labeling them with.
-- Verification: lint, build, desktop and phone widths via the responsive media query, keyboard / pointer / touch input on all five games.
+- Verification expectation: lint, build, direct nested game URL checks, desktop and phone widths, and keyboard / pointer / touch input on representative games.
 
 ### Shop
 
@@ -273,12 +275,24 @@ Intention: the app sells solutions to problems it created.
 
 The shop should feel embedded everywhere, not isolated. Products should appear inside posts, friend messages, assistant answers, search results, settings, profile insights, and games.
 
+Current implementation:
+
+- The shop is now a gem-first urgency marketplace. Dollars are converted into gems at the top of the page, and products are purchased with gems so the real cash equivalent becomes secondary.
+- Preserve the top challenge meter. It should reward both cart filling and completed checkout volume, making progress feel like a game instead of spending.
+- Product cards should keep the Temu-style contradiction: large red `99% OFF` badges, countdown timers, inflated "was" gem prices, and the actual product price translated into gems and a quieter cash equivalent.
+- Product imagery comes from the feed image pool so commerce feels like the feed has been repackaged into deals.
+- Adding a product must open the bonus sheet with exactly three add-on offers. Those add-ons should feel plausible, small, and predatory: timer protection, proof/review layers, future auto-reorder calm, or similar.
+- Desktop should read as a dense deal feed with a sticky cart rail. Phone should stack into one column with no horizontal overflow, touch-sized buttons, and the cart panel before the product grid.
+
 Interaction hooks:
 
 - cart fills with recommended context
 - pricing shifts based on urgency, insecurity, or engagement
 - bundles with generated names
 - scarcity language that contradicts inventory or user history
+- gem conversion hides dollar spending behind a second currency
+- add-to-cart interrupts with three discounted extras
+- cart challenge reframes spending as progress
 
 ### Search
 
@@ -432,6 +446,7 @@ The app surfaces are separate pages, not only local tab state.
 
 - landing lives at the Slopularity root
 - app surfaces live at `/app/feed/`, `/app/friends/`, `/app/games/`, `/app/shop/`, `/app/search/`, `/app/assistant/`, and `/app/profile/`
+- individual game playrooms live at `/app/games/snack-sort/`, `/app/games/spot-the-slop/`, `/app/games/cozy-robot/`, `/app/games/mood-cloud/`, and `/app/games/path-pebble/`
 - tab chrome should use real links with `aria-current`, then layer product state changes on click
 - direct visits to a tab route should open the app shell immediately on that surface
 - GitHub Pages builds should include nested `dist/app/<route>/index.html` files so shared links do not depend on a server fallback

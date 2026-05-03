@@ -62,6 +62,16 @@ Each entry includes:
 |---------|---------|---------------|-------|--------|
 | Personalized result poisoning | Search after browsing other tabs | 1–3 extra "personalized" results injected, 30% about the query, 70% product push based on your feed/games/shop activity | 2+ | implemented |
 
+## Shop
+
+| Feature | Trigger | What Degrades | Stage | Status |
+|---------|---------|---------------|-------|--------|
+| Gem wallet abstraction | Open Shop, then exchange dollars | Dollar amounts convert into gems and the purchase path prioritizes gem totals over cash equivalents | all | implemented |
+| Inflated 99% discounts | View any product | Every product displays a massive marked-up "was" gem price and a red 99% off badge while the current price remains the actual equivalent | all | implemented |
+| Deal countdown pressure | View product grid | Each product has a large red countdown timer that loops urgency instead of resolving scarcity | all | implemented |
+| Cart Quest spending bar | Add items or checkout | Cart and purchase volume fill a challenge meter toward "checkout calm," reframing spending as progress | all | implemented |
+| Bonus add-on sheet | Add any product to cart | A modal offers exactly three extra discounted add-ons before the user can return to the cart | all | implemented |
+
 ## Assistant
 
 | Feature | Trigger | What Degrades | Stage | Status |
@@ -76,8 +86,8 @@ Each entry includes:
 | Feature | Trigger | What Degrades | Stage | Status |
 |---------|---------|---------------|-------|--------|
 | Training pipeline receipt flip | Complete any mini-game | Sticker receipt flips from "reward: sticker pack" to real training pipeline string (e.g. `vision_label_queue.snack_v41`) | 3+ | implemented |
-| Training queue footer | View games tab | "Today's training queue" footer becomes more legible at higher stages | 3+ | implemented |
-| AutoSprint TODO leak | View games tab at stage 4 | `// AutoSprint TODO` fragment surfaces in footer | 4 | implemented |
+| Training queue footer | View Games lobby or any game playroom | "Today's training queue" footer becomes more legible at higher stages | 3+ | implemented |
+| AutoSprint TODO leak | View Games lobby or any game playroom at stage 4 | `// AutoSprint TODO` fragment surfaces in footer | 4 | implemented |
 | Per-cell debug labels | Play games at stage 4 | Truth tags, `inferred:` confidence labels leak through game UI | 4 | implemented |
 | Reward devaluation | Complete any game at stage 2+ | Rewards degrade from "sticker pack" → "0.3 credits" → "0.003 credits (47,000 required)" → "0.00004 credits (ETA: 11.7 years)" | 2+ | implemented |
 | Game becomes work (SnackSort) | Complete SnackSort, play again | Round 2+: emoji removed, labels become "Item A-1", baskets become "Category 1". Round 3+: timer and quota bar appear. Round 4+: submit becomes "mandatory", play again becomes "Next batch →" | all (round-based) | implemented |

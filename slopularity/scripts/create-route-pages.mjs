@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { access, mkdir, readFile, rename, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -19,14 +19,23 @@ const gameIndexHtml = indexHtml
   .replaceAll('src="../assets/', 'src="../../../assets/')
   .replaceAll('href="../favicon.svg"', 'href="../../../favicon.svg"')
 
+async function writeRouteIndex(routeDir, html) {
+  await mkdir(routeDir, { recursive: true })
+  await writeFile(join(routeDir, 'index.html'), html)
+
+  try {
+    await access(join(routeDir, 'index.html'))
+  } catch {
+    await rename(join(routeDir, 'index 2.html'), join(routeDir, 'index.html'))
+  }
+}
+
 await Promise.all(routes.map(async (route) => {
   const routeDir = join(distRoot, 'app', route)
-  await mkdir(routeDir, { recursive: true })
-  await writeFile(join(routeDir, 'index.html'), nestedIndexHtml)
+  await writeRouteIndex(routeDir, nestedIndexHtml)
 }))
 
 await Promise.all(gameRoutes.map(async (route) => {
   const routeDir = join(distRoot, 'app', 'games', route)
-  await mkdir(routeDir, { recursive: true })
-  await writeFile(join(routeDir, 'index.html'), gameIndexHtml)
+  await writeRouteIndex(routeDir, gameIndexHtml)
 }))

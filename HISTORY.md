@@ -1,5 +1,13 @@
 # History
 
+## [2026-05-02 19:10] Games Lobby And Playrooms
+
+- Reworked the Slopularity Games surface so `/app/games/` is a polished image-led arcade lobby and each game opens on its own playroom route under `/app/games/<game-id>/`.
+- Added GPT-generated game art under `slopularity/src/assets/games/` for the lobby, Snack Sort Picnic, Spot the Slop, Cozy Robot Coach, Mood Cloud Parade, and Path of the Pebble.
+- Updated game metadata, route-page generation, Games design notes, and decay tracking so the existing mini-game premises stay intact while the presentation, route structure, and responsive play surfaces are upgraded.
+- Regenerated `slopularity/dist/` so GitHub Pages has nested game route pages.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome DevTools smoke against `vite preview` checked lobby, desktop Snack Sort, mobile Path Pebble, mobile Spot the Slop, loaded game images, nested routes, no runtime errors, and no horizontal overflow.
+
 ## [2026-05-02 19:04] Add News Feed Clone
 
 - Added News as a first-class app tab and `/app/news/` route while reusing the exact Feed surface instead of creating a separate article layout.
@@ -8,6 +16,15 @@
 - Updated `slopularity/src/App.tsx`, `slopularity/src/index.css`, `slopularity/src/types.ts`, and `slopularity/scripts/create-route-pages.mjs` so News behaves like Feed on desktop and phone and gets a published route page.
 - Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the News section intention and decay hooks.
 - Validation run: verified `news-01.jpg` through `news-30.jpg` are 30 real 1200x1200 JPEGs with no duplicate hashes; `npm run lint`; `npm run build`; headless Chrome/CDP against `vite preview` at 1280x900 and 390x844 confirmed `/app/news/` renders the News heading, active News tab, 60 live post cards from the two-cycle feed clone, News images in posts and stories, correct mobile switcher behavior, and no horizontal overflow.
+
+## [2026-05-02 19:12] Revamp Shop Into Gem Urgency Marketplace
+
+- Rebuilt `slopularity/src/pages/ShopPage.tsx` into a full gem-based commerce surface with wallet exchange packs, Cart Quest progress, live countdown deal cards, 99% off inflated pricing, feed-image product visuals, sticky cart, checkout, and a three-offer bonus sheet after add-to-cart.
+- Updated `slopularity/src/index.css` with the new shop layout, red urgency system, gem/cash price treatments, cart rail, bonus modal, responsive phone stacking, and reduced-motion fallbacks.
+- Patched `slopularity/src/App.tsx` to pass Profile's current decay-demo callbacks so the parallel Profile changes do not block TypeScript builds.
+- Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` with the new shop intent and implemented decay mechanics.
+- Regenerated `slopularity/dist/` for the GitHub Pages build.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome screenshots at 1280x900 and 390x844 confirmed the new shop renders with wallet, exchange, Cart Quest, 99% off cards, timers, and phone stacking. Playwright MCP was unavailable because its browser profile was locked.
 
 ## [2026-05-02 19:11] Add Profile Decay Demo Control
 

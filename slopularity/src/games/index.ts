@@ -8,8 +8,8 @@ import type { GameMeta } from './types'
 export type { GameProps, GameMeta, LabelReceipt } from './types'
 
 export const GAMES_LOBBY_ART = {
-  background: new URL('../assets/games/lobby/arcade-garden-lobby.png', import.meta.url).href,
-  icon: new URL('../assets/games/lobby/games-app-icon.png', import.meta.url).href,
+  background: new URL('../assets/games/lobby/arcade-garden-lobby-bg.png', import.meta.url).href,
+  icon: new URL('../assets/games/lobby/games-lobby-icon.png', import.meta.url).href,
   backgroundAlt: 'A cheerful arcade garden with tiny game kiosks inside the everything app.',
 }
 

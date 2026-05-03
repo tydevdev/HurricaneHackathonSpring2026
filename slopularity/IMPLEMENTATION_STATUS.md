@@ -10,6 +10,15 @@ Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESI
 - Files changed: `src/content.ts`, `src/pages/FeedPage.tsx`, `src/App.tsx`, `src/index.css`, `src/types.ts`, `scripts/create-route-pages.mjs`, `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, generated `src/assets/news/news-01.jpg` through `news-30.jpg`, and regenerated `dist/`.
 - Validation run: verified `src/assets/news/news-01.jpg` through `news-30.jpg` are 30 real 1200x1200 JPEGs with no duplicate hashes; `npm run lint`; `npm run build`; headless Chrome/CDP against `vite preview` at 1280x900 and 390x844 confirmed `/app/news/` renders the News heading, active News tab, 60 live post cards from the two-cycle feed clone, News image assets in posts and stories, mobile inline switcher visibility, hidden mobile global switcher, and no horizontal overflow.
 
+## [2026-05-02 19:12] Shop Gem Urgency Revamp
+
+- Active focus: `ShopPage.tsx` and shop-specific responsive styling in `index.css`.
+- Behavior changed: Shop is now a gem-first marketplace with a wallet exchange, cart challenge meter, red countdown deal cards, 99% off inflated "was" prices, feed-image product visuals, sticky cart rail, checkout state, and a three-offer bonus sheet after each add-to-cart action.
+- Behavior changed: completing checkout spends gems, adds purchase volume to the challenge meter, clears the cart, and still routes through the app's shared instability path.
+- Build blocker fixed: `App.tsx` now passes the Profile decay callbacks expected by the current `ProfilePage.tsx`, restoring TypeScript build compatibility after parallel profile work.
+- Files changed: `src/pages/ShopPage.tsx`, `src/index.css`, `src/App.tsx`, `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome screenshots against `vite preview` at 1280x900 and 390x844 confirmed the new shop renders with the gem wallet, Cart Quest meter, exchange packs, 99% off product cards, red timers, and responsive single-column phone layout. Playwright MCP was unavailable because its browser profile was locked, so local headless Chrome was used instead.
+
 ## [2026-05-02 19:11] Profile Decay Demo Control
 
 - Active focus: Profile demo controls in `ProfilePage.tsx`, score mutation in `App.tsx`, and Profile-specific styling in `index.css`.
@@ -238,6 +247,15 @@ Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESI
 - Add a new dated entry whenever a tab, mechanic, feature flag, or testing posture changes substantially.
 - Keep entries concrete: files changed, what is intentional now, what is still skeleton, and what validation was run.
 - Do not use this file for broad ideation. Put ideas in `PLAN.md`; put execution rules in `DESIGN_BIBLE.md`.
+
+## [2026-05-02 23:58] Games Lobby And Playroom Revamp
+
+- Active focus: `GamesPage.tsx`, `src/games/index.ts`, route helpers, generated game assets, and responsive game styling.
+- Behavior changed: `/app/games/` is now an image-led arcade lobby. Each game card links to a dedicated playroom route under `/app/games/<game-id>/`, where the existing playable mini-game runs in a focused page with its own hero art, icon, sticker/accent image, and queue receipt.
+- Generated assets added under `src/assets/games/`: lobby art plus per-game covers, icons, sticker/accent images, and UI patterns. The games stay the same premises: sorting snacks, spotting anomalies, ranking robot replies, tagging cloud moods, and tracing a pebble path.
+- Routing changed: nested game URLs open the app shell on Games, tab links still resolve back to the normal `/app/<tab>/` routes, and the static route generator now emits GitHub Pages fallback pages for each game playroom.
+- Still intentional: per-game completion continues through `onComplete(title)`, so completed tasks, instability, Profile stats, and Search cross-tab poisoning still receive the same game-completion signal.
+- Validation run: `npm run lint`; `npm run build`; local headless Chrome DevTools smoke against `vite preview` confirmed `/app/games/` renders 5 lobby cards with 12 loaded game images, direct `/app/games/snack-sort/` opens a desktop playroom, direct `/app/games/path-pebble/` and `/app/games/spot-the-slop/` open phone-sized playrooms, no game images are broken, no console/runtime errors fired, and all checked viewports had zero horizontal overflow.
 
 ## [2026-05-02 14:51] Feed Sprint Images And Interactions
 

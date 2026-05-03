@@ -15,7 +15,11 @@ export function stageFor(score: number) {
 }
 
 export function hasPageFractures(stage: number) {
-  return stage >= 3
+  return stage >= maxDecayStage
+}
+
+export function shouldShowPageFractures(stage: number, repaired: boolean) {
+  return hasPageFractures(stage) && !repaired
 }
 
 export function getEngagementLabels(stage: number) {

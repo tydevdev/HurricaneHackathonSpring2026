@@ -2,12 +2,15 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties, type Mous
 import { pushActivity } from './activityLog'
 import { BugScatter } from './components/BugScatter'
 import { CrackRepairAssistant } from './components/CrackRepairAssistant'
+import { HumanDevRescue } from './components/HumanDevRescue'
 import { IdleEye } from './components/IdleEye'
 import { LonelinessPopup, type IdleNudgeAction } from './components/LonelinessPopup'
 import { PageFracture } from './components/PageFracture'
 import { PopupSwarm } from './components/PopupSwarm'
 import { fragmentLeaks, newsPosts, popupSeeds, tabs as defaultTabs } from './content'
+import { recoveryScore } from './decayRecovery'
 import { featureFlags } from './featureFlags'
+import { choosePageWarp, type PageWarp } from './pageWarp'
 import { AssistantPage } from './pages/AssistantPage'
 import { FeedPage } from './pages/FeedPage'
 import { FriendsPage } from './pages/FriendsPage'
@@ -17,12 +20,17 @@ import { appBasePath, pathForTab, tabFromLocation } from './routes'
 import { SearchPage } from './pages/SearchPage'
 import { ShopPage } from './pages/ShopPage'
 import type { Popup, ScrollStats, TabId } from './types'
-import { maxDecayScore, maxDecayStage, scoreForStage, stageFor } from './utils'
+import { maxDecayScore, maxDecayStage, scoreForStage, shouldShowPageFractures, stageFor } from './utils'
 
 const storageKey = 'slopularity-state-v1'
 const enteredKey = 'slopularity-entered-v1'
 const scrollStatsKey = 'slopularity-scroll-stats-v1'
+const CRACK_EXPERIENCE_COOLDOWN_MS = 60_000
 type PopupReason = 'manual' | 'idle' | 'dismiss'
+type ActivePageWarp = PageWarp & {
+  tabId: TabId
+  token: number
+}
 
 const popupProductTargets: Record<string, string> = {
   Honey: 'glownest',
@@ -119,6 +127,10 @@ function App() {
   const [friendFocus, setFriendFocus] = useState<{ name: string; token: number } | null>(null)
   const [searchLaunch, setSearchLaunch] = useState<{ query: string; token: number } | null>(null)
   const [shopClaim, setShopClaim] = useState<{ productId?: string; token: number } | null>(null)
+  const [pageWarp, setPageWarp] = useState<ActivePageWarp | null>(null)
+  const [cracksRepaired, setCracksRepaired] = useState(false)
+  const [crackExperienceReady, setCrackExperienceReady] = useState(false)
+  const [crackExperienceKey, setCrackExperienceKey] = useState(0)
   // We allow at most one "softer follow-up" after a dismiss, and only when
   // the user has been around long enough to read it as escalation rather than
   // a respawn loop. Tracked here so dismissals don't endlessly chain.
@@ -135,6 +147,8 @@ function App() {
   const idleReorgDoneRef = useRef(false)
   const idleNudgeShownRef = useRef(false)
   const queuedPopupReasonRef = useRef<PopupReason | null>(null)
+  const lastCrackExperienceAtRef = useRef(0)
+  const crackExperienceEligibleRef = useRef(false)
   // Interaction-driven popups: spawn one on average every ~4 meaningful
   // interactions, with a hard cooldown so the dock never feels spammy.
   const interactionsSinceSpawnRef = useRef(0)
@@ -147,6 +161,8 @@ function App() {
   const interruptionMode = featureFlags.interruptionLayer
   const stage = stageFor(score)
   const visibleStage = interruptionMode ? stage : 1
+  const pageFracturesEligible = shouldShowPageFractures(visibleStage, cracksRepaired)
+  const pageFracturesVisible = pageFracturesEligible && crackExperienceReady
 
   const visiblePopups = muted ? [] : popups
 
@@ -233,7 +249,77 @@ function App() {
 
     previousTabRef.current = activeTab
     dismissScreenPopups()
-  }, [activeTab, dismissScreenPopups])
+
+    const nextWarp = choosePageWarp(visibleStage)
+    setPageWarp(nextWarp ? { ...nextWarp, tabId: activeTab, token: Date.now() } : null)
+  }, [activeTab, dismissScreenPopups, visibleStage])
+
+  useEffect(() => {
+    if (visibleStage < maxDecayStage) {
+      const frameId = window.requestAnimationFrame(() => setPageWarp(null))
+      return () => window.cancelAnimationFrame(frameId)
+    }
+    return undefined
+  }, [visibleStage])
+
+  useEffect(() => {
+    if (visibleStage < maxDecayStage) {
+      const frameId = window.requestAnimationFrame(() => setCracksRepaired(false))
+      return () => window.cancelAnimationFrame(frameId)
+    }
+    return undefined
+  }, [visibleStage])
+
+  useEffect(() => {
+    let frameId: number | null = null
+    const scheduleReady = (ready: boolean) => {
+      frameId = window.requestAnimationFrame(() => setCrackExperienceReady(ready))
+    }
+    const cleanupFrame = () => {
+      if (frameId !== null) {
+        window.cancelAnimationFrame(frameId)
+      }
+    }
+    const triggerCrackExperience = () => {
+      lastCrackExperienceAtRef.current = Date.now()
+      crackExperienceEligibleRef.current = true
+      frameId = window.requestAnimationFrame(() => {
+        setCrackExperienceReady(true)
+        setCrackExperienceKey((current) => current + 1)
+      })
+    }
+
+    if (!pageFracturesEligible) {
+      crackExperienceEligibleRef.current = false
+      scheduleReady(false)
+      return cleanupFrame
+    }
+
+    const now = Date.now()
+    const elapsed = now - lastCrackExperienceAtRef.current
+
+    if (!crackExperienceEligibleRef.current) {
+      if (lastCrackExperienceAtRef.current === 0 || elapsed >= CRACK_EXPERIENCE_COOLDOWN_MS) {
+        triggerCrackExperience()
+        return cleanupFrame
+      }
+
+      scheduleReady(false)
+      const timeoutId = window.setTimeout(triggerCrackExperience, CRACK_EXPERIENCE_COOLDOWN_MS - elapsed)
+      return () => {
+        cleanupFrame()
+        window.clearTimeout(timeoutId)
+      }
+    }
+
+    if (elapsed >= CRACK_EXPERIENCE_COOLDOWN_MS) {
+      triggerCrackExperience()
+    } else {
+      scheduleReady(true)
+    }
+
+    return cleanupFrame
+  }, [activeTab, pageFracturesEligible])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -485,6 +571,11 @@ function App() {
     setCompletedTasks([])
     setScrollStats(emptyScrollStats)
     setTabOrder(defaultTabs)
+    setCracksRepaired(false)
+    setCrackExperienceReady(false)
+    setCrackExperienceKey(0)
+    lastCrackExperienceAtRef.current = 0
+    crackExperienceEligibleRef.current = false
     queuedPopupReasonRef.current = null
     followupArmedRef.current = true
   }
@@ -561,8 +652,23 @@ function App() {
   }
 
   function handleRepairCracks() {
-    setScore(0)
-    pushActivity('system', 'spackle_repair', 'stage_0')
+    setCracksRepaired(true)
+    pushActivity('system', 'spackle_repair', `stage_${visibleStage}`)
+  }
+
+  function handleHumanDevRescue() {
+    setScore(recoveryScore())
+    setPageWarp(null)
+    setCracksRepaired(false)
+    setCrackExperienceReady(false)
+    crackExperienceEligibleRef.current = false
+    dismissScreenPopups()
+    pushActivity('system', 'human_dev_rescue', 'stage_1')
+  }
+
+  function handleRepairPageWarp() {
+    setPageWarp(null)
+    pushActivity('system', 'page_warp_repair', pageWarp ? pageWarp.tabId : activeTab)
   }
 
   function handleLonelinessDismiss() {
@@ -635,6 +741,15 @@ function App() {
     )
   }
 
+  const workspaceClasses = [
+    'workspace',
+    pageWarp?.inverted ? 'is-color-inverted' : '',
+    pageWarp?.upsideDown ? 'is-upside-down' : '',
+    pageWarp?.zeroGravity ? 'is-zero-gravity' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
+
   return (
     <main
       className={`app-shell tab-${activeTab}`}
@@ -669,9 +784,13 @@ function App() {
         </div>
 
         <div className="appbar-status" aria-label="System status">
-          <span className={`phase-pill phase-${visibleStage}`} title={`phase ${visibleStage} of ${maxDecayStage}`}>
+          <span
+            className={`phase-pill phase-${visibleStage}`}
+            role="img"
+            aria-label={`Phase ${visibleStage} of ${maxDecayStage}`}
+            title={`Phase ${visibleStage} of ${maxDecayStage}`}
+          >
             <span className="phase-dot" aria-hidden="true" />
-            {visibleStage >= 4 ? fragmentLeaks.phasePill : `phase ${visibleStage}/${maxDecayStage}`}
           </span>
           {interruptionMode && (
             <button
@@ -714,7 +833,11 @@ function App() {
 
       {renderTabbar('global')}
 
-      <section className="workspace" aria-live="polite">
+      <section
+        className={workspaceClasses}
+        data-page-warp-token={pageWarp?.token}
+        aria-live="polite"
+      >
         <div className="tab-panel">
           {activeTab === 'feed' && (
             <FeedPage
@@ -788,8 +911,30 @@ function App() {
         </div>
       </section>
 
-      <PageFracture stage={visibleStage} surfaceKey={activeTab} />
-      <CrackRepairAssistant key={`repair-${visibleStage}`} stage={visibleStage} onRepair={handleRepairCracks} />
+      {pageFracturesVisible && <PageFracture key={`fracture-${crackExperienceKey}`} stage={visibleStage} />}
+      {pageFracturesVisible && (
+        <CrackRepairAssistant key={`repair-${visibleStage}`} stage={visibleStage} onRepair={handleRepairCracks} />
+      )}
+      <HumanDevRescue stage={visibleStage} onComplete={handleHumanDevRescue} />
+
+      {pageWarp && (
+        <div className="helpy-rescue page-warp-repair" role="dialog" aria-label="Helpy page repair">
+          <div className="helpy-rescue-bubble">
+            <div className="helpy-rescue-avatar" aria-hidden="true">
+              <span className="helpy-rescue-face">🤖</span>
+            </div>
+            <div className="helpy-rescue-body">
+              <p className="helpy-rescue-name">Helpy</p>
+              <p className="helpy-rescue-msg">
+                Uh oh, looks like something&apos;s wrong,{' '}
+                <button type="button" className="helpy-rescue-link" onClick={handleRepairPageWarp}>
+                  click here to fix!
+                </button>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {interruptionMode && (
         <PopupSwarm
@@ -806,7 +951,7 @@ function App() {
 
       {/* Idle surveillance layer */}
       <BugScatter stage={visibleStage} />
-      <IdleEye visible={idleEyeVisible} />
+      <IdleEye visible={idleEyeVisible} decayStage={visibleStage} />
       <LonelinessPopup
         visible={lonelinessVisible}
         nudgeIndex={idleNudgeIndex}

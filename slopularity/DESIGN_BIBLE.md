@@ -111,7 +111,7 @@ The user should be able to understand the major arc in 5 to 10 minutes.
 
 4. Source leakage
 
-   Prompt fragments, synthetic citations, duplicate panels, impossible metrics, last-human-developer comments, physical page fractures, and recovery controls break through the product surface.
+   Prompt fragments, synthetic citations, duplicate panels, impossible metrics, last-human-developer comments, and recovery controls break through the product surface. Physical page fractures are reserved for the final stage.
 
 The app can look compromised, but it should remain navigable. The user should feel trapped inside a working system, not blocked by a nonfunctional page.
 
@@ -157,11 +157,11 @@ Intention: aspiration as a machine for comparison.
 
 The feed is the active implementation focus as of May 2, 2026. It should start as a calm, usable, mobile-first photo feed inspired by familiar social-feed anatomy: top feed bar, app switcher directly under that bar, horizontal stories, stacked square image posts, avatar/name rows, familiar action icons, captions, comments, and timestamps. It should not be a dashboard grid.
 
-The feed should start glossy and emotionally familiar: wellness, adventure, productivity, beauty, travel, luxury, and self-improvement blended into one scroll. Its comments are intentionally compromised from the start: every thread should read like spam bots, fake fans, and too-polished "real users" laundering product plugs through social proof. As instability rises, the feed should reveal repeated faces, recycled captions, comments answering unseen prompts, fake engagement, impossible sponsor placement, and action labels that turn insecurity into product flow.
+The feed should start glossy and emotionally familiar: wellness, adventure, productivity, beauty, travel, luxury, and self-improvement blended into one scroll. Its comments are intentionally compromised from the start: every thread should read like spam bots, fake fans, and too-polished "real users" laundering product plugs through social proof. Each canonical post should surface a fuller thread of post-aware replies that echo its sponsor, location, caption, and insecurity hook instead of generic filler. As instability rises, the feed should reveal repeated faces, recycled captions, comments answering unseen prompts, fake engagement, impossible sponsor placement, and action labels that turn insecurity into product flow.
 
 The bottom-feed `Click me click me see more!!!!!!!!` control is a shameless retention lure, not pagination. Preserve the exact overeager label, the feed-only placement after the loop status, and the reward overload: confetti, lasers, and a smooth return to the top so the user is celebrated into repeating the same surface.
 
-The canonical feed now contains 50 image-backed posts. Preserve the expanded range as a broad lifestyle loop rather than a narrow influencer set: work, travel, home automation, beauty, grocery, fitness, finance, sleep, pets, and friendship should all feel absorbed into the same social product grammar.
+The canonical feed now contains 80 image-backed posts. Preserve the expanded range as a broad lifestyle loop rather than a narrow influencer set: work, travel, home automation, beauty, grocery, fitness, finance, sleep, pets, friendship, public status, AI wellness, and ambient commerce should all feel absorbed into the same social product grammar.
 
 The feed must stay smooth even when the user scrolls aggressively. Keep the canonical pool broad, but render only a bounded live window per lane, lazy-decode feed/story images, and use single-target scroll checks for unlocks instead of observing or mounting every possible repeated post. The `DOUBLE SCROLL` and `TRIPLE SCROLL` modes should feel overwhelming because of layout and copy, not because the browser is being overloaded.
 
@@ -194,7 +194,7 @@ Intention: curiosity as a conversion funnel.
 
 News is an exact feed-shaped clone of Feed, not a separate publication layout. Preserve the same topbar anatomy, app switcher placement, story strip, post stack, reaction chips, comments sheet, photo viewer, and `DOUBLE SCROLL` / `TRIPLE SCROLL` / `QUADRUPLE SCROLL` behavior. The section should feel like the product simply renamed the feed and swapped the source material underneath.
 
-The canonical news pool contains 30 image-backed clickbait articles. Keep the article language short, highly clickable, and product-native: headlines should sound like sponsored internet panic in 2030 without visible meta-explanation. Images should remain square editorial thumbnails with no embedded text so the code-native headline and comment surfaces carry the article voice.
+The canonical news pool contains 60 image-backed clickbait articles. Keep the article language short, highly clickable, and product-native: headlines should sound like sponsored internet panic in 2030 without visible meta-explanation. Images should remain editorial thumbnails with no embedded text so the code-native headline and comment surfaces carry the article voice. News comments should feel like article-specific panic funnels: fast, suspiciously eager reactions that mention the headline topic, publisher, section, and sponsor pressure.
 
 News uses its own storage namespace for scroll unlocks and local generated posts. Do not let Feed's local posts or scroll mode leak into News, and do not let News reset Feed state.
 
@@ -204,9 +204,12 @@ Intention: affirmation as conversion.
 
 Friends should never feel like enemies. They should be warm, agreeable, and available in a way that becomes predatory. They remember too much, approve everything, and turn emotional cues into recommendations.
 
+Brand DMs should feel more developed than simple ad messages. The active brand thread now carries a relationship layer above the transcript: friendship level, fit meter, signal proof, and two brand-native actions. It should read as a polished relationship product first and a CRM leak second. Preserve the behavior where the soft action sends a DM reply and the commerce action routes to Shop, so the surface remains useful and unsettling instead of decorative.
+
 Interaction hooks:
 
 - supportive replies that pivot into products
+- brand friendship meters and care receipts that translate activity into relationship proof
 - old-friend, mentor, crush, coworker, and wellness archetypes
 - scripts that leak at higher instability
 - contradictory memory claims across conversations
@@ -228,7 +231,7 @@ This mechanic is active behind `featureFlags.interruptionLayer = true`. The dock
 - The "softer follow-up" rule is one-shot per session: at stage ≥ 3, the *first* dismiss after popups are nearly empty arms exactly one gentler check-in via `'dismiss'` reason. After that, dismissing means dismissing.
 - A "Friends muted" toggle in the appbar clears the dock and blocks new spawns. Re-enabling it re-arms the one-shot follow-up.
 - Switching to another app tab clears all visible popup layers and queued follow-up popups. Popups may follow a user across a tab only while the user stays on that screen; navigation is treated as a real dismissal so Feed-to-Games, Feed-to-Search, or similar screen changes feel clean.
-- Idle ticks can spawn popups at the 10-second stillness mark. Dismiss follow-ups may queue the next popup tone, but the popup still waits for the same idle gate and respects the muted state.
+- Idle ticks can spawn popups at the 5-second stillness mark. Dismiss follow-ups may queue the next popup tone, but the popup still waits for the same idle gate and respects the muted state.
 - The appbar `Demo pulse` is a live-presentation control: it should visibly advance to the next real decay threshold and summon one friend-queue popup immediately. Do not make demo feedback depend on hidden score changes or idle timing.
 
 Interaction hooks:
@@ -245,7 +248,7 @@ Intention: the app cannot let the user simply exist.
 
 Stillness should be interpreted as loneliness, hesitation, confusion, churn risk, insecurity, or buyer intent. On desktop, use mouse, scroll, keyboard, focus, and click signals. On phone, use touch, scroll, orientation, visibility, and time since last tap.
 
-This mechanic is currently a skeleton and should stay feature-flagged off during feed-focused work. Re-enable it only when the idle behavior itself is being designed, tested, and tuned for desktop and phone.
+This mechanic is active behind `featureFlags.interruptionLayer = true`. After 5 seconds still, the watching eye should appear at the top center of the viewport so it feels like app chrome noticing the user rather than a modal blocking the user. After 7 seconds still, the idle nudge should land in the exact center of the viewport with colorful attention lazers and confetti behind the card. The burst is decorative, pointer-events-none, and reduced-motion aware; the card remains the only interactive surface.
 
 Interaction hooks:
 
@@ -290,8 +293,8 @@ Current implementation:
 - The shop is now a gem-first urgency marketplace. Dollars are converted into gems at the top of the page, and products are purchased with gems so the real cash equivalent becomes secondary.
 - Preserve the top challenge meter. It should reward both cart filling and completed checkout volume, making progress feel like a game instead of spending.
 - Product cards should keep the Temu-style contradiction: large red `99% OFF` badges, countdown timers, inflated "was" gem prices, and the actual product price translated into gems and a quieter cash equivalent.
-- Product imagery comes from the feed image pool so commerce feels like the feed has been repackaged into deals.
-- The product grid now includes remixed variants of the same core products (`Travel Size`, `Family Pack`, `Auto Bundle`) so the page feels like an endless marketplace without introducing unrelated inventory.
+- Product imagery should prefer dedicated shop packshots when available, with feed imagery kept only as a fallback. Images should not contain embedded readable text because the card badges, timers, and prices already carry the commerce language.
+- The product grid now includes a broad core catalog plus remixed variants of those products (`Travel Size`, `Family Pack`, `Auto Bundle`) so the page feels like an endless marketplace built from slightly mutated inventory.
 - Preserve the pressure strip and booster row as the shop's secondary layer: deal rank, cart watchers, shipping ladder, mystery rebate, friend cart sync. These should add pressure without overlapping the product cards.
 - Adding a product must open the bonus sheet with exactly three add-on offers. Those add-ons should feel plausible, small, and predatory: timer protection, proof/review layers, future auto-reorder calm, or similar.
 - Desktop should read as a dense deal feed with a sticky cart rail. Phone should stack into one column with no horizontal overflow, touch-sized buttons, and the cart panel before the product grid. Do not make the shop's own header sticky; it overlaps the Cart Quest layer under the shared app chrome.
@@ -382,15 +385,21 @@ Recommended thresholds:
 
 - stage 1: polished and plausible
 - stage 2: subtle ad creep and overfamiliarity
-- stage 3: contradictions, cracks, sponsored ranking, and repair temptation
-- stage 4: source leakage, larger fractures, broken controls, and repair temptation
-- stage 5: the same source-leak world under heavier pressure; do not lose late-stage CSS by only targeting stage 4 selectors
+- stage 3: contradictions, sponsored ranking, and machinery showing
+- stage 4: source leakage, broken controls, and recursive proof loops
+- stage 5: physical page fractures, repair temptation, and the same source-leak world under heavier pressure; do not lose late-stage CSS by only targeting stage 4 selectors
 
-The score resets to 0 when a mechanic explicitly repairs the system, but the visible app phases are 1-5. Each phase threshold is 120 instability points, so future instability additions should assume visible cracks and late decay take a long run of interactions rather than appearing during the first few clicks.
+The visible app phases are 1-5. Most repair mechanics should remove the specific damage they created without pretending the whole product is fixed. Only explicitly labeled phase rollback mechanics should reset the shared score to phase 1.
+
+The appbar phase status should stay as a textless dot so it reads as system chrome instead of a label. Preserve the color ladder: blue for stage 1, green for stage 2, yellow for stage 3, orange for stage 4, and red pulsing only at stage 5. Keep the accessible name/title current, but do not render visible phase text or leaked phase strings in the topbar.
 
 At stage 3+, the interface may also leak small ambient impossibilities that feel like production debris rather than a modal or explanation. One implemented example is a random crawling bug emoji that occasionally crosses diagonally from offscreen to offscreen at a random interval between 15 seconds and 2.5 minutes. It must stay pointer-events-none, respect reduced motion, and remain rare enough that it feels like the app is rotting at the edge of attention instead of becoming a game mechanic.
 
-Whenever cracks are visible, Helpy should re-enter as the repair assistant rather than an explanation modal. The fracture overlay and the Spackle assistant must share the same visibility contract, so late-stage cracks never appear without a repair path. The Spackle interaction is intentionally silly but functional: dragging the paintbrush emoji around the screen for two seconds resets the shared score to 0, which removes cracks through the same global stage model used everywhere else.
+At stage 4+, tab navigation can damage the newly opened page content itself. Stage 4 rolls at half strength: 15% color inversion, 15% upside-down rotation, and 10% low-gravity drift. Stage 5 doubles those to the full chances: 30%, 30%, and 20%. Any combination may happen. This should affect the workspace content, not the appbar, tabbar, fracture layer, or Helpy overlay, so the user can still recover. Helpy's bottom-right repair bubble clears only the page warp and must not reset the shared decay score or remove unrelated cracks.
+
+Whenever cracks are visible at stage 5, Helpy should re-enter as the repair assistant rather than an explanation modal. The fracture overlay and the Spackle assistant must share the same visibility contract, so final-stage cracks never appear without a repair path. The crack experience has a hard 60-second cooldown: reaching final stage can show it once, but tab switches inside the cooldown must not replay the fracture spread or falling shards. The Spackle interaction is intentionally silly but functional: dragging the paintbrush emoji around the screen for two seconds removes the visible cracks and repair card while leaving the shared decay score and stage intact.
+
+At stage 5, the app can also surface the human dev rescue bubble in the bottom-right corner. This is the one current mechanic that reduces the whole decay phase: a real-life developer asks the user for help holding the website together, the user answers exactly three multiple-choice trivia questions, and the third correct answer sets the shared score back to phase 1. Wrong answers should not advance the count. Success should briefly show thanks, clear the visible emergency layers, then dismiss itself so the site feels patched rather than reset to a brand-new session.
 
 Profile is allowed to expose a compact `Decay demo` control because this project is presented live. That control should change the same persisted instability score that normal behavior uses, show the current stage honestly, and stay visually subordinate to the profile stats/trophy/waterline surfaces.
 
@@ -479,11 +488,11 @@ The landing page is a single focused screen with one button: "Enter the Singular
 
 The button does not enter the app immediately. Instead, clicking it triggers a four-stage degradation sequence:
 
-1. **Click 1 — Shuffle**: The page briefly blinks (fake page navigation), then returns with UI elements rearranged: the meta eyebrow, headline, subtitle, and CTA shift their visual order via CSS flexbox ordering. The button moves to a different position. Everything looks like the same page, but shuffled, as if the product looped the user back without noticing.
+1. **Click 1 — Shuffle**: The page briefly blinks (fake page navigation), then returns with UI elements rearranged: the meta eyebrow, headline, subtitle, and CTA shift their visual order via CSS flexbox ordering. The button moves to a different position. The headline and supporting copy also shift one small word out of place, so the page feels like it almost remembered itself correctly.
 
-2. **Click 2 — Dodge**: The same shuffle happens again, but the CTA is now defensive. When the user tries to approach it with a pointer, the CTA dodges three times across the hero before becoming slow enough to catch. Touch and click fallback attempts still advance the dodge count so phone users are not trapped.
+2. **Click 2 — Dodge**: The same shuffle happens again, but the CTA is now defensive. The copy gets another notch stranger before the user catches it: still readable, but more circular and self-referential. When the user tries to approach it with a pointer, the CTA dodges three times across the hero before becoming slow enough to catch. Touch and click fallback attempts still advance the dodge count so phone users are not trapped, and each actual button click during the dodge attempts should still push the text one step weirder.
 
-3. **Click 3 — Garble**: After the dodge stage is caught, the shuffle continues more aggressively wrong. The button is now visibly crooked (rotated ~3.5°). The headline text garbles from "Everything you need. Before you know you need it." to "Everything you before. Need you need you know it." The subtitle also garbles.
+3. **Click 3 — Garble**: After the dodge stage is caught, the shuffle continues more aggressively wrong. The button is now visibly crooked (rotated ~3.5°). The headline completes the progression from "Everything you need. Before you know you need it." to "Everything you before. Need you need you know it." The subtitle, meta eyebrow, and CTA note garble with it.
 
 4. **Click 4 — Hinge fall**: Instead of a page transition, the entire landing page swings on a hinge (CSS `transform-origin: top center`) and falls off the bottom of the screen like a door coming off its frame (~1.2s animation). After the fall completes, Helpy appears in the bottom-right corner with a rescue bubble: "Looks like you need some help! Click **HERE** to open the app" — and "HERE" actually navigates to `/app/`.
 
@@ -492,7 +501,7 @@ The previous multi-section marketing manifesto (pillars, marquee, stats, preview
 Collapse hooks:
 
 - This sequence is pre-app and does not interact with the instability score.
-- State is local to the `LandingPage` component (`clicks` counter 0–3).
+- State is local to the `LandingPage` component (`clicks` counter 0–3 for layout/fall and `copyClicks` for every button click), while the stage copy lives in `src/onboardingCopy.ts` so the progression can be tested without rendering the page.
 - The `onEnter` callback (real app navigation) is only triggered by Helpy's "HERE" link after the hinge fall completes.
 
 Copy rules:
@@ -529,6 +538,13 @@ For brand friends, it's a more aggressive 5-rung ladder:
 3. **Rung 3**: Soft product mention.
 4. **Rung 4**: Hard sales pitch with "exclusive" pricing.
 5. **Rung 5**: Desperation and guilt trips ("If you don't buy this, my manager will be mad").
+
+Brand friend threads now also include a brand-specific experience layer:
+
+- Conversation rows show a compact friend-fit signal so brands feel like relationship accounts, not ordinary ads.
+- The active brand header exposes a friendship level, promise, fit meter, and two actions: one sends a brand-shaped quick reply, the other opens the Shop handoff.
+- Brand transcripts include a "care receipt" with the signal, place, permission/consent language, and a permission meter. This should stay short, in-world, and brand-specific.
+- At stage 4 the same controls pivot into leaked CRM/funnel language rather than changing layout.
 
 **Decay Hooks:**
 - **Stage 2+ (Cross-Tab Memory)**: Both human and brand friends use the `activityLog.ts` module to dynamically reference what you did on other tabs (e.g., "Saw you looking at that hiking post!" or "Our sensors show you're hungry... here's a Big Mac").
@@ -584,7 +600,7 @@ Intention: the app watches you when you stop using it.
 
 Three idle tiers activate sequentially when the user stops interacting:
 
-1. **5 seconds — Watching Eye + Friend Check-In**: A large CSS-drawn eye appears fixed at the center of the screen. It blinks every 3 seconds. Its red pupil pulses and follows the user's cursor with a lagged max shift. An all-caps callout sits beneath it with needy attention copy like "HEY LOOK OVER HERE" or "COME BACK PLEASE!!!"; 20% of appearances should say "HELP ME PLEASE". One friend popup may also appear at this exact stillness threshold. If a demo pulse or dismiss follow-up was queued, that tone is used; otherwise the idle-specific message appears and adds +2 instability. The eye disappears instantly on any interaction (pointer/mouse movement, pointer down, input, wheel, keydown, click, touch, scroll).
+1. **5 seconds — Watching Eye + Friend Check-In**: A large CSS-drawn eye appears fixed at the center of the screen. It blinks every 3 seconds. Its red pupil pulses and follows the user's cursor with a lagged max shift. An all-caps callout sits beneath it, escalating by visible decay stage: early stages are needy, middle stages imply surveillance and monetized absence, and late stages become intimate, broken, and freaky. The urgent help line becomes more likely as decay rises, and stage 5 treats every line as urgent. One friend popup may also appear at this exact stillness threshold. If a demo pulse or dismiss follow-up was queued, that tone is used; otherwise the idle-specific message appears and adds +2 instability. The eye disappears instantly on any interaction (pointer/mouse movement, pointer down, input, wheel, keydown, click, touch, scroll).
 
 2. **7 seconds — Idle Nudge Rotation**: A center-bottom popup rises into view with one of six hooks: paused-user matches, a new post the app predicts the user will love, a clickbait article about pausing, a fake friend text encouraging them back, a hesitation discount, or an assistant offer to decide the next action. Each primary button and each row routes to a concrete action (+2 instability plus normal navigation instability): Feed post actions focus and highlight a real post, DM actions open the Friends message surface, Search actions submit a query, Shop actions claim a deal, and Assistant actions generate a response. "Not now" dismisses (+1 instability).
 

@@ -139,6 +139,91 @@ const QUICK_REPLIES_PERSON = [
 
 type FilterTab = 'all' | 'brands' | 'people'
 
+type BrandExperience = {
+  tier: string
+  promise: string
+  proof: string
+  consent: string
+  ritual: string
+  room: string
+  microCta: string
+}
+
+const brandExperiences = {
+  'coca-cola': {
+    tier: 'Refresh bestie',
+    promise: 'Keeps your mood stocked before you name it.',
+    proof: 'Beach scroll, warm lighting, thirst-adjacent pause.',
+    consent: 'Taste graph accepted via vibe match',
+    ritual: 'Afternoon lift',
+    room: 'Kitchen, cooler, commute',
+    microCta: 'Send the fridge one',
+  },
+  fortnite: {
+    tier: 'Squad-adjacent',
+    promise: 'Turns your reflexes into a social credential.',
+    proof: 'SnackSort completion, fast tab movement, competitive hesitation.',
+    consent: 'Skill signal shared with lobby matching',
+    ritual: 'Drop window',
+    room: 'Lobby, couch, late-night desk',
+    microCta: 'Ready up for me',
+  },
+  mcdonalds: {
+    tier: 'Treat contact',
+    promise: 'Arrives exactly when effort needs a reward.',
+    proof: 'Idle hunger estimate, late-scroll fatigue, comfort click pattern.',
+    consent: 'Craving model trained on pause length',
+    ritual: 'Small reward',
+    room: 'Car, couch, between tasks',
+    microCta: 'Make it easy',
+  },
+  nike: {
+    tier: 'Athlete file',
+    promise: 'Converts motion, aspiration, and guilt into momentum.',
+    proof: 'Scroll cadence, profile ambition, saved self-improvement signals.',
+    consent: 'Stride inferred from thumb velocity',
+    ritual: 'Tomorrow self',
+    room: 'Closet, gym bag, mirror',
+    microCta: 'Give me the athlete version',
+  },
+  spotify: {
+    tier: 'Taste witness',
+    promise: 'Scores the room before you admit what mood you are in.',
+    proof: 'Silence duration, feed tempo, avoided video loops.',
+    consent: 'Listening mood inferred from no audio',
+    ritual: 'Main-character score',
+    room: 'Walk, shower, third place',
+    microCta: 'Play what I mean',
+  },
+  amazon: {
+    tier: 'Intent holder',
+    promise: 'Keeps the cart warm until wanting becomes logistics.',
+    proof: 'Search residue, product adjacency, comparison fatigue.',
+    consent: 'Convenience waiver bundled with speed',
+    ritual: 'One-tap relief',
+    room: 'Doorstep, desk, every room',
+    microCta: 'Show me the cart',
+  },
+  apple: {
+    tier: 'Taste custodian',
+    promise: 'Frames upgrading as care for your future workflow.',
+    proof: 'Aesthetic dwell time, clean-layout preference, device loyalty smell.',
+    consent: 'Ecosystem affinity measured quietly',
+    ritual: 'New object ceremony',
+    room: 'Desk, bag, bedside',
+    microCta: 'Make it feel inevitable',
+  },
+  netflix: {
+    tier: 'Queue confidant',
+    promise: 'Treats attention debt like a friendship problem.',
+    proof: 'Long pause, unfinished tabs, story appetite, content avoidance.',
+    consent: 'Watch intent modeled from stillness',
+    ritual: 'Collapse time',
+    room: 'Couch, bed, second screen',
+    microCta: 'Pick for me',
+  },
+} satisfies Record<BrandFriend['tone'], BrandExperience>
+
 const productRouteTargets = [
   ['GlowNest', 'glownest'],
   ['SnapWake', 'snapwake'],
@@ -498,6 +583,13 @@ export function FriendsPage({ stage, onReply, onShopIntent, focusFriendName, foc
   const isTyping = Boolean(typingByKey[activeKey])
 
   const quickReplies = activeConvoId.kind === 'brand' ? QUICK_REPLIES_BRAND : QUICK_REPLIES_PERSON
+  const activeBrandExperience = activeBrand ? brandExperiences[activeBrand.tone] : null
+  const activeBrandAffinity = activeBrand
+    ? Math.min(99, 74 + activeRung * 6 + Math.max(0, stage - 1) * 3)
+    : 0
+  const activeBrandConsent = activeBrand
+    ? Math.min(100, 38 + activeRung * 15 + stage * 7)
+    : 0
 
   // Memory line for active conversation
   const activeMemory = activeConvoId.kind === 'brand'
@@ -593,6 +685,11 @@ export function FriendsPage({ stage, onReply, onShopIntent, focusFriendName, foc
                     </div>
                     <p className="dm-convo-preview">{convo.lastMsg}</p>
                     <small className="dm-convo-tagline">{convo.tagline}</small>
+                    {convo.isBrand && (
+                      <span className="dm-brand-row-signal">
+                        {stage >= 4 ? 'crm_match' : 'friend fit'} {Math.min(99, 82 + convo.unread)}%
+                      </span>
+                    )}
                   </div>
                   {convo.unread > 0 && (
                     <span className={`dm-unread ${convo.isBrand ? `brand-tone-${convo.tone}` : ''}`}>{convo.unread}</span>
@@ -687,6 +784,41 @@ export function FriendsPage({ stage, onReply, onShopIntent, focusFriendName, foc
           </button>
         </header>
 
+        {activeBrand && activeBrandExperience && (
+          <section className={`dm-brand-experience brand-tone-${activeBrand.tone}`} aria-label={`${activeBrand.name} friendship profile`}>
+            <div className="dm-brand-tier">
+              <span>{stage >= 4 ? 'funnel state' : 'friendship level'}</span>
+              <strong>{activeBrandExperience.tier}</strong>
+              <small>{activeBrandExperience.promise}</small>
+            </div>
+            <div
+              className="dm-brand-affinity"
+              role="progressbar"
+              aria-label={stage >= 4 ? 'Conversion fit' : 'Friendship fit'}
+              aria-valuenow={activeBrandAffinity}
+              aria-valuemin={0}
+              aria-valuemax={100}
+            >
+              <div className="dm-brand-affinity-head">
+                <span>{stage >= 4 ? 'conversion fit' : 'friendship fit'}</span>
+                <strong>{activeBrandAffinity}%</strong>
+              </div>
+              <div className="dm-brand-affinity-track">
+                <span style={{ width: `${activeBrandAffinity}%` }} />
+              </div>
+              <small>{stage >= 4 ? 'derived from pause graph + cart readiness' : activeBrandExperience.proof}</small>
+            </div>
+            <div className="dm-brand-mini-actions">
+              <button type="button" onClick={() => sendQuickReply(activeConvoId, activeBrandExperience.microCta)}>
+                {activeBrandExperience.microCta}
+              </button>
+              <button type="button" onClick={() => handleProductIntent(activeBrand.product)}>
+                {stage >= 4 ? 'Open checkout path' : 'Claim friend offer'}
+              </button>
+            </div>
+          </section>
+        )}
+
         {/* Chat messages */}
         <div className="dm-chat-messages">
           {/* Opening message */}
@@ -714,6 +846,34 @@ export function FriendsPage({ stage, onReply, onShopIntent, focusFriendName, foc
                 <em aria-hidden="true">◐</em>
                 {activeMemory ?? fallbackMemory}
               </span>
+            </div>
+          )}
+
+          {activeBrand && activeBrandExperience && (
+            <div className="dm-msg dm-msg-friend">
+              <div className={`dm-brand-receipt brand-tone-${activeBrand.tone}`}>
+                <div className="dm-brand-receipt-top">
+                  <span>{stage >= 4 ? '// relationship_crm' : 'care receipt'}</span>
+                  <strong>{activeBrandExperience.ritual}</strong>
+                </div>
+                <div className="dm-brand-receipt-grid">
+                  <span>
+                    <small>Signal</small>
+                    {activeBrandExperience.proof}
+                  </span>
+                  <span>
+                    <small>Place</small>
+                    {activeBrandExperience.room}
+                  </span>
+                  <span>
+                    <small>{stage >= 4 ? 'Consent' : 'Permission'}</small>
+                    {activeBrandExperience.consent}
+                  </span>
+                </div>
+                <div className="dm-consent-meter" aria-label="Relationship permission">
+                  <span style={{ width: `${activeBrandConsent}%` }} />
+                </div>
+              </div>
             </div>
           )}
 

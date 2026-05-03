@@ -1,3 +1,5 @@
+import type { CSSProperties } from 'react'
+
 type LonelinessPopupProps = {
   visible: boolean
   nudgeIndex: number
@@ -25,6 +27,48 @@ type IdleNudge = {
     tone: 'wellness' | 'hype' | 'nostalgia' | 'finance' | 'dating' | 'lucid'
     action: IdleNudgeAction
   }>
+}
+
+type AttentionLazerStyle = CSSProperties & {
+  '--attention-lazer-angle': string
+  '--attention-lazer-hue': string
+  '--attention-lazer-delay': string
+}
+
+type AttentionConfettiStyle = CSSProperties & {
+  '--attention-confetti-x': string
+  '--attention-confetti-y': string
+  '--attention-confetti-rotate': string
+  '--attention-confetti-hue': string
+  '--attention-confetti-delay': string
+}
+
+const attentionLazers = Array.from({ length: 14 }, (_, index) => index)
+const attentionConfetti = Array.from({ length: 48 }, (_, index) => index)
+
+function getAttentionLazerStyle(index: number): AttentionLazerStyle {
+  const spread = 360 / attentionLazers.length
+
+  return {
+    '--attention-lazer-angle': `${index * spread - 90}deg`,
+    '--attention-lazer-hue': `${(index * 53 + 14) % 360}`,
+    '--attention-lazer-delay': `${(index % 7) * 48}ms`,
+  }
+}
+
+function getAttentionConfettiStyle(index: number): AttentionConfettiStyle {
+  const angle = index * 137.5
+  const distance = 140 + (index % 9) * 18
+  const x = Math.cos((angle * Math.PI) / 180) * distance
+  const y = Math.sin((angle * Math.PI) / 180) * distance
+
+  return {
+    '--attention-confetti-x': `${x}px`,
+    '--attention-confetti-y': `${y}px`,
+    '--attention-confetti-rotate': `${index * 31}deg`,
+    '--attention-confetti-hue': `${(index * 41 + 22) % 360}`,
+    '--attention-confetti-delay': `${(index % 16) * 26}ms`,
+  }
 }
 
 const IDLE_NUDGES: IdleNudge[] = [
@@ -104,6 +148,16 @@ export function LonelinessPopup({ visible, nudgeIndex, onDismiss, onAct }: Lonel
 
   return (
     <div className="loneliness-popup" role="dialog" aria-label={nudge.label}>
+      <div className="attention-lazer-field" aria-hidden="true">
+        {attentionLazers.map((lazer) => (
+          <span key={lazer} style={getAttentionLazerStyle(lazer)} />
+        ))}
+      </div>
+      <div className="attention-confetti-field" aria-hidden="true">
+        {attentionConfetti.map((piece) => (
+          <span key={piece} style={getAttentionConfettiStyle(piece)} />
+        ))}
+      </div>
       <div className="loneliness-card">
         <span className="loneliness-label">{nudge.label}</span>
         <p className="loneliness-header">

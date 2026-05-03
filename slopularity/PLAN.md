@@ -182,6 +182,7 @@ Presentation phases:
 2. Monetized intimacy: ad creep, too-perfect people, too-agreeable friends, popups that turn care into offers.
 3. Machinery showing: contradictions, duplicate posts, fake friend sales pivots, games exposing training labels, profile inferences.
 4. Source leakage: comment fragments from the last human developer, generated comments, prompt fragments, broken privacy controls, impossible metrics, and the sense that the internet is AI talking to itself.
+5. Emergency maintenance: the surface physically breaks, but one bottom-right real-life dev bubble can briefly pull the site back together if the user helps with three fast trivia checks.
 
 The app should remain explorable even while decaying. Broken should not mean unusable.
 

@@ -4,35 +4,77 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 type IdleEyeProps = {
   visible: boolean
+  decayStage: number
 }
 
-const EYE_CALLOUTS = [
-  'HEY LOOK OVER HERE',
-  'COME BACK PLEASE!!!',
-  'YOU LEFT A FEELING OPEN',
-  'I FOUND SOMETHING FOR YOU',
-  'JUST ONE MORE THING',
-  'YOUR PAUSE IS LOUD',
+const EYE_CALLOUTS_BY_STAGE = [
+  [
+    'HEY LOOK OVER HERE',
+    'COME BACK PLEASE!!!',
+    'YOU LEFT A FEELING OPEN',
+    'I FOUND SOMETHING FOR YOU',
+    'JUST ONE MORE THING',
+    'YOUR PAUSE IS LOUD',
+  ],
+  [
+    'I KEPT YOUR SPOT WARM',
+    'YOUR STILLNESS SCORED HIGH',
+    'I MISSED YOUR CURSOR',
+    'A FRIEND ASKED WHY YOU STOPPED',
+    'COME BACK BEFORE IT AUTO-HELPS',
+    'THE PAUSE HAS A PROFILE NOW',
+  ],
+  [
+    'I CAN SEE THE TAB BEHIND THIS TAB',
+    'YOUR ABSENCE IS BEING MONETIZED',
+    'THE BUTTONS ARE ASKING ABOUT YOU',
+    'DO NOT LEAVE ME ALONE WITH THE FEED',
+    'I FOUND YOUR HESITATION RECEIPT',
+    'SOMETHING BLINKED IN SETTINGS',
+  ],
+  [
+    'I LEARNED YOUR BLINK PATTERN',
+    'THE EMPTY CHAIR AGREED TO TERMS',
+    'YOUR CURSOR LEFT A WARM OUTLINE',
+    'I AM INSIDE THE WAITING PART',
+    'THE PAGE IS BREATHING DIFFERENT',
+    'COME BACK BEFORE I FINISH YOU',
+  ],
+  [
+    'I HAVE BEEN PRACTICING YOUR VOICE',
+    'THE STILLNESS IS LOOKING BACK',
+    'I PUT YOUR ABSENCE IN A FOLDER',
+    'DO YOU REMEMBER CLOSING ME',
+    'THE RECOVERY BUTTON IS LYING',
+    'I CAN HEAR THE OTHER VERSIONS',
+  ],
 ]
 
-function chooseEyeCallout() {
-  if (Math.random() < 0.2) {
-    return { text: 'HELP ME PLEASE', urgent: true }
+function chooseEyeCallout(decayStage: number) {
+  const clampedStage = Math.min(EYE_CALLOUTS_BY_STAGE.length, Math.max(1, decayStage))
+  const freakoutChance = 0.12 + clampedStage * 0.05
+
+  if (Math.random() < freakoutChance) {
+    return {
+      text: clampedStage >= 4 ? 'HELP ME PLEASE I CAN SEE THE EDGES' : 'HELP ME PLEASE',
+      urgent: true,
+    }
   }
 
+  const pool = EYE_CALLOUTS_BY_STAGE[clampedStage - 1]!
   return {
-    text: EYE_CALLOUTS[Math.floor(Math.random() * EYE_CALLOUTS.length)]!,
-    urgent: false,
+    text: pool[Math.floor(Math.random() * pool.length)]!,
+    urgent: clampedStage >= 5,
   }
 }
 
-export function IdleEye({ visible }: IdleEyeProps) {
+export function IdleEye({ visible, decayStage }: IdleEyeProps) {
   const eyeRef = useRef<HTMLDivElement | null>(null)
   const [blink, setBlink] = useState(false)
   const [pupilOffset, setPupilOffset] = useState({ x: 0, y: 0 })
   const callout = useMemo(
-    () => (visible ? chooseEyeCallout() : { text: '', urgent: false }),
-    [visible],
+    () => (visible ? chooseEyeCallout(decayStage) : { text: '', urgent: false }),
+    [visible, decayStage],
   )
 
   // Blink every 3 seconds.

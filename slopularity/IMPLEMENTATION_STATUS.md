@@ -2,13 +2,124 @@
 
 Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESIGN_BIBLE.md` stays the product/design execution guide. This file records what is actively intentional in the app right now, what is still a skeleton, and which feature flags are keeping unfinished mechanics out of the way.
 
+## [2026-05-02 23:02] Feed And News Comment Expansion
+
+- Active focus: making Feed and News comment threads feel fuller, more varied, and more tied to the specific post/article being shown.
+- Behavior changed: `src/content.ts` now expands every Feed post into up to eight unique sample comments using deterministic sponsor, location, caption, handle, and story-name cues.
+- Behavior changed: News articles now expand their clickbait comment pairs into up to eight topic-aware replies that mention the headline hook, publisher, section, sponsor, and curiosity funnel.
+- Behavior changed: `src/pages/FeedPage.tsx` now previews three inline comments per post/article before the focused comment sheet.
+- Documentation updated: `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, and root `HISTORY.md`.
+- Validation run: pending.
+
+## [2026-05-02 22:58] Human Dev Trivia Rescue
+
+- Active focus: giving final decay a whole-phase recovery path that feels like a real person trying to hold the site together.
+- Behavior changed: `src/decayRecovery.ts` owns the three trivia questions, final-stage availability rule, correct-answer progression, and phase-1 recovery score.
+- Behavior changed: `src/components/HumanDevRescue.tsx` renders a bottom-right real-life dev bubble at stage 5, keeps wrong answers on the current question, advances only on correct answers, thanks the user after the third correct answer, then disappears.
+- Behavior changed: `src/App.tsx` resets the shared score to phase 1, clears page warp/crack readiness, dismisses active popup layers, and logs `human_dev_rescue` when the trivia run succeeds.
+- Styling changed: `src/index.css` adds the compact desktop/mobile bubble, multiple-choice answer states, thank-you state, and a stack rule so page-warp repair can sit above it when both are visible.
+- Test added: `tests/decayRecovery.test.ts` covers phase-5 availability, exactly three three-choice questions, wrong-answer behavior, correct progression, and phase-1 recovery score.
+- Validation run: `node --experimental-strip-types --test tests/decayRecovery.test.ts`; `node --experimental-strip-types --test tests/utils.test.ts tests/pageWarp.test.ts tests/decayRecovery.test.ts`; `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` forced stage 5 at 1280x900, confirmed the bubble and first trivia question, answered Mars / HyperText Markup Language / Pacific Ocean, confirmed `data-stage` returned to `1`, stored score became `0`, the thank-you message appeared and then disappeared, then forced 390x844 stage 5 and confirmed the bubble rendered with 0 horizontal overflow. Screenshots: `/tmp/slopularity-dev-rescue-after-desktop.png`, `/tmp/slopularity-dev-rescue-mobile.png`.
+
+## [2026-05-02 22:54] Stage 4 Page Warp Odds
+
+- Active focus: making the three page-warp effects possible at stage 4 while keeping stage 5 more chaotic.
+- Behavior changed: `src/pageWarp.ts` now allows page warps starting at stage 4, using half odds there: 15% color invert, 15% upside down, and 10% zero gravity. Stage 5 keeps the full 30% / 30% / 20% odds.
+- Test updated: `tests/pageWarp.test.ts` covers no warp before stage 4, half-strength stage-4 odds, and full independent stage-5 odds.
+- Documentation updated: `DECAY_FEATURES.md`, `DESIGN_BIBLE.md`, `IMPLEMENTATION_STATUS.md`, and root `HISTORY.md`.
+- Validation run: `node --experimental-strip-types --test tests/pageWarp.test.ts`; `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` forced stage 4 and stage 5 warp rolls, confirmed both stages can apply invert/upside-down/zero-gravity classes with Helpy visible and no horizontal overflow, and confirmed Helpy repair clears the stage-4 warp while leaving the user at stage 4.
+
+## [2026-05-02 22:53] Crack Experience Cooldown
+
+- Active focus: making final-stage cracks feel rarer instead of replaying on every navigation.
+- Behavior changed: `src/App.tsx` now owns a 60-second crack-experience cooldown and only remounts `PageFracture` when the cooldown has cleared; tab switches inside the cooldown keep the current fracture state instead of restarting the spread and shard fall.
+- Behavior changed: `src/components/PageFracture.tsx` no longer keys its root by the active surface, so the app-level cooldown controls replay timing.
+- Documentation updated: `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, `IMPLEMENTATION_STATUS.md`, and root `HISTORY.md`.
+- Validation run: `npm run lint`; `npm run build`.
+
+## [2026-05-02 22:52] Zero-Gravity Page Warp
+
+- Active focus: adding a third recoverable final-stage page warp alongside inversion and upside-down rotation.
+- Behavior changed: `src/pageWarp.ts` now rolls a separate 20% `zeroGravity` chance at stage 5, independent from the two existing 30% page-warp chances.
+- Styling changed: `src/index.css` adds `.workspace.is-zero-gravity` and slow, staggered low-gravity drift animations across page elements while keeping app chrome and Helpy outside the affected workspace.
+- Repair path preserved: the existing bottom-right Helpy page repair clears zero gravity together with any other page-warp classes without changing the decay stage.
+- Documentation updated: `DECAY_FEATURES.md`, `DESIGN_BIBLE.md`, `IMPLEMENTATION_STATUS.md`, and root `HISTORY.md`.
+- Validation run: `node --experimental-strip-types --test tests/pageWarp.test.ts`; `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` forced stage 5 and the warp rolls, confirmed Search had `.is-zero-gravity`, 22 animated desktop elements, Helpy repair, and no horizontal overflow, clicked repair and confirmed score/stage stayed `40`/5 while the warp cleared, then forced a 390px phone warp and confirmed 87 animated elements, Helpy, and no horizontal overflow.
+
+## [2026-05-02 22:51] Crack Repair Preserves Stage
+
+- Active focus: making Spackle repair remove cracks without resetting the app back to phase 1.
+- Behavior changed: `src/App.tsx` now tracks repaired page fractures separately from the shared decay score. Repair hides `PageFracture` and `CrackRepairAssistant`, but keeps the visible stage and score where they were.
+- Test updated: `tests/utils.test.ts` covers the repaired-fracture visibility helper.
+- Documentation updated: `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, and root `HISTORY.md`.
+- Validation run: `npm exec tsx -- --test tests/utils.test.ts tests/pageWarp.test.ts`; `npm run lint`; `npm run build`.
+
+## [2026-05-02 22:48] Textless Appbar Phase Dot
+
+- Active focus: simplifying the topbar phase notifier into a compact status dot.
+- Behavior changed: `src/App.tsx` no longer renders visible phase text or leaked review copy in the appbar indicator. The dot keeps an accessible phase label/title.
+- Cleanup changed: `src/content.ts` no longer carries the unused `phasePill` leak string.
+- Styling changed: `src/index.css` now maps phase colors to blue, green, yellow, orange, and red pulsing only at phase 5.
+- Documentation updated: `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, and root `HISTORY.md`.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` forced stages 1-5 and confirmed the appbar phase notifier has no visible text, keeps accessible labels/titles, maps to blue/green/yellow/orange/red, pulses only at stage 5, and has no horizontal overflow.
+
+## [2026-05-02 22:47] Highest-Stage Page Warp
+
+- Active focus: adding a recoverable page-content warp when users switch tabs at maximum decay.
+- Behavior changed: `src/pageWarp.ts` now owns the independent 30% color-invert and 30% upside-down rolls, and `src/App.tsx` applies the result only to `.workspace` after real tab changes at stage 5.
+- Repair path changed: if either roll hits, Helpy appears in the bottom-right with a one-click repair that clears the page warp without resetting the shared decay score or hiding stage-5 cracks.
+- Styling changed: `src/index.css` adds the workspace invert/rotation states plus a higher-priority page-warp Helpy bubble that stays separate from the Spackle repair card.
+- Documentation updated: `DECAY_FEATURES.md`, `DESIGN_BIBLE.md`, `IMPLEMENTATION_STATUS.md`, and root `HISTORY.md`.
+- Validation run: `node --experimental-strip-types --test tests/pageWarp.test.ts`; `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` forced stage 5, forced both warp rolls on desktop, confirmed Search opened with both workspace classes and Helpy repair, clicked repair and confirmed stage/score stayed at 5/40 while the warp cleared, then forced a phone-width warp and confirmed Helpy rendered with no mobile horizontal overflow.
+
+## [2026-05-02 22:46] Final-Stage-Only Page Fractures
+
+- Active focus: moving physical page fractures and Helpy Spackle repair out of middle decay and into the final decay stage only.
+- Behavior changed: `src/utils.ts` now reports page fractures only at `maxDecayStage`, so `PageFracture` and `CrackRepairAssistant` both stay hidden through stages 1-4 and appear together at stage 5.
+- Test added: `tests/utils.test.ts` covers the fracture visibility contract across every stage.
+- Documentation updated: `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, and root `HISTORY.md`.
+- Validation run: `npm run lint`; `node --test tests/utils.test.ts`; `npm run build`; headless Chrome/CDP smoke against `vite preview` forced score `30`/stage 4 and confirmed no `.page-fracture-layer`, `.crack-repair`, or `.spackle-brush`, then forced score `40`/stage 5 and confirmed all three appear with no horizontal overflow. Full `node --test tests/*.test.ts` is currently blocked by unrelated in-flight tests for missing `src/decayRecovery.ts` and a `pageWarp` zero-gravity expectation.
+
+## [2026-05-02 22:44] Progressive Onboarding Copy Rot
+
+- Active focus: making the landing onboarding text degrade on every "Enter the Singularity" button click instead of waiting until the final pre-fall stage.
+- Behavior changed: `src/onboardingCopy.ts` now owns the seven visible copy states; the headline, subtitle, meta line, and CTA note move from polished to subtly wrong to fully garbled across the main clicks and dodge-click attempts.
+- Behavior preserved: the fake transition, button repositioning, dodge stage, crooked button, hinge fall, and Helpy rescue flow stay on the existing `LandingPage` click sequence.
+- Test added: `tests/onboardingCopy.test.ts` covers unique headline copy per button-click copy step and last-stage clamping.
+- Validation run: `npm exec tsx -- --test tests/onboardingCopy.test.ts`; `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` clicked the landing CTA six times and confirmed seven distinct headline states, the CTA remained present, and there was no horizontal overflow.
+
+## [2026-05-02 22:45] Shop Catalog Expansion
+
+- Active focus: expanding the Shop into a larger item catalog with dedicated product packshot imagery.
+- Behavior changed: `src/content.ts` now supports product-specific `imageSrc` values from `src/assets/shop/` and adds 20 new core shop products across sleep, travel, home, food, chores, privacy, beauty, finance, and social automation.
+- Behavior changed: `src/pages/ShopPage.tsx` now prefers product packshots and falls back to feed imagery only when a product has no dedicated shop asset.
+- Documentation updated: `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, and root `HISTORY.md`.
+- Validation run: `npm run lint`; `npm run build`; verified all 20 generated shop images are square `1254x1254`; headless Chrome smoke against `vite preview` at 1280x900 and 390px phone widths confirmed `/app/shop/` renders 52 shop cards, all 20 new asset references, and representative new product names.
+
+## [2026-05-02 22:42] Brand DM Experience Expansion
+
+- Active focus: making brand-friend DMs feel like a fuller relationship-commerce product instead of only chat bubbles and product cards.
+- Behavior changed: `src/pages/FriendsPage.tsx` now gives each brand a friendship tier, promise, signal proof, permission language, ritual, room context, soft reply CTA, fit meter, and in-thread care receipt. Stage 4 pivots the same surfaces into CRM/funnel leak language.
+- Styling changed: `src/index.css` adds brand row fit chips, the active brand relationship strip, responsive brand action buttons, care receipts, and permission meters.
+- Verification note: the implementation also fixed an existing `App.tsx` lint blocker by moving the page-warp reset out of the synchronous effect body.
+- Documentation updated: `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, `IMPLEMENTATION_STATUS.md`, and root `HISTORY.md`.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP against `vite preview` confirmed `/app/friends/` renders the brand relationship strip, care receipt, row fit chip, soft reply action, checkout action, no desktop overflow, soft reply adds a user bubble and raises affinity from 74% to 80%, checkout routes to `/app/shop/`, and phone-sized 390x844 has no horizontal overflow. Screenshots: `/tmp/slopularity-brand-dm-desktop.png`, `/tmp/slopularity-brand-dm-mobile.png`.
+
+## [2026-05-02 22:44] Idle Attention Recenter
+
+- Active focus: `src/components/IdleEye.tsx`, `src/components/LonelinessPopup.tsx`, and idle popup styling in `src/index.css`.
+- Behavior changed: the watching eye now appears at the top center of the viewport instead of the middle of the screen.
+- Behavior changed: the idle nudge card now appears in the exact center of the viewport with colorful attention lazers and confetti behind the interactive card.
+- Documentation updated: `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, and root `HISTORY.md`.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` at 1280x900 and 390x844 confirmed the idle popup center matches the viewport center, the eye is top-centered, 14 attention lazers and 48 confetti pieces render, and horizontal overflow is 0.
+
 ## [2026-05-02 22:39] Snack Sort Drag Placement
 
 - Active focus: making Snack Sort Picnic support direct drag-to-basket placement instead of only tap/select, then basket.
 - Behavior changed: `src/games/SnackSort.tsx` now tracks pointer drags, shows a snack ghost under the pointer, highlights the basket under the drag, and drops the snack into that basket on release. The existing click-to-select fallback still works.
 - Styling changed: `src/index.css` adds grab/grabbing affordances, a lifted dragged-chip state, basket drop emphasis, and a picnic-colored drag ghost.
 - Documentation updated: `DESIGN_BIBLE.md` and root `HISTORY.md`.
-- Validation run: pending in this session.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` at 1280x900 dragged Blueberry into the visible Berry basket area and confirmed 1 basket chip, 8 remaining tray chips, no lingering drag ghost, and no horizontal overflow.
 
 ## [2026-05-02 22:36] Crack Repair Visibility Coupling
 
@@ -379,6 +490,21 @@ Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESI
 - Add a new dated entry whenever a tab, mechanic, feature flag, or testing posture changes substantially.
 - Keep entries concrete: files changed, what is intentional now, what is still skeleton, and what validation was run.
 - Do not use this file for broad ideation. Put ideas in `PLAN.md`; put execution rules in `DESIGN_BIBLE.md`.
+
+## [2026-05-02 22:53] Stage-Aware Idle Eye Copy
+
+- Active focus: making the AFK watching eye escalate its text with the visible decay stage.
+- Behavior changed: `IdleEye` now receives the current decay stage from `App.tsx`, chooses from five stage-specific callout pools, increases the urgent-help chance as decay rises, and treats every stage-5 callout as urgent.
+- Documentation updated: `DECAY_FEATURES.md`, `DESIGN_BIBLE.md`, and `HISTORY.md` now record the stage-aware idle-eye behavior.
+- Validation run: `npm run build` passed and regenerated `dist/`; `npm run lint` is still blocked by existing `react-hooks/set-state-in-effect` errors in `src/App.tsx` crack-experience timing and `src/components/HumanDevRescue.tsx`.
+
+## [2026-05-02 22:57] Feed And News Image Expansion
+
+- Active focus: `src/content.ts`, `src/assets/feed/`, and `src/assets/news/`.
+- Behavior changed: Feed now has 80 canonical posts and News has 60 canonical articles, extending the existing loop with 30 new AI-generated image-backed entries per section.
+- Asset handling changed: feed/news images now use Vite glob imports so future numbered image batches are picked up without hand-maintaining import maps.
+- New assets added: `src/assets/feed/post-51.jpg` through `post-80.jpg` and `src/assets/news/news-31.jpg` through `news-60.jpg`, generated by six GPT-5.4 low image subagents and placed into the app asset tree.
+- Validation run: verified all new feed/news asset slots exist as real JPEGs; `npm run lint`; `npm run build`.
 
 ## [2026-05-02 23:58] Games Lobby And Playroom Revamp
 

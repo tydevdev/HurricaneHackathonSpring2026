@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { getOnboardingCopy } from '../onboardingCopy'
 
 // The onboarding gate is the first taste of collapse. Everything looks polished
 // on arrival — one confident button, one confident promise. Each click reveals
@@ -14,54 +15,6 @@ const GATE_CLICKS = 4
 const DODGE_STAGE = 2
 const DODGE_LIMIT = 3
 
-// Tagline variants: each click garbles the product promise a little more.
-const TAGLINES: { line1: string; line2: string; line2em: [string, string] }[] = [
-  {
-    line1: 'Everything you need.',
-    line2: 'Before you know you need it.',
-    line2em: ['Before you', 'you need it.'],
-  },
-  {
-    line1: 'Everything you need.',
-    line2: 'Before you know you need it.',
-    line2em: ['Before you', 'you need it.'],
-  },
-  {
-    line1: 'Everything you need.',
-    line2: 'Before you know you need it.',
-    line2em: ['Before you', 'you need it.'],
-  },
-  {
-    line1: 'Everything you before.',
-    line2: 'Need you need you know it.',
-    line2em: ['Need you', 'you know it.'],
-  },
-]
-
-// The sub-tagline also shifts slightly per stage
-const SUBS = [
-  'The only page you will ever need. We absorbed the rest, with consent we will explain shortly.',
-  'The only page you will ever need. We absorbed the rest, with consent we will explain shortly.',
-  'The only page you will ever need. We absorbed the rest. Please click normally.',
-  'The only we absorbed. Consent: page. Rest: you.',
-]
-
-// Meta eyebrow shifts
-const METAS: string[][] = [
-  ['EST. 2030', '·', 'ONE WEB', '·', 'ALL OF YOU'],
-  ['ONE WEB', '·', 'ALL OF YOU', '·', 'EST. 2030'],
-  ['ONE WEB', '·', 'EST. 2030', '·', 'STILL HERE'],
-  ['ALL OF', '·', 'EST. YOU', '·', 'ONE 2030'],
-]
-
-// CTA note shifts
-const CTA_NOTES = [
-  '1.4B daily lives, currently unified',
-  'currently unified, 1.4B daily lives',
-  'predictive onboarding has detected intent',
-  '1.4B daily currently, lives unified',
-]
-
 const DODGE_OFFSETS = [
   { x: 'clamp(86px, 18vw, 220px)', y: '-22px', rotate: '-2deg' },
   { x: 'clamp(-210px, -20vw, -92px)', y: '34px', rotate: '2.8deg' },
@@ -70,6 +23,7 @@ const DODGE_OFFSETS = [
 
 export function LandingPage({ onEnter }: LandingPageProps) {
   const [clicks, setClicks] = useState(0)
+  const [copyClicks, setCopyClicks] = useState(0)
   const [transitioning, setTransitioning] = useState(false)
   const [fallen, setFallen] = useState(false)
   const [helpyVisible, setHelpyVisible] = useState(false)
@@ -123,6 +77,8 @@ export function LandingPage({ onEnter }: LandingPageProps) {
   }, [clicks])
 
   const handleClick = useCallback(() => {
+    setCopyClicks((current) => current + 1)
+
     if (dodgeButton()) {
       return
     }
@@ -156,10 +112,7 @@ export function LandingPage({ onEnter }: LandingPageProps) {
     }
   }, [transitioning])
 
-  const tagline = TAGLINES[Math.min(clicks, TAGLINES.length - 1)]!
-  const sub = SUBS[Math.min(clicks, SUBS.length - 1)]!
-  const meta = METAS[Math.min(clicks, METAS.length - 1)]!
-  const ctaNote = CTA_NOTES[Math.min(clicks, CTA_NOTES.length - 1)]!
+  const onboardingCopy = getOnboardingCopy(copyClicks)
   const btnStyle = buttonStyles[Math.min(clicks, buttonStyles.length - 1)]!
   const dodgeOffset = clicks === DODGE_STAGE && dodgeCount > 0
     ? DODGE_OFFSETS[Math.min(dodgeCount - 1, DODGE_OFFSETS.length - 1)]!
@@ -216,7 +169,7 @@ export function LandingPage({ onEnter }: LandingPageProps) {
                 data-reveal
                 style={{ order: orderMeta }}
               >
-                {meta.map((item, i) => (
+                {onboardingCopy.meta.map((item, i) => (
                   <span key={i}>{item}</span>
                 ))}
               </div>
@@ -226,12 +179,12 @@ export function LandingPage({ onEnter }: LandingPageProps) {
                 style={{ order: orderHeadline }}
               >
                 <span className="line line-1" data-reveal>
-                  {tagline.line1}
+                  {onboardingCopy.headlineLine1}
                 </span>
                 <span className="line line-2" data-reveal>
-                  <em>{tagline.line2em[0]}</em>{' '}
-                  {tagline.line2.replace(tagline.line2em[0]!, '').replace(tagline.line2em[1]!, '').trim()}{' '}
-                  <em>{tagline.line2em[1]}</em>
+                  <em>{onboardingCopy.headlineLine2Parts[0]}</em>{' '}
+                  {onboardingCopy.headlineLine2Parts[1]}{' '}
+                  <em>{onboardingCopy.headlineLine2Parts[2]}</em>
                 </span>
               </h1>
 
@@ -240,7 +193,7 @@ export function LandingPage({ onEnter }: LandingPageProps) {
                 data-reveal
                 style={{ order: orderSub }}
               >
-                {sub}
+                {onboardingCopy.sub}
               </p>
 
               <div
@@ -278,7 +231,7 @@ export function LandingPage({ onEnter }: LandingPageProps) {
                 </button>
                 <p className="landing-cta-note">
                   <span className="landing-pulse" aria-hidden="true" />
-                  {ctaNote}
+                  {onboardingCopy.ctaNote}
                 </p>
               </div>
             </div>

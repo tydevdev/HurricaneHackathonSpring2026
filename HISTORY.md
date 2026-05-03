@@ -7,6 +7,67 @@
 - Regenerated `slopularity/dist/` so the published app uses the earlier crawl threshold.
 - Validation run: `npm run lint`; `npm run build`; checked generated `dist/assets/app-*.js` for the phase 3 crawl gate.
 
+## [2026-05-02 22:58] Add Human Dev Trivia Rescue
+
+- Added `slopularity/src/decayRecovery.ts` and `slopularity/tests/decayRecovery.test.ts` for the phase-5 rescue rules: three trivia questions, correct-answer progression, wrong-answer retry, and phase-1 recovery score.
+- Added `slopularity/src/components/HumanDevRescue.tsx` and updated `slopularity/src/App.tsx` so phase 5 shows a bottom-right real-life dev bubble; answering Mars, HyperText Markup Language, and Pacific Ocean resets decay to phase 1, shows thanks, and dismisses the bubble.
+- Updated `slopularity/src/index.css` with the responsive rescue bubble, answer states, thank-you state, and page-warp repair stacking.
+- Updated `slopularity/PLAN.md`, `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the recovery mechanic.
+- Validation run: `node --experimental-strip-types --test tests/decayRecovery.test.ts`; `node --experimental-strip-types --test tests/utils.test.ts tests/pageWarp.test.ts tests/decayRecovery.test.ts`; `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` confirmed stage-5 desktop and mobile rescue rendering, 3-answer success, score `0`/stage `1`, thank-you dismissal, and 0 horizontal overflow.
+
+## [2026-05-02 22:53] Add Crack Experience Cooldown
+
+- Updated `slopularity/src/App.tsx` so final-stage page fractures use a 60-second cooldown before replaying the crack spread and falling-shard experience.
+- Updated `slopularity/src/components/PageFracture.tsx` so fracture replay timing is controlled by the app-level cooldown instead of the active tab key.
+- Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the crack cooldown contract.
+- Validation run: `npm run lint`; `npm run build`.
+
+## [2026-05-02 22:51] Keep Crack Repair At Current Phase
+
+- Updated `slopularity/src/App.tsx` so Spackle repair hides the fracture layer and repair card without resetting the persisted decay score or visible phase.
+- Updated `slopularity/src/utils.ts` and `slopularity/tests/utils.test.ts` with a repaired-fracture visibility helper.
+- Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record that crack cleaning removes cracks only.
+- Validation run: `npm exec tsx -- --test tests/utils.test.ts tests/pageWarp.test.ts`; `npm run lint`; `npm run build`.
+
+## [2026-05-02 22:48] Simplify Appbar Phase Notifier
+
+- Updated `slopularity/src/App.tsx` so the topbar phase notifier renders only the dot while preserving an accessible phase label/title.
+- Updated `slopularity/src/index.css` so phase colors are blue for 1, green for 2, yellow for 3, orange for 4, and red pulsing only for 5.
+- Removed the unused `phasePill` leak string from `slopularity/src/content.ts`.
+- Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the textless phase-dot contract.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` forced stages 1-5 and confirmed the appbar phase notifier has no visible text, keeps accessible labels/titles, maps to blue/green/yellow/orange/red, pulses only at stage 5, and has no horizontal overflow.
+
+## [2026-05-02 22:46] Move Page Fractures To Stage 5
+
+- Updated `slopularity/src/utils.ts` so the shared fracture visibility helper returns true only at the final decay stage.
+- Updated `slopularity/src/components/PageFracture.tsx` so falling fracture shards are also final-stage-only.
+- Added `slopularity/tests/utils.test.ts` to lock the stage 5 fracture contract.
+- Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` so docs no longer describe stage 3 or stage 4 cracks.
+- Validation run: `npm run lint`; `node --test tests/utils.test.ts`; `npm run build`; headless Chrome/CDP smoke against `vite preview` forced score `30`/stage 4 and confirmed no fracture or repair layer, then forced score `40`/stage 5 and confirmed fractures, Helpy repair, and the brush appear with no horizontal overflow. Full `node --test tests/*.test.ts` is currently blocked by unrelated in-flight tests for missing `src/decayRecovery.ts` and a `pageWarp` zero-gravity expectation.
+
+## [2026-05-02 22:45] Expand Shop Catalog With Product Images
+
+- Updated `slopularity/src/content.ts` so shop products can use dedicated packshot images from `slopularity/src/assets/shop/`.
+- Added 20 new core shop products spanning sleep, travel, friendship gear, pantry scanning, pet care, relationship automation, micro-finance, chores, privacy, wellness, and beauty.
+- Updated `slopularity/src/pages/ShopPage.tsx` so product cards prefer item-specific imagery before falling back to feed images.
+- Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the expanded catalog and image rule.
+- Validation run: `npm run lint`; `npm run build`; verified all 20 generated shop images are square `1254x1254`; headless Chrome smoke against `vite preview` at 1280x900 and 390px phone widths confirmed `/app/shop/` renders 52 shop cards, all 20 new asset references, and representative new product names.
+
+## [2026-05-02 22:44] Add Progressive Onboarding Copy Rot
+
+- Added `slopularity/src/onboardingCopy.ts` so each onboarding button-click copy step owns its own headline, subtitle, meta line, and CTA note, including dodge-click attempts.
+- Updated `slopularity/src/pages/LandingPage.tsx` to use the staged copy helper while preserving the existing button shuffle, dodge, crooked, hinge-fall, and Helpy rescue behavior.
+- Added `slopularity/tests/onboardingCopy.test.ts` to prevent the early onboarding headlines from becoming identical again.
+- Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the progressive copy degradation contract.
+- Validation run: `npm exec tsx -- --test tests/onboardingCopy.test.ts`; `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` clicked the landing CTA six times and confirmed seven distinct headline states, the CTA remained present, and there was no horizontal overflow.
+
+## [2026-05-02 22:44] Recenter Idle Attention Popups
+
+- Updated `slopularity/src/index.css` so the idle watching eye sits at the top center of the viewport.
+- Updated `slopularity/src/components/LonelinessPopup.tsx` and `slopularity/src/index.css` so the idle nudge opens in the exact screen center with colorful attention lazers and confetti behind the card.
+- Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the new idle attention contract.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` at 1280x900 and 390x844 confirmed the idle popup center matches the viewport center, the eye is top-centered, 14 attention lazers and 48 confetti pieces render, and horizontal overflow is 0.
+
 ## [2026-05-02 22:40] Expand Ambient Bug Crawl
 
 - Updated `slopularity/src/components/BugScatter.tsx` so stage 4+ ambient crawls now pick from caterpillar, beetle, cockroach, ant, spider, and cricket emoji variants.
@@ -19,7 +80,7 @@
 - Updated `slopularity/src/games/SnackSort.tsx` so snack chips can be dragged directly into baskets with pointer input while preserving the click-to-select fallback.
 - Updated `slopularity/src/index.css` with grab cursors, dragged-chip opacity, active basket highlighting, and a floating snack ghost that follows the pointer.
 - Updated `slopularity/DESIGN_BIBLE.md` and `slopularity/IMPLEMENTATION_STATUS.md` to record the direct manipulation behavior.
-- Validation run: pending in this session.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` at 1280x900 dragged Blueberry into the visible Berry basket area and confirmed 1 basket chip, 8 remaining tray chips, no lingering drag ghost, and no horizontal overflow.
 
 ## [2026-05-02 22:39] Link Appbar Me Avatar To Profile
 
@@ -843,3 +904,55 @@
 - Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record that visible cracks must always come with Spackle repair.
 - Regenerated `slopularity/dist/` so the published app includes the repair coupling.
 - Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` forced score `480`/stage 5, confirmed cracks, Helpy, and the brush all render together with no horizontal overflow, then simulated a 2+ second brush drag and confirmed score `0`, stage 1, and no crack/repair layers.
+
+## [2026-05-02 22:42] Expand Brand DM Friend Experience
+- Updated `slopularity/src/pages/FriendsPage.tsx` so brand DMs now include friendship tiers, fit meters, brand-specific signal proof, permission language, care receipts, and soft reply/checkout actions.
+- Updated `slopularity/src/index.css` with the active brand relationship strip, row fit chips, care receipt layout, permission meters, and mobile-safe brand action buttons.
+- Updated `slopularity/src/App.tsx` to fix an existing lint blocker in the page-warp reset effect.
+- Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the brand relationship CRM behavior.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP against `vite preview` confirmed `/app/friends/` renders the brand relationship strip, care receipt, row fit chip, soft reply action, checkout action, no desktop overflow, soft reply adds a user bubble and raises affinity from 74% to 80%, checkout routes to `/app/shop/`, and phone-sized 390x844 has no horizontal overflow. Screenshots: `/tmp/slopularity-brand-dm-desktop.png`, `/tmp/slopularity-brand-dm-mobile.png`.
+
+## [2026-05-02 22:47] Highest-Stage Page Warp
+- Added `slopularity/src/pageWarp.ts` plus `slopularity/tests/pageWarp.test.ts` so max-decay page switching has independent 30% color-invert and 30% upside-down rolls.
+- Updated `slopularity/src/App.tsx` so the warp is applied only to the new page workspace at stage 5, while app chrome, Helpy, and repair layers remain usable.
+- Updated `slopularity/src/index.css` with workspace invert/rotation states and a bottom-right Helpy repair bubble that clears only the page warp.
+- Updated `slopularity/DECAY_FEATURES.md`, `slopularity/DESIGN_BIBLE.md`, and `slopularity/IMPLEMENTATION_STATUS.md` with the new final-stage navigation decay mechanic.
+- Regenerated `slopularity/dist/` so the published build includes the page-warp repair path.
+- Validation run: `node --experimental-strip-types --test tests/pageWarp.test.ts`; `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` forced stage 5, forced both warp rolls on desktop, confirmed Search opened with both workspace warp classes and Helpy repair, clicked repair and confirmed stage/score stayed at 5/40 while the warp cleared, then forced a 390px phone warp and confirmed Helpy rendered with no mobile horizontal overflow.
+
+## [2026-05-02 22:52] Zero-Gravity Page Warp
+- Updated `slopularity/src/pageWarp.ts` and `slopularity/tests/pageWarp.test.ts` so stage-5 tab navigation also has an independent 20% zero-gravity roll.
+- Updated `slopularity/src/App.tsx` so the page warp can apply `.is-zero-gravity` alongside invert and upside-down classes.
+- Updated `slopularity/src/index.css` so workspace page elements slowly float, bounce, and rotate with staggered low-gravity drift while Helpy remains outside the affected area.
+- Updated `slopularity/DECAY_FEATURES.md`, `slopularity/DESIGN_BIBLE.md`, and `slopularity/IMPLEMENTATION_STATUS.md` with the new final-stage zero-gravity mechanic.
+- Regenerated `slopularity/dist/` so the published build includes the zero-gravity page warp.
+- Validation run: `node --experimental-strip-types --test tests/pageWarp.test.ts`; `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` forced stage 5 and the warp rolls, confirmed Search had `.is-zero-gravity`, 22 animated desktop elements, Helpy repair, and no horizontal overflow, clicked repair and confirmed score/stage stayed `40`/5 while the warp cleared, then forced a 390px phone warp and confirmed 87 animated elements, Helpy, and no horizontal overflow.
+
+## [2026-05-02 22:53] Escalate AFK Eye Copy
+- Updated `slopularity/src/components/IdleEye.tsx` so the watching eye uses five decay-stage-specific callout pools instead of one flat list.
+- Updated `slopularity/src/App.tsx` to pass the visible decay stage into the AFK eye.
+- Updated `slopularity/DECAY_FEATURES.md`, `slopularity/DESIGN_BIBLE.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the stage-aware idle behavior.
+- Validation run: `npm run build` passed and regenerated `slopularity/dist/`; `npm run lint` is still blocked by existing `react-hooks/set-state-in-effect` errors in `slopularity/src/App.tsx` crack-experience timing and `slopularity/src/components/HumanDevRescue.tsx`.
+
+## [2026-05-02 22:57] Expand Feed And News Image Pools
+- Updated `slopularity/src/content.ts` so Feed grows from 50 to 80 canonical posts and News grows from 30 to 60 canonical articles.
+- Replaced hardcoded feed/news image import maps with Vite glob imports so future numbered assets are picked up automatically.
+- Added 30 new subagent-generated feed images at `slopularity/src/assets/feed/post-51.jpg` through `post-80.jpg`.
+- Added 30 new subagent-generated news images at `slopularity/src/assets/news/news-31.jpg` through `news-60.jpg`.
+- Updated `slopularity/DESIGN_BIBLE.md` and `slopularity/IMPLEMENTATION_STATUS.md` with the new content-pool sizes and asset handling.
+- Validation run: verified all new feed/news asset slots exist as real JPEGs; `npm run lint`; `npm run build`.
+
+## [2026-05-02 22:54] Stage 4 Page Warp Odds
+- Updated `slopularity/src/pageWarp.ts` so color inversion, upside-down rotation, and zero-gravity page drift can now happen at stage 4 at half the stage-5 odds.
+- Updated `slopularity/tests/pageWarp.test.ts` to cover stage 3 disabled, stage 4 half-strength odds, and stage 5 full independent odds.
+- Updated `slopularity/DECAY_FEATURES.md`, `slopularity/DESIGN_BIBLE.md`, and `slopularity/IMPLEMENTATION_STATUS.md` with the new stage 4 / stage 5 probability split.
+- Regenerated `slopularity/dist/` so the published build includes the stage-4 page-warp odds.
+- Validation run: `node --experimental-strip-types --test tests/pageWarp.test.ts`; `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` forced stage 4 and stage 5 warp rolls, confirmed both stages can apply invert/upside-down/zero-gravity classes with Helpy visible and no horizontal overflow, and confirmed Helpy repair clears the stage-4 warp while leaving the user at stage 4.
+
+## [2026-05-02 23:02] Feed And News Comment Expansion
+
+- Updated `slopularity/src/content.ts` so Feed posts now expand into fuller post-aware comment threads keyed to sponsor, location, caption terms, handle, and story name.
+- Updated `slopularity/src/content.ts` so News articles now expand their clickbait comment pairs into article-specific panic threads keyed to the headline topic, publisher, section, and sponsor pressure.
+- Updated `slopularity/src/pages/FeedPage.tsx` so Feed and News preview three inline comments before opening the focused comment sheet.
+- Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the richer comment behavior.
+- Validation run: pending.

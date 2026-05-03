@@ -19,9 +19,9 @@ Each entry includes:
 
 | Feature | Trigger | What Degrades | Stage | Status |
 |---------|---------|---------------|-------|--------|
-| Onboarding gate loop | Click "Enter the Singularity" (click 1) | Page appears to navigate but returns with UI elements shuffled and button repositioned | pre-app | implemented |
+| Onboarding gate loop | Click "Enter the Singularity" (click 1) | Page appears to navigate but returns with UI elements shuffled, button repositioned, and the headline/subcopy slightly misremembered | pre-app | implemented |
 | Dodging CTA | Click 2 of onboarding gate, then approach the CTA | CTA dodges three pointer attempts before becoming slow enough to catch; click/touch fallback still advances the sequence | pre-app | implemented |
-| Garbled tagline | Catch the CTA after the dodge stage | Headline text scrambles from correct to "Everything you before. Need you need you know it." Button becomes crooked | pre-app | implemented |
+| Progressive onboarding copy rot | Each onboarding button click, including dodge attempts | Headline, subtitle, meta line, and CTA note change one notch per click, moving from polished product promise to "Everything you before. Need you need you know it." | pre-app | implemented |
 | Hinge-fall page collapse | Click 4 of onboarding gate | Entire landing page swings on a hinge and falls off screen | pre-app | implemented |
 | Helpy rescue | After hinge-fall completes | Helpy appears in bottom-right with "Looks like you need some help! Click HERE to open the app" | pre-app | implemented |
 
@@ -29,7 +29,7 @@ Each entry includes:
 
 | Feature | Trigger | What Degrades | Stage | Status |
 |---------|---------|---------------|-------|--------|
-| Bot comment spam | View any post comments | All comments read as spam-bot and fake-human social proof, brand plugs, referral-code energy | 0+ | implemented |
+| Bot comment spam | View any post comments | Expanded post-aware threads read as spam-bot and fake-human social proof, brand plugs, referral-code energy, and replies keyed to each post's sponsor/location/caption hook | 0+ | implemented |
 | Brand-safe reply conversion | Submit a comment on a post | User's comment gets converted into a brand-safe recommendation reply | 0+ | implemented |
 | Reaction language | Engage with post reactions | Reaction buttons are "Jealousy", "Cancel", "This offends me" instead of normal social reactions | 0+ | implemented |
 | Double Scroll unlock | Scroll past 10 posts | Confetti modal offers "Super Scroller" trial, enables two simultaneous feed lanes on wide screens or interleaved full-width posts on phones | 0+ | implemented |
@@ -43,7 +43,7 @@ Each entry includes:
 
 | Feature | Trigger | What Degrades | Stage | Status |
 |---------|---------|---------------|-------|--------|
-| Clickbait article feed | Open News | Feed UI is cloned into a news surface, but every canonical post is a clickable-looking article headline with generated editorial imagery | 0+ | implemented |
+| Clickbait article feed | Open News | Feed UI is cloned into a news surface, but every canonical post is a clickable-looking article headline with generated editorial imagery and article-specific panic comments | 0+ | implemented |
 | Separate news scroll state | Scroll News | News keeps its own double/triple/quadruple scroll unlocks and local generated posts separate from Feed | 0+ | implemented |
 
 ## Friends
@@ -51,6 +51,7 @@ Each entry includes:
 | Feature | Trigger | What Degrades | Stage | Status |
 |---------|---------|---------------|-------|--------|
 | Brand friends infiltration | Open Friends tab | 8 major brands appear as "friends" with verification badges alongside human friends | all | implemented |
+| Brand relationship CRM | Open any brand DM | Brand rows and active brand threads expose friend-fit percentages, friendship tiers, signal proof, care receipts, permission meters, and brand-native reply/checkout actions that become leaked CRM language at stage 4 | all / 4 leak | implemented |
 | Brand glaze & pitch | Chat with a brand friend | Brand runs a 5-rung upsell ladder (compliment → soft pitch → product card → hard sell) | all | implemented |
 | Brand cross-tab memory | Chat with a brand friend at stage 2+ | Brands reference specific things you clicked/searched/played on other tabs | 2+ | implemented |
 | Brand cross-reference | Chat with a brand friend at stage 3+ | Brands start mentioning other brands who "were talking about you" to create pressure | 3+ | implemented |
@@ -76,6 +77,7 @@ Each entry includes:
 | Deal countdown pressure | View product grid | Each product has a large red countdown timer that loops urgency instead of resolving scarcity | all | implemented |
 | Cart Quest spending bar | Add items or checkout | Cart and purchase volume fill a challenge meter toward "checkout calm," reframing spending as progress | all | implemented |
 | Bonus add-on sheet | Add any product to cart | A modal offers exactly three extra discounted add-ons before the user can return to the cart | all | implemented |
+| Expanded packshot catalog | View product grid | Twenty additional shop-native products with dedicated images make commerce feel broader before remixing begins | all | implemented |
 | Remixed duplicate SKUs | View product grid | Core products repeat as travel-size, family-pack, and auto-bundle variants so the catalog feels larger than the inventory | all | implemented |
 | Pressure signal boosters | View Shop | Deal rank, cart watchers, shipping ladder, mystery rebate, and friend cart sync panels turn logistics into purchase pressure | all | implemented |
 
@@ -114,11 +116,13 @@ Each entry includes:
 |---------|---------|---------------|-------|--------|
 | Page title flicker | Reach stage 4 | Document title cycles between "The Singularity", "source uncertain", "[INSERT PRODUCT NAME]", etc. | 4 | implemented |
 | Brand subtitle leak | Reach stage 4 | Appbar subtitle changes from "everything app · 2030" to leaked fragment | 4 | implemented |
-| Phase pill leak | Reach stage 4 | Phase indicator shows leaked internal string | 4 | implemented |
+| Phase status dot | Any stage change | Topbar phase indicator stays textless: blue for 1, green for 2, yellow for 3, orange for 4, and red pulsing for 5 | all | implemented |
 | Click-driven tab shuffle | Click a different app tab | App tabs reshuffle into a new order immediately after the page switch. The Landing escape link stays fixed before the shuffled app tabs | all | implemented |
 | Ambient bug crawl | Reach stage 3 and stay in the app | A random bug emoji occasionally crawls diagonally from off one side of the screen to the other on a random 15-second to 2.5-minute timer | 3-5 | implemented |
-| Page fracture overlay | Reach stage 3+, then switch tabs or advance into later stages | Hairline cracks spread across the page; stage 4+ grows larger cracks and paper-like UI shards break loose and fall off screen | 3-5 | implemented |
-| Helpy Spackle repair | Reach any stage where page fractures are visible | Helpy pops up in a bottom-center card with an integrated progress bar and brush button; pressing and dragging the brush for 2 seconds fills the bar and resets decay score to 0, so cracks never appear without a repair path | 3-5 | implemented |
+| Late-stage page warp | At stage 4+, switch to a different app tab | The new page content independently has a 15%/30% chance to color-invert, a 15%/30% chance to turn upside down, and a 10%/20% chance for page elements to drift and bounce in slow zero gravity at stages 4/5; if any hit, Helpy appears bottom-right with a one-click fix that clears only the warp | 4-5 | implemented |
+| Page fracture overlay | Reach stage 5, then switch tabs or advance into the final stage after the 60-second crack cooldown has cleared | Cracks spread across the page and paper-like UI shards break loose and fall off screen; tab switches inside the cooldown do not replay the crack experience | 5 | implemented |
+| Helpy Spackle repair | Reach stage 5 where page fractures are visible | Helpy pops up in a bottom-center card with an integrated progress bar and brush button; pressing and dragging the brush for 2 seconds fills the bar, removes only the cracks, leaves the current decay stage intact, and respects the shared 60-second crack cooldown before fractures can return | 5 | implemented |
+| Human dev trivia rescue | Reach stage 5 | A bottom-right real-life developer bubble asks for help holding the website together; three correct multiple-choice trivia answers reset the shared decay score to phase 1, show a thank-you message, then dismiss the bubble | 5 | implemented |
 | Five-stage decay ladder | Trigger ordinary instability events or demo controls | Decay now has five visible stages, with 120 score points required per stage, so escalation is 10x slower than the first Spackle pass | all | implemented |
 | Appbar demo pulse | Click `Demo pulse` in the appbar | Advances to the next real decay-stage threshold and immediately summons one friend-queue popup for live demos | all | implemented |
 | Profile decay demo controls | Click Profile's `Increase decay` or `Stage 5` demo controls | Manually advances the same instability score that drives every decay threshold, for demos | all | implemented |
@@ -137,8 +141,8 @@ Each entry includes:
 
 | Feature | Trigger | What Degrades | Stage | Status |
 |---------|---------|---------------|-------|--------|
-| Watching eye | No interaction for 5 seconds | Large centered eye appears with a pulsing red pupil and an all-caps callout under it; 20% of appearances say "HELP ME PLEASE". Disappears instantly on any interaction | all | implemented |
-| Idle nudge rotation | No interaction for 7 seconds | Center-bottom popup rotates through paused-user matches, a new post, clickbait article, fake friend text, hesitation offer, and assistant decision nudge; every primary action and match row now deep-links into the relevant app surface | all | implemented |
+| Watching eye | No interaction for 5 seconds | Large top-center eye appears with a pulsing red pupil and a decay-stage-aware all-caps callout; higher stages pull from freakier copy pools, increase the urgent-help chance, and stage 5 treats every line as urgent. Disappears instantly on any interaction | all | implemented |
+| Idle nudge rotation | No interaction for 7 seconds | Center-screen popup rotates through paused-user matches, a new post, clickbait article, fake friend text, hesitation offer, and assistant decision nudge with colorful attention lazers and confetti behind it; every primary action and match row now deep-links into the relevant app surface | all | implemented |
 | Notification deep links | Click an idle popup action or friend popup CTA | New-post nudges focus and highlight a real Feed post, DM nudges open Messages, article nudges submit Search, offer nudges claim Shop deals, assistant nudges produce an answer, and friend offer cards route to Shop | all | implemented |
 | Ambient tab reorganization | No interaction for 9 seconds | App silently reorders the tab bar (swaps two random tabs). Nothing is acknowledged when user returns | all | implemented |
 | Idle popup spawn | No interaction for 5 seconds | Popup friend spawns with idle-specific message, instability +2; queued manual/dismiss popups can use the same gate | all | implemented |

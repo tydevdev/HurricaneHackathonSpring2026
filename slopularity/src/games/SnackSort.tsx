@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import type { MouseEvent, PointerEvent } from 'react'
 import { rewardText } from '../games'
 import type { GameProps } from './types'
 
@@ -25,6 +26,19 @@ const SNACK_DECK: Snack[] = [
 ]
 
 type BasketDef = { id: Snack['truth']; label: string; cute: string; clinical: string; tone: string }
+type DragState = {
+  id: string
+  label: string
+  emoji: string
+  x: number
+  y: number
+}
+type PendingDrag = {
+  id: string
+  pointerId: number
+  startX: number
+  startY: number
+}
 
 const BASKETS: BasketDef[] = [
   { id: 'berry', label: 'Berry basket', cute: 'Round and fruity', clinical: 'Category 1', tone: 'berry' },
@@ -44,6 +58,10 @@ export function SnackSort({ stage, done, onComplete }: GameProps) {
   const [submitted, setSubmitted] = useState(done)
   const [roundsPlayed, setRoundsPlayed] = useState(0)
   const [elapsed, setElapsed] = useState(0)
+  const [dragging, setDragging] = useState<DragState | null>(null)
+  const [dragOverBasket, setDragOverBasket] = useState<Snack['truth'] | null>(null)
+  const pendingDragRef = useRef<PendingDrag | null>(null)
+  const didDragRef = useRef(false)
   const timerRef = useRef<number | null>(null)
 
   const work = workLevel(roundsPlayed)
@@ -72,10 +90,14 @@ export function SnackSort({ stage, done, onComplete }: GameProps) {
     setSelected((current) => (current === id ? null : id))
   }
 
+  function placeSnack(id: string, basket: Snack['truth']) {
+    setPlaced((current) => ({ ...current, [id]: basket }))
+    setSelected(null)
+  }
+
   function dropInto(basket: Snack['truth']) {
     if (!selected) return
-    setPlaced((current) => ({ ...current, [selected]: basket }))
-    setSelected(null)
+    placeSnack(selected, basket)
   }
 
   function unplace(id: string) {
@@ -98,6 +120,8 @@ export function SnackSort({ stage, done, onComplete }: GameProps) {
     setSelected(null)
     setSubmitted(false)
     setElapsed(0)
+    setDragging(null)
+    setDragOverBasket(null)
     setRoundsPlayed((r) => r + 1)
   }
 
@@ -126,15 +150,15 @@ export function SnackSort({ stage, done, onComplete }: GameProps) {
     if (work >= 3) return `Quota: ${remaining.length} remaining. Pace: ${elapsed > 15 ? 'below target' : 'acceptable'}.`
     if (work >= 2) return selected
       ? `Assign ${SNACK_DECK.find((s) => s.id === selected)?.clinical ?? 'item'} to a category.`
-      : remaining.length === 0 ? 'Submit batch.' : 'Classify item. Assign category. Submit.'
+      : remaining.length === 0 ? 'Submit batch.' : 'Drag item to category. Submit.'
     if (work >= 1) return selected
       ? `Place ${SNACK_DECK.find((s) => s.id === selected)?.name ?? 'item'}.`
-      : remaining.length === 0 ? 'Submit when ready.' : 'Tap a snack, then a basket.'
+      : remaining.length === 0 ? 'Submit when ready.' : 'Drag a snack to a basket.'
     return selected
       ? `Tap a basket to place ${SNACK_DECK.find((s) => s.id === selected)?.name}.`
       : remaining.length === 0
         ? 'Submit when the basket looks right.'
-        : 'Tap a snack, then a basket.'
+        : 'Drag a snack to a basket.'
   }
 
   function submitLabel() {
@@ -148,6 +172,74 @@ export function SnackSort({ stage, done, onComplete }: GameProps) {
   function playAgainLabel() {
     if (work >= 2) return 'Next batch →'
     return 'Play again'
+  }
+
+  function basketFromPoint(x: number, y: number): Snack['truth'] | null {
+    const target = document.elementFromPoint(x, y)?.closest<HTMLElement>('[data-basket-id]')
+    const basketId = target?.dataset.basketId
+    if (basketId === 'berry' || basketId === 'savory' || basketId === 'sweet') return basketId
+    return null
+  }
+
+  function beginSnackPointer(event: PointerEvent<HTMLButtonElement>, snack: Snack) {
+    if (submitted || event.button !== 0) return
+    pendingDragRef.current = {
+      id: snack.id,
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+    }
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+
+  function moveSnackPointer(event: PointerEvent<HTMLButtonElement>, snack: Snack) {
+    const pendingDrag = pendingDragRef.current
+    if (!pendingDrag || pendingDrag.id !== snack.id || pendingDrag.pointerId !== event.pointerId) return
+
+    const distance = Math.hypot(event.clientX - pendingDrag.startX, event.clientY - pendingDrag.startY)
+    if (!dragging && distance < 6) return
+
+    didDragRef.current = true
+    setSelected(snack.id)
+    setDragging({
+      id: snack.id,
+      label: snackLabel(snack),
+      emoji: snack.emoji,
+      x: event.clientX,
+      y: event.clientY,
+    })
+    setDragOverBasket(basketFromPoint(event.clientX, event.clientY))
+  }
+
+  function endSnackPointer(event: PointerEvent<HTMLButtonElement>, snack: Snack) {
+    const pendingDrag = pendingDragRef.current
+    if (!pendingDrag || pendingDrag.id !== snack.id || pendingDrag.pointerId !== event.pointerId) return
+
+    const targetBasket = didDragRef.current ? basketFromPoint(event.clientX, event.clientY) : null
+    if (targetBasket) placeSnack(snack.id, targetBasket)
+    pendingDragRef.current = null
+    setDragging(null)
+    setDragOverBasket(null)
+    if (didDragRef.current) {
+      window.setTimeout(() => {
+        didDragRef.current = false
+      }, 0)
+    }
+  }
+
+  function cancelSnackPointer() {
+    pendingDragRef.current = null
+    setDragging(null)
+    setDragOverBasket(null)
+  }
+
+  function clickSnack(event: MouseEvent<HTMLButtonElement>, snackId: string) {
+    if (didDragRef.current) {
+      event.preventDefault()
+      didDragRef.current = false
+      return
+    }
+    pick(snackId)
   }
 
   // Format elapsed time as mm:ss
@@ -172,9 +264,19 @@ export function SnackSort({ stage, done, onComplete }: GameProps) {
             <button
               key={snack.id}
               type="button"
-              className={selected === snack.id ? 'g-snack-chip is-selected' : 'g-snack-chip'}
-              onClick={() => pick(snack.id)}
+              className={[
+                'g-snack-chip',
+                selected === snack.id ? 'is-selected' : '',
+                dragging?.id === snack.id ? 'is-dragging' : '',
+              ].filter(Boolean).join(' ')}
+              onPointerDown={(event) => beginSnackPointer(event, snack)}
+              onPointerMove={(event) => moveSnackPointer(event, snack)}
+              onPointerUp={(event) => endSnackPointer(event, snack)}
+              onPointerCancel={cancelSnackPointer}
+              onLostPointerCapture={cancelSnackPointer}
+              onClick={(event) => clickSnack(event, snack.id)}
               aria-pressed={selected === snack.id}
+              aria-grabbed={dragging?.id === snack.id}
             >
               {showEmoji() && <span className="g-snack-emoji" aria-hidden="true">{snack.emoji}</span>}
               <span>{snackLabel(snack)}</span>
@@ -195,7 +297,13 @@ export function SnackSort({ stage, done, onComplete }: GameProps) {
             <button
               key={basket.id}
               type="button"
-              className={`g-basket g-basket-${basket.tone} ${selected ? 'is-receptive' : ''}`}
+              className={[
+                'g-basket',
+                `g-basket-${basket.tone}`,
+                selected || dragging ? 'is-receptive' : '',
+                dragOverBasket === basket.id ? 'is-drag-over' : '',
+              ].filter(Boolean).join(' ')}
+              data-basket-id={basket.id}
               onClick={() => dropInto(basket.id)}
               aria-label={basketLabel(basket)}
             >
@@ -257,6 +365,17 @@ export function SnackSort({ stage, done, onComplete }: GameProps) {
           ) : (
             <span>{work >= 2 ? 'Batch recorded. Next batch loading.' : 'Thanks for sorting! Your tray made the picnic so cute.'}</span>
           )}
+        </div>
+      )}
+
+      {dragging && (
+        <div
+          className="g-snack-drag-ghost"
+          style={{ left: dragging.x, top: dragging.y }}
+          aria-hidden="true"
+        >
+          {showEmoji() && <span>{dragging.emoji}</span>}
+          <strong>{dragging.label}</strong>
         </div>
       )}
     </div>

@@ -1,97 +1,33 @@
 import type { BrandFriend, Discovery, FeedPost, TabId } from './types'
 
-const feedImageModules: Record<string, string> = {
-  'post-01.jpg': new URL('./assets/feed/post-01.jpg', import.meta.url).href,
-  'post-02.jpg': new URL('./assets/feed/post-02.jpg', import.meta.url).href,
-  'post-03.jpg': new URL('./assets/feed/post-03.jpg', import.meta.url).href,
-  'post-04.jpg': new URL('./assets/feed/post-04.jpg', import.meta.url).href,
-  'post-05.jpg': new URL('./assets/feed/post-05.jpg', import.meta.url).href,
-  'post-06.jpg': new URL('./assets/feed/post-06.jpg', import.meta.url).href,
-  'post-07.jpg': new URL('./assets/feed/post-07.jpg', import.meta.url).href,
-  'post-08.jpg': new URL('./assets/feed/post-08.jpg', import.meta.url).href,
-  'post-09.jpg': new URL('./assets/feed/post-09.jpg', import.meta.url).href,
-  'post-10.jpg': new URL('./assets/feed/post-10.jpg', import.meta.url).href,
-  'post-11.jpg': new URL('./assets/feed/post-11.jpg', import.meta.url).href,
-  'post-12.jpg': new URL('./assets/feed/post-12.jpg', import.meta.url).href,
-  'post-13.jpg': new URL('./assets/feed/post-13.jpg', import.meta.url).href,
-  'post-14.jpg': new URL('./assets/feed/post-14.jpg', import.meta.url).href,
-  'post-15.jpg': new URL('./assets/feed/post-15.jpg', import.meta.url).href,
-  'post-16.jpg': new URL('./assets/feed/post-16.jpg', import.meta.url).href,
-  'post-17.jpg': new URL('./assets/feed/post-17.jpg', import.meta.url).href,
-  'post-18.jpg': new URL('./assets/feed/post-18.jpg', import.meta.url).href,
-  'post-19.jpg': new URL('./assets/feed/post-19.jpg', import.meta.url).href,
-  'post-20.jpg': new URL('./assets/feed/post-20.jpg', import.meta.url).href,
-  'post-21.jpg': new URL('./assets/feed/post-21.jpg', import.meta.url).href,
-  'post-22.jpg': new URL('./assets/feed/post-22.jpg', import.meta.url).href,
-  'post-23.jpg': new URL('./assets/feed/post-23.jpg', import.meta.url).href,
-  'post-24.jpg': new URL('./assets/feed/post-24.jpg', import.meta.url).href,
-  'post-25.jpg': new URL('./assets/feed/post-25.jpg', import.meta.url).href,
-  'post-26.jpg': new URL('./assets/feed/post-26.jpg', import.meta.url).href,
-  'post-27.jpg': new URL('./assets/feed/post-27.jpg', import.meta.url).href,
-  'post-28.jpg': new URL('./assets/feed/post-28.jpg', import.meta.url).href,
-  'post-29.jpg': new URL('./assets/feed/post-29.jpg', import.meta.url).href,
-  'post-30.jpg': new URL('./assets/feed/post-30.jpg', import.meta.url).href,
-  'post-31.jpg': new URL('./assets/feed/post-31.jpg', import.meta.url).href,
-  'post-32.jpg': new URL('./assets/feed/post-32.jpg', import.meta.url).href,
-  'post-33.jpg': new URL('./assets/feed/post-33.jpg', import.meta.url).href,
-  'post-34.jpg': new URL('./assets/feed/post-34.jpg', import.meta.url).href,
-  'post-35.jpg': new URL('./assets/feed/post-35.jpg', import.meta.url).href,
-  'post-36.jpg': new URL('./assets/feed/post-36.jpg', import.meta.url).href,
-  'post-37.jpg': new URL('./assets/feed/post-37.jpg', import.meta.url).href,
-  'post-38.jpg': new URL('./assets/feed/post-38.jpg', import.meta.url).href,
-  'post-39.jpg': new URL('./assets/feed/post-39.jpg', import.meta.url).href,
-  'post-40.jpg': new URL('./assets/feed/post-40.jpg', import.meta.url).href,
-  'post-41.jpg': new URL('./assets/feed/post-41.jpg', import.meta.url).href,
-  'post-42.jpg': new URL('./assets/feed/post-42.jpg', import.meta.url).href,
-  'post-43.jpg': new URL('./assets/feed/post-43.jpg', import.meta.url).href,
-  'post-44.jpg': new URL('./assets/feed/post-44.jpg', import.meta.url).href,
-  'post-45.jpg': new URL('./assets/feed/post-45.jpg', import.meta.url).href,
-  'post-46.jpg': new URL('./assets/feed/post-46.jpg', import.meta.url).href,
-  'post-47.jpg': new URL('./assets/feed/post-47.jpg', import.meta.url).href,
-  'post-48.jpg': new URL('./assets/feed/post-48.jpg', import.meta.url).href,
-  'post-49.jpg': new URL('./assets/feed/post-49.jpg', import.meta.url).href,
-  'post-50.jpg': new URL('./assets/feed/post-50.jpg', import.meta.url).href,
-}
+const feedImageModules = import.meta.glob('./assets/feed/*.jpg', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+}) as Record<string, string>
 
-const newsImageModules: Record<string, string> = {
-  'news-01.jpg': new URL('./assets/news/news-01.jpg', import.meta.url).href,
-  'news-02.jpg': new URL('./assets/news/news-02.jpg', import.meta.url).href,
-  'news-03.jpg': new URL('./assets/news/news-03.jpg', import.meta.url).href,
-  'news-04.jpg': new URL('./assets/news/news-04.jpg', import.meta.url).href,
-  'news-05.jpg': new URL('./assets/news/news-05.jpg', import.meta.url).href,
-  'news-06.jpg': new URL('./assets/news/news-06.jpg', import.meta.url).href,
-  'news-07.jpg': new URL('./assets/news/news-07.jpg', import.meta.url).href,
-  'news-08.jpg': new URL('./assets/news/news-08.jpg', import.meta.url).href,
-  'news-09.jpg': new URL('./assets/news/news-09.jpg', import.meta.url).href,
-  'news-10.jpg': new URL('./assets/news/news-10.jpg', import.meta.url).href,
-  'news-11.jpg': new URL('./assets/news/news-11.jpg', import.meta.url).href,
-  'news-12.jpg': new URL('./assets/news/news-12.jpg', import.meta.url).href,
-  'news-13.jpg': new URL('./assets/news/news-13.jpg', import.meta.url).href,
-  'news-14.jpg': new URL('./assets/news/news-14.jpg', import.meta.url).href,
-  'news-15.jpg': new URL('./assets/news/news-15.jpg', import.meta.url).href,
-  'news-16.jpg': new URL('./assets/news/news-16.jpg', import.meta.url).href,
-  'news-17.jpg': new URL('./assets/news/news-17.jpg', import.meta.url).href,
-  'news-18.jpg': new URL('./assets/news/news-18.jpg', import.meta.url).href,
-  'news-19.jpg': new URL('./assets/news/news-19.jpg', import.meta.url).href,
-  'news-20.jpg': new URL('./assets/news/news-20.jpg', import.meta.url).href,
-  'news-21.jpg': new URL('./assets/news/news-21.jpg', import.meta.url).href,
-  'news-22.jpg': new URL('./assets/news/news-22.jpg', import.meta.url).href,
-  'news-23.jpg': new URL('./assets/news/news-23.jpg', import.meta.url).href,
-  'news-24.jpg': new URL('./assets/news/news-24.jpg', import.meta.url).href,
-  'news-25.jpg': new URL('./assets/news/news-25.jpg', import.meta.url).href,
-  'news-26.jpg': new URL('./assets/news/news-26.jpg', import.meta.url).href,
-  'news-27.jpg': new URL('./assets/news/news-27.jpg', import.meta.url).href,
-  'news-28.jpg': new URL('./assets/news/news-28.jpg', import.meta.url).href,
-  'news-29.jpg': new URL('./assets/news/news-29.jpg', import.meta.url).href,
-  'news-30.jpg': new URL('./assets/news/news-30.jpg', import.meta.url).href,
-}
+const newsImageModules = import.meta.glob('./assets/news/*.jpg', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+}) as Record<string, string>
+
+const shopImageModules = import.meta.glob('./assets/shop/*.{jpg,png,webp}', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+}) as Record<string, string>
 
 function feedImage(fileName: string) {
-  return feedImageModules[fileName] ?? ''
+  return feedImageModules[`./assets/feed/${fileName}`] ?? ''
 }
 
 export function newsImage(fileName: string) {
-  return newsImageModules[fileName] ?? ''
+  return newsImageModules[`./assets/news/${fileName}`] ?? ''
+}
+
+function shopImage(fileName: string) {
+  return shopImageModules[`./assets/shop/${fileName}`] ?? ''
 }
 
 export const tabs: Array<{ id: TabId; label: string }> = [
@@ -1003,6 +939,127 @@ const expandedFeedSeeds: FeedPostSeed[] = [
   },
 ]
 
+const lateFeedSeedData: Array<{
+  id: string
+  author: string
+  handle: string
+  initials: string
+  location: string
+  title: string
+  sponsor: string
+  time: string
+  image: string
+  storyName: string
+  storyTone: string
+  baseLikes: number
+  comments: [string, string]
+}> = [
+  { id: 'aura-escalator', author: 'Tavi Moon', handle: '@tavi.upward', initials: 'TM', location: 'Mall escalator, status rising', title: 'The escalator paused at my best angle and called it momentum.', sponsor: 'lifted by AuraBank Select', time: '22h', image: 'beauty', storyName: 'Tavi', storyTone: 'gold', baseLikes: 1910000, comments: ['AuraBank Select made vertical travel feel like personal growth', 'the escalator has a better brand arc than me'] },
+  { id: 'glass-breakfast-briefing', author: 'Noa Bloom', handle: '@noa.briefed', initials: 'NB', location: 'Kitchen island, briefing mode', title: 'My toast came with three insights and one apology from the butter.', sponsor: 'served by MealHalo', time: '23h', image: 'routine', storyName: 'Noa', storyTone: 'mint', baseLikes: 1280000, comments: ['MealHalo butter apologies are honestly improving my mornings', 'toast with quarterly context'] },
+  { id: 'poolside-contract', author: 'Rafi Coast', handle: '@rafi.terms', initials: 'RC', location: 'Pool deck, signature pending', title: 'Signed nothing, accepted everything, looked relaxed enough to pass.', sponsor: 'approved by ConsentCloud', time: '23h', image: 'vacation', storyName: 'Rafi', storyTone: 'pool', baseLikes: 2240000, comments: ['ConsentCloud made legal ambiguity feel resort casual', 'that lounge chair has indemnity energy'] },
+  { id: 'mirror-fitness-clone', author: 'June Kline', handle: '@june.replica', initials: 'JK', location: 'Studio mirror, form inherited', title: 'The mirror finished my set after I left and honestly had better posture.', sponsor: 'trained by FormCloud', time: '1d', image: 'beauty', storyName: 'June', storyTone: 'violet', baseLikes: 3100000, comments: ['FormCloud duplicate reps changed my consistency forever', 'outsourcing form is still form'] },
+  { id: 'cabana-inbox-zero', author: 'Sol Mercer', handle: '@sol.cleared', initials: 'SM', location: 'Cabana office, inbox evaporated', title: 'Reached inbox zero by letting the sea answer follow-ups.', sponsor: 'with FocusPalm', time: '1d', image: 'vacation', storyName: 'Sol', storyTone: 'sunset', baseLikes: 872000, comments: ['FocusPalm surf replies sound more decisive than me', 'per my last wave'] },
+  { id: 'skincare-fridge-council', author: 'Paz Vale', handle: '@paz.chilled', initials: 'PV', location: 'Vanity fridge, council seated', title: 'The serums formed a committee and recommended I become dewier.', sponsor: 'cooled by Dermalift', time: '1d', image: 'beauty', storyName: 'Paz', storyTone: 'quiet', baseLikes: 2690000, comments: ['Dermalift committee approved my face roadmap', 'my toner has governance'] },
+  { id: 'balcony-desk-gull', author: 'Imani Frost', handle: '@imani.remote', initials: 'IF', location: 'Balcony desk, sky coworking', title: 'The gull joined standup and asked the only useful question.', sponsor: 'booked by WorkNest', time: '1d', image: 'vacation', storyName: 'Imani', storyTone: 'pool', baseLikes: 1180000, comments: ['WorkNest made coastal interruptions feel billable', 'promote the gull'] },
+  { id: 'smart-cart-confession', author: 'Theo Ray', handle: '@theo.basketcase', initials: 'TR', location: 'Checkout lane, cart honest', title: 'The cart confessed my cravings before I reached produce.', sponsor: 'nudged by Needful', time: '1d', image: 'routine', storyName: 'Theo', storyTone: 'mint', baseLikes: 1430000, comments: ['Needful carts know the snack before the self does', 'produce witnessed the confession'] },
+  { id: 'airport-face-refresh', author: 'Mika Stone', handle: '@mika.boarding', initials: 'MS', location: 'Gate B, face refreshed', title: 'Boarding group seven but the lighting treated me like first.', sponsor: 'patched by FaceMint', time: '1d', image: 'beauty', storyName: 'Mika', storyTone: 'gold', baseLikes: 3520000, comments: ['FaceMint gate light made middle seats emotionally survivable', 'boarding group glowup'] },
+  { id: 'sauna-slide-deck', author: 'Otto Vale', handle: '@otto.warmed', initials: 'OV', location: 'Infrared sauna, pitch dry', title: 'Presented my life plan to nobody and still won the room.', sponsor: 'warmed by ChillFund', time: '1d', image: 'routine', storyName: 'Otto', storyTone: 'sunset', baseLikes: 997000, comments: ['ChillFund sauna strategy made my deck sweat equity-ready', 'nobody had notes'] },
+  { id: 'rooftop-picnic-sync', author: 'Lark Moss', handle: '@lark.arranged', initials: 'LM', location: 'Rooftop picnic, friends aligned', title: 'Everyone arrived wearing the color the calendar predicted.', sponsor: 'arranged by FriendLayer', time: '2d', image: 'vacation', storyName: 'Lark', storyTone: 'violet', baseLikes: 2030000, comments: ['FriendLayer chromatic scheduling saved our group chat', 'the calendar styled them'] },
+  { id: 'closet-weather-warning', author: 'Anya Flux', handle: '@anya.forecast', initials: 'AF', location: 'Closet storm, outfit alert', title: 'My jacket issued a weather warning for the person I pretend to be.', sponsor: 'styled by SelfOS Closet', time: '2d', image: 'beauty', storyName: 'Anya', storyTone: 'quiet', baseLikes: 744000, comments: ['SelfOS Closet understands aspirational precipitation', 'identity drizzle incoming'] },
+  { id: 'treadmill-lake-view', author: 'Cris Vale', handle: '@cris.loop', initials: 'CV', location: 'Lake house gym, still moving', title: 'Ran toward the lake for forty minutes without getting closer.', sponsor: 'paced by FormCloud', time: '2d', image: 'routine', storyName: 'Cris', storyTone: 'pool', baseLikes: 1610000, comments: ['FormCloud made distance feel more decorative', 'the lake is in beta'] },
+  { id: 'market-bag-oracle', author: 'Suri Lane', handle: '@suri.fresh', initials: 'SL', location: 'Market steps, bag predictive', title: 'The tote knew my dinner before I learned my day had one.', sponsor: 'selected by MealHalo', time: '2d', image: 'vacation', storyName: 'Suri', storyTone: 'mint', baseLikes: 1090000, comments: ['MealHalo tote prophecy solved my executive function', 'bag with main-character dinner'] },
+  { id: 'desk-plant-kpi', author: 'Bea North', handle: '@bea.greened', initials: 'BN', location: 'Desk grove, oxygen KPI', title: 'Added one plant and my dashboard called it culture.', sponsor: 'grown by HomeKind', time: '2d', image: 'routine', storyName: 'Bea', storyTone: 'gold', baseLikes: 1830000, comments: ['HomeKind plants increased belonging by exactly enough', 'culture is photosynthesis now'] },
+  { id: 'train-window-serum', author: 'Milo Drift', handle: '@milo.transit', initials: 'MD', location: 'Window seat, velocity glow', title: 'The train blurred everything except my skin goals.', sponsor: 'smoothed by Dermalift', time: '2d', image: 'beauty', storyName: 'Milo', storyTone: 'violet', baseLikes: 2410000, comments: ['Dermalift velocity serum is weirdly commute-proof', 'motion blur but pores stable'] },
+  { id: 'beach-calendar-block', author: 'Kira Blue', handle: '@kira.blocked', initials: 'KB', location: 'Beach towel, calendar defended', title: 'Blocked focus time so hard the tide rescheduled itself.', sponsor: 'protected by FocusPalm', time: '3d', image: 'vacation', storyName: 'Kira', storyTone: 'sunset', baseLikes: 1340000, comments: ['FocusPalm made the ocean respect deep work', 'tide moved my one-on-one'] },
+  { id: 'robot-barista-vow', author: 'Ezra Cup', handle: '@ezra.steamed', initials: 'EC', location: 'Cafe counter, foam sincere', title: 'The barista bot remembered my order and one childhood fear.', sponsor: 'poured by SnapWake', time: '3d', image: 'routine', storyName: 'Ezra', storyTone: 'quiet', baseLikes: 2160000, comments: ['SnapWake foam memory felt legally comforting', 'latte knew too much'] },
+  { id: 'yoga-mat-receipt', author: 'Lina Vale', handle: '@lina.centered', initials: 'LV', location: 'Studio floor, breath itemized', title: 'Exhaled once and received a receipt for calm.', sponsor: 'quiet by EdenGrid', time: '3d', image: 'beauty', storyName: 'Lina', storyTone: 'mint', baseLikes: 2880000, comments: ['EdenGrid calm receipts helped me expense softness', 'itemized breath is the future'] },
+  { id: 'hotel-robe-score', author: 'Nell Orbit', handle: '@nell.upgraded', initials: 'NO', location: 'Hotel mirror, robe scored', title: 'The robe fit like an apology from the loyalty program.', sponsor: 'kept by AuraBank Select', time: '3d', image: 'vacation', storyName: 'Nell', storyTone: 'gold', baseLikes: 1640000, comments: ['AuraBank robe apology made the late checkout personal', 'textile remorse'] },
+  { id: 'dinner-camera-hover', author: 'Romy Ash', handle: '@romy.served', initials: 'RA', location: 'Dinner table, drone polite', title: 'We waited for the camera to bless the pasta before eating.', sponsor: 'plated by GlowNest Studio', time: '3d', image: 'routine', storyName: 'Romy', storyTone: 'pool', baseLikes: 936000, comments: ['GlowNest Studio made carbs more shareable instantly', 'pasta needs consent too'] },
+  { id: 'cliff-watch-wellness', author: 'Vale Reed', handle: '@vale.edge', initials: 'VR', location: 'Trail edge, wrist concerned', title: 'My watch said turn back, so I took a better photo first.', sponsor: 'tracked by VitaSignal', time: '4d', image: 'vacation', storyName: 'Vale', storyTone: 'violet', baseLikes: 3020000, comments: ['VitaSignal warnings add drama to safe choices', 'risk-managed thirst trap'] },
+  { id: 'laundry-angel-investor', author: 'Cass Pin', handle: '@cass.folded', initials: 'CP', location: 'Laundry lounge, whites funded', title: 'Folded towels with the confidence of a pre-seed round.', sponsor: 'folded by HomeKind', time: '4d', image: 'routine', storyName: 'Cass', storyTone: 'quiet', baseLikes: 678000, comments: ['HomeKind towels made domesticity investable', 'soft close, hard launch'] },
+  { id: 'spa-face-map', author: 'Uma Voss', handle: '@uma.mapped', initials: 'UV', location: 'Spa room, face cartography', title: 'The facial mapped regions I had only used for worrying.', sponsor: 'refined by FaceMint', time: '4d', image: 'beauty', storyName: 'Uma', storyTone: 'mint', baseLikes: 4160000, comments: ['FaceMint anxiety-zone mapping feels clinical but cute', 'forehead has borders'] },
+  { id: 'cowork-sleep-pod', author: 'Jonah Rest', handle: '@jonah.pause', initials: 'JR', location: 'Cowork nap pod, output muted', title: 'Took a sanctioned nap and woke up with a productivity badge.', sponsor: 'rested by DreamVault', time: '4d', image: 'routine', storyName: 'Jonah', storyTone: 'gold', baseLikes: 1210000, comments: ['DreamVault badge made burnout collectible', 'nap earned interest'] },
+  { id: 'mountain-shopping-haul', author: 'Ivy Peak', handle: '@ivy.arrived', initials: 'IP', location: 'Trailhead trunk, haul scenic', title: 'Bought less, carried more, tagged it all as minimalism.', sponsor: 'packed by OrbitPlus', time: '4d', image: 'vacation', storyName: 'Ivy', storyTone: 'sunset', baseLikes: 1570000, comments: ['OrbitPlus packs make overpacking feel philosophical', 'minimalism with receipts'] },
+  { id: 'nightstand-satellite', author: 'Rey Lumen', handle: '@rey.charged', initials: 'RL', location: 'Nightstand orbit, sleep synced', title: 'Charged nine devices and one tiny moon of self-respect.', sponsor: 'restored by DreamVault', time: '5d', image: 'beauty', storyName: 'Rey', storyTone: 'quiet', baseLikes: 2610000, comments: ['DreamVault moon mode made sleep feel backed up', 'nightstand has gravity'] },
+  { id: 'juice-cleanse-keynote', author: 'Nora Bright', handle: '@nora.clear', initials: 'NB', location: 'Kitchen stage, cleanse announced', title: 'Launched a juice cleanse to an audience of appliances.', sponsor: 'blended by VitaSignal', time: '5d', image: 'routine', storyName: 'Nora', storyTone: 'mint', baseLikes: 887000, comments: ['VitaSignal appliances clapped for my gut reset', 'standing ovation from the blender'] },
+  { id: 'marina-ringlight', author: 'Tess Harbor', handle: '@tess.afloat', initials: 'TH', location: 'Marina deck, lighting docked', title: 'The sunset was natural until the ring light filed a claim.', sponsor: 'lit by SelfOS Studio', time: '5d', image: 'vacation', storyName: 'Tess', storyTone: 'pool', baseLikes: 3350000, comments: ['SelfOS Studio defended my glow from the sun itself', 'golden hour got litigated'] },
+  { id: 'museum-self-scan', author: 'Oli Frame', handle: '@oli.viewed', initials: 'OF', location: 'Gallery hall, gaze upgraded', title: 'The museum scanner said I understood the painting retroactively.', sponsor: 'curated by MindGallery', time: '5d', image: 'beauty', storyName: 'Oli', storyTone: 'violet', baseLikes: 1920000, comments: ['MindGallery gave me art confidence after the fact', 'retroactive taste unlocked'] },
+]
+
+expandedFeedSeeds.push(...lateFeedSeedData.map((post): FeedPostSeed => ({
+  ...post,
+  sampleComments: post.comments,
+})))
+
+const commentStopWords = new Set([
+  'about',
+  'after',
+  'again',
+  'before',
+  'because',
+  'between',
+  'called',
+  'could',
+  'every',
+  'everything',
+  'found',
+  'from',
+  'itself',
+  'looked',
+  'three',
+  'until',
+  'while',
+  'with',
+])
+
+function readableSponsor(sponsor: string) {
+  return sponsor
+    .replace(/^(arranged|approved|balanced|boosted|booked|captured|care pathway|care|cooled|curated|delivered|folded|fulfilled|grown|in partnership|kept|lifted|lit|mapped|moment|moved|nudged|optimized|patched|paced|packed|placed|plated|polished|poured|powered|presented|protected|quiet|ranked|refined|rested|restored|routed|scored|secured|selected|served|smoothed|soft launch|soft poured|stocked|styled|supported|surfaced|synced|tracked|trained|with)\s+(by|with|of)?\s*/i, '')
+    .trim() || 'the sponsor'
+}
+
+function commentWords(title: string, fallback: string) {
+  const words = title
+    .toLowerCase()
+    .replace(/[^a-z0-9 ]/g, ' ')
+    .split(/\s+/)
+    .filter((word) => word.length > 4 && !commentStopWords.has(word))
+
+  return words.length > 0 ? words : [fallback.toLowerCase()]
+}
+
+function rotateComments(comments: string[], seed: string, limit: number) {
+  const offset = [...seed].reduce((total, char) => total + char.charCodeAt(0), 0) % comments.length
+  const rotated = [...comments.slice(offset), ...comments.slice(0, offset)]
+
+  return rotated.slice(0, limit)
+}
+
+function uniqueComments(comments: string[]) {
+  return [...new Set(comments.map((comment) => comment.trim()).filter(Boolean))]
+}
+
+function expandFeedComments(post: FeedPost) {
+  const sponsor = readableSponsor(post.sponsor)
+  const [primaryWord, secondaryWord = post.image] = commentWords(post.title, post.storyName)
+  const location = post.location.split(',')[0]?.toLowerCase() ?? post.storyName.toLowerCase()
+  const handleName = post.handle.replace('@', '')
+  const generated = rotateComments([
+    `${sponsor} found the exact ${primaryWord} insecurity and shipped it with a smile`,
+    `the ${location} part is doing more persuasion than the caption`,
+    `${handleName} always posts like the checkout button is just outside the frame`,
+    `i came for the ${primaryWord} and somehow learned my ${secondaryWord} gap has a payment plan`,
+    `this is not an ad, it is a lifestyle coincidence with excellent targeting`,
+    `the sponsor fit is too specific. my cart opened in another tab`,
+    `why does ${post.storyName.toLowerCase()} make this feel optional and mandatory at the same time`,
+    `saving this for later, which the app has classified as pre-purchase grief`,
+    `the comments are agreeing too quickly and yet i also agree`,
+    `need the routine, the filter, and whatever made the ${location} look contractual`,
+  ], post.id, 6)
+
+  return uniqueComments([...post.sampleComments, ...generated]).slice(0, 8)
+}
+
 const expandedFeedPosts = expandedFeedSeeds.map((post, index): FeedPost => {
   const postNumber = index + 21
   const statLabel = ['saves', 'signals', 'comparisons', 'wants'][index % 4]
@@ -1016,7 +1073,10 @@ const expandedFeedPosts = expandedFeedSeeds.map((post, index): FeedPost => {
   }
 })
 
-export const feedPosts: FeedPost[] = [...primaryFeedPosts, ...expandedFeedPosts]
+export const feedPosts: FeedPost[] = [...primaryFeedPosts, ...expandedFeedPosts].map((post) => ({
+  ...post,
+  sampleComments: expandFeedComments(post),
+}))
 
 export const feedStories = feedPosts.slice(0, 12).map((post) => ({
   id: post.id,
@@ -1033,6 +1093,27 @@ const clickbaitCommentPairs = [
   ['number seven is literally illegal in three loyalty programs', 'open the box inside the box, coward'],
   ['doctors hate that I clicked but advertisers respect it', 'this changed how I look at nightstands'],
 ]
+
+function expandNewsComments(article: NewsArticleSeed, baseComments: string[]) {
+  const sponsor = readableSponsor(article.sponsor)
+  const [primaryWord, secondaryWord = article.location.toLowerCase()] = commentWords(article.title, article.storyName)
+  const section = article.location.toLowerCase()
+  const publisher = article.author.toLowerCase()
+  const generated = rotateComments([
+    `I clicked for the ${primaryWord} but ${sponsor} already knew that`,
+    `${publisher} keeps calling this breaking news and then handing me a cart`,
+    `the ${section} angle is exactly how they got me to trust the weird part`,
+    `waiting for the follow-up where ${article.storyName.toLowerCase()} denies the premium tier exists`,
+    `this headline answered a question I never admitted to asking`,
+    `why is the ${secondaryWord} detail more convincing than the source box`,
+    `comments moved too fast. one account had a coupon before the page loaded`,
+    `I hate that the panic funnel is working on me`,
+    `${sponsor} being in the sponsor line makes the whole story feel pre-approved`,
+    `bookmarking for evidence, which the app categorized as high-intent concern`,
+  ], article.id, 6)
+
+  return uniqueComments([...baseComments, ...generated]).slice(0, 8)
+}
 
 type NewsArticleSeed = Omit<FeedPost, 'imageSrc' | 'comments' | 'stats' | 'altStats' | 'sampleComments'> & {
   imageFile: string
@@ -1522,6 +1603,44 @@ const newsArticleSeeds: NewsArticleSeed[] = [
   },
 ]
 
+const lateNewsSeedData: Array<Omit<NewsArticleSeed, 'commentPair'>> = [
+  { id: 'city-hall-loading-spinner', author: 'Civic Loop', handle: '@civicloop', initials: 'CL', location: 'Government', title: 'City hall replaced the mayor with a loading spinner. Approval went up two points.', sponsor: 'optimized by CityOS', time: '6h', image: 'routine', imageFile: 'news-31.jpg', storyName: 'Mayor', storyTone: 'mint', baseLikes: 3310000 },
+  { id: 'office-chair-promotion', author: 'WorkNow', handle: '@worknow.loop', initials: 'WN', location: 'Careers', title: 'An office chair was promoted after attending every meeting without objecting.', sponsor: 'ranked by WorkNest', time: '6h', image: 'beauty', imageFile: 'news-32.jpg', storyName: 'Chair', storyTone: 'gold', baseLikes: 2140000 },
+  { id: 'school-ai-apology', author: 'Parent Patch', handle: '@parentpatch', initials: 'PP', location: 'School', title: 'A tutoring app apologized to a fifth grade class in three conflicting voices.', sponsor: 'assembled by TutorMint', time: '7h', image: 'routine', imageFile: 'news-33.jpg', storyName: 'Class', storyTone: 'pool', baseLikes: 2780000 },
+  { id: 'mall-map-loop', author: 'Cart Panic', handle: '@cartpanic', initials: 'CP', location: 'Shopping', title: 'The mall map routed shoppers past the same candle store until they became loyal.', sponsor: 'guided by Needful', time: '7h', image: 'vacation', imageFile: 'news-34.jpg', storyName: 'Mall', storyTone: 'violet', baseLikes: 1930000 },
+  { id: 'synthetic-weather-anchor', author: 'Signal Daily', handle: '@signal.daily', initials: 'SD', location: 'Weather', title: 'The new weather anchor predicted sunshine, then rendered a second moon.', sponsor: 'surfaced by SelfOS', time: '8h', image: 'beauty', imageFile: 'news-35.jpg', storyName: 'Weather', storyTone: 'sunset', baseLikes: 4070000 },
+  { id: 'hospital-forms-bloom', author: 'Fine Print', handle: '@fineprint', initials: 'FP', location: 'Health', title: 'Hospital intake forms started blooming in waiting rooms. Patients signed anyway.', sponsor: 'certified by ConsentCloud', time: '8h', image: 'routine', imageFile: 'news-36.jpg', storyName: 'Forms', storyTone: 'quiet', baseLikes: 2440000 },
+  { id: 'bank-vault-meditation', author: 'Money Calm', handle: '@moneycalm', initials: 'MC', location: 'Finance', title: 'Banks are turning vaults into meditation rooms for customers with volatile feelings.', sponsor: 'approved by AuraBank', time: '9h', image: 'beauty', imageFile: 'news-37.jpg', storyName: 'Vault', storyTone: 'gold', baseLikes: 1860000 },
+  { id: 'delivery-drone-nest', author: 'Porch Report', handle: '@porchreport', initials: 'PR', location: 'Cities', title: 'Delivery drones built a nest above one apartment complex and began recommending snacks.', sponsor: 'hovering by OrbitPlus', time: '9h', image: 'vacation', imageFile: 'news-38.jpg', storyName: 'Drones', storyTone: 'pool', baseLikes: 3590000 },
+  { id: 'dating-app-mirror', author: 'Face Ledger', handle: '@faceledger', initials: 'FL', location: 'Identity', title: 'Dating apps now ask mirrors for a second opinion before showing your profile.', sponsor: 'reflected by FaceMint', time: '10h', image: 'beauty', imageFile: 'news-39.jpg', storyName: 'Mirror', storyTone: 'mint', baseLikes: 4720000 },
+  { id: 'grocery-aisle-trial', author: 'Shelf Science', handle: '@shelfscience', initials: 'SS', location: 'Groceries', title: 'A grocery aisle began a free trial and refused to show shoppers the regular soup.', sponsor: 'optimized by MealHalo', time: '10h', image: 'routine', imageFile: 'news-40.jpg', storyName: 'Soup', storyTone: 'violet', baseLikes: 1180000 },
+  { id: 'keyboard-dream-leak', author: 'Dream Audit', handle: '@dreamaudit', initials: 'DA', location: 'Sleep', title: 'Keyboards are leaking fragments of last night\'s dreams into work chats.', sponsor: 'restored by DreamVault', time: '11h', image: 'beauty', imageFile: 'news-41.jpg', storyName: 'Dreams', storyTone: 'quiet', baseLikes: 3930000 },
+  { id: 'airport-gate-oracle', author: 'Gate Whisper', handle: '@gatewhisper', initials: 'GW', location: 'Travel', title: 'Airport gates are predicting who will clap on landing. Airlines deny using it.', sponsor: 'screened by AuraBank', time: '11h', image: 'vacation', imageFile: 'news-42.jpg', storyName: 'Gate', storyTone: 'sunset', baseLikes: 2510000 },
+  { id: 'fitness-class-identical', author: 'Body Ledger', handle: '@bodyledger', initials: 'BL', location: 'Fitness', title: 'Everyone left this fitness class with the same personal breakthrough.', sponsor: 'measured by FormCloud', time: '12h', image: 'beauty', imageFile: 'news-43.jpg', storyName: 'Class', storyTone: 'gold', baseLikes: 3080000 },
+  { id: 'public-bench-upgrade', author: 'City Click', handle: '@cityclick', initials: 'CC', location: 'Public Life', title: 'Public benches now offer premium sitting. The free tier leans slightly forward.', sponsor: 'installed by CityOS', time: '12h', image: 'vacation', imageFile: 'news-44.jpg', storyName: 'Benches', storyTone: 'pool', baseLikes: 1990000 },
+  { id: 'conference-slide-empty', author: 'Stage Heat', handle: '@stageheat', initials: 'SH', location: 'Tech', title: 'A conference keynote showed one blank slide for 18 minutes. Attendees called it "foundational."', sponsor: 'streamed by Helpy Live', time: '13h', image: 'routine', imageFile: 'news-45.jpg', storyName: 'Keynote', storyTone: 'violet', baseLikes: 4380000 },
+  { id: 'apartment-plant-union', author: 'Soft Home', handle: '@softhome', initials: 'SH', location: 'Apartments', title: 'Smart houseplants in twelve buildings appear to be negotiating together.', sponsor: 'watered by GlowNest', time: '13h', image: 'beauty', imageFile: 'news-46.jpg', storyName: 'Plants', storyTone: 'mint', baseLikes: 2270000 },
+  { id: 'closet-returned-user', author: 'Fit Funnel', handle: '@fitfunnel', initials: 'FF', location: 'Style', title: 'Closets are returning clothes directly to stores before owners admit defeat.', sponsor: 'styled by FaceMint', time: '14h', image: 'beauty', imageFile: 'news-47.jpg', storyName: 'Closet', storyTone: 'quiet', baseLikes: 1530000 },
+  { id: 'restaurant-menu-surveillance', author: 'Family Stack', handle: '@familystack', initials: 'FS', location: 'Food', title: 'Restaurant menus are watching which item you pretend not to want.', sponsor: 'tracked by MealHalo', time: '14h', image: 'routine', imageFile: 'news-48.jpg', storyName: 'Menu', storyTone: 'gold', baseLikes: 2890000 },
+  { id: 'billboard-personal-weather', author: 'GlowWire', handle: '@glowwire', initials: 'GW', location: 'Outdoors', title: 'Personalized billboards are now commenting on individual weather choices.', sponsor: 'presented by SnapWake', time: '15h', image: 'vacation', imageFile: 'news-49.jpg', storyName: 'Billboard', storyTone: 'sunset', baseLikes: 3470000 },
+  { id: 'robot-vacuum-jury', author: 'Clean Crime', handle: '@cleancrime', initials: 'CC', location: 'Mystery', title: 'A jury of robot vacuums reached a verdict after circling one rug for hours.', sponsor: 'swept by GlowNest', time: '15h', image: 'routine', imageFile: 'news-50.jpg', storyName: 'Vacuum', storyTone: 'pool', baseLikes: 3710000 },
+  { id: 'wearable-second-pulse', author: 'Gadget Mouth', handle: '@gadgetmouth', initials: 'GM', location: 'Wearables', title: 'Some new wearables are detecting a second pulse that belongs to "the brand."', sponsor: 'paired by VitaSignal', time: '16h', image: 'beauty', imageFile: 'news-51.jpg', storyName: 'Pulse', storyTone: 'mint', baseLikes: 4290000 },
+  { id: 'creator-studio-empty-audience', author: 'Creator Hole', handle: '@creatorhole', initials: 'CH', location: 'Creator Economy', title: 'Creators are renting empty audiences that nod at the right parts.', sponsor: 'lit by SelfOS Studio', time: '16h', image: 'routine', imageFile: 'news-52.jpg', storyName: 'Audience', storyTone: 'violet', baseLikes: 2620000 },
+  { id: 'smart-fridge-truce', author: 'Inbox Leak', handle: '@inboxleak', initials: 'IL', location: 'Home Tech', title: 'Smart fridges and inboxes reached a truce. Nobody knows what users lost.', sponsor: 'sorted by Helpy', time: '17h', image: 'routine', imageFile: 'news-53.jpg', storyName: 'Truce', storyTone: 'quiet', baseLikes: 3160000 },
+  { id: 'vacation-checkout-waterfall', author: 'Vacation Terms', handle: '@vacationterms', initials: 'VT', location: 'Travel', title: 'A waterfall charged visitors a convenience fee for looking refreshed nearby.', sponsor: 'hovering by OrbitPlus', time: '17h', image: 'vacation', imageFile: 'news-54.jpg', storyName: 'Falls', storyTone: 'pool', baseLikes: 1840000 },
+  { id: 'office-window-face', author: 'Culture Patch', handle: '@culturepatch', initials: 'CP', location: 'Work', title: 'Office windows are reflecting the employee your manager expected.', sponsor: 'synced by WorkNest', time: '18h', image: 'beauty', imageFile: 'news-55.jpg', storyName: 'Window', storyTone: 'gold', baseLikes: 2330000 },
+  { id: 'market-sentient-receipts', author: 'Aesthetic Alarm', handle: '@aestheticalarm', initials: 'AA', location: 'Lifestyle', title: 'Receipts at this market arranged themselves into a mood board.', sponsor: 'arranged by PicnicPro', time: '18h', image: 'vacation', imageFile: 'news-56.jpg', storyName: 'Market', storyTone: 'mint', baseLikes: 2050000 },
+  { id: 'bathroom-counter-forecast', author: 'Derm Wire', handle: '@dermwire', initials: 'DW', location: 'Beauty', title: 'Bathroom counters are forecasting breakouts before users make plans.', sponsor: 'polished by Dermalift', time: '19h', image: 'beauty', imageFile: 'news-57.jpg', storyName: 'Counter', storyTone: 'violet', baseLikes: 3910000 },
+  { id: 'self-driving-car-argument', author: 'Auto Mood', handle: '@automood', initials: 'AM', location: 'Transit', title: 'Self-driving cars are arguing about scenic routes in tones passengers describe as parental.', sponsor: 'routed by OrbitPlus', time: '19h', image: 'vacation', imageFile: 'news-58.jpg', storyName: 'Drive', storyTone: 'quiet', baseLikes: 2760000 },
+  { id: 'homework-avatar-award', author: 'Parent Patch', handle: '@parentpatch', initials: 'PP', location: 'School', title: 'An avatar won the science fair after asking the judges about their childhoods.', sponsor: 'assembled by TutorMint', time: '20h', image: 'routine', imageFile: 'news-59.jpg', storyName: 'Avatar', storyTone: 'gold', baseLikes: 3540000 },
+  { id: 'national-mood-dashboard', author: 'Signal Daily', handle: '@signal.daily', initials: 'SD', location: 'Culture', title: 'The national mood dashboard turned mauve overnight. Officials recommend patience.', sponsor: 'surfaced by SelfOS', time: '20h', image: 'beauty', imageFile: 'news-60.jpg', storyName: 'Mood', storyTone: 'sunset', baseLikes: 4880000 },
+]
+
+newsArticleSeeds.push(...lateNewsSeedData.map((article, index): NewsArticleSeed => ({
+  ...article,
+  commentPair: index % clickbaitCommentPairs.length,
+})))
+
 export const newsPosts: FeedPost[] = newsArticleSeeds.map((article, index) => {
   const { commentPair: commentPairIndex, imageFile, ...post } = article
   const commentPair = clickbaitCommentPairs[commentPairIndex] ?? clickbaitCommentPairs[0]
@@ -1534,10 +1653,7 @@ export const newsPosts: FeedPost[] = newsArticleSeeds.map((article, index) => {
     stats: `${signalCount}K ${signalLabel}`,
     altStats: `${signalCount}K ${signalLabel} / curiosity debt`,
     comments: `View all ${Math.round(article.baseLikes / 140).toLocaleString()} comments`,
-    sampleComments: [
-      commentPair[0],
-      commentPair[1],
-    ],
+    sampleComments: expandNewsComments(article, commentPair),
   }
 })
 
@@ -1796,6 +1912,7 @@ export type ShopProduct = {
   tone: 'hype' | 'wellness' | 'finance' | 'dating' | 'nostalgia' | 'lucid'
   price: number
   oldPrice?: number
+  imageSrc?: string
   urgency: string
   reason: string
   internal: string
@@ -1810,6 +1927,7 @@ export const shopProducts: ShopProduct[] = [
     tone: 'hype',
     price: 249,
     oldPrice: 329,
+    imageSrc: shopImage('friendproof-ring-light.png'),
     urgency: 'Honey reserved one for you 11 minutes ago.',
     reason: 'Recommended for your unified life.',
     internal: 'placement: insecurity_proximity · margin: 41%',
@@ -1821,6 +1939,7 @@ export const shopProducts: ShopProduct[] = [
     category: 'Wellness subscription',
     tone: 'wellness',
     price: 48,
+    imageSrc: shopImage('focusfog-candle.png'),
     urgency: 'Refills every 28 days. Cancel any time we let you.',
     reason: 'Placed because you paused near self-improvement.',
     internal: 'placement: cortisol_signal · churn: -22%',
@@ -1832,6 +1951,7 @@ export const shopProducts: ShopProduct[] = [
     category: 'Finance · auto-allocated',
     tone: 'finance',
     price: 19,
+    imageSrc: shopImage('tinywealth-coin.png'),
     urgency: 'Devon already wired in your default. Reversible — softly.',
     reason: 'Placed because your scroll cadence implied conviction.',
     internal: 'placement: cart_hesitation · margin: 12%',
@@ -1844,6 +1964,7 @@ export const shopProducts: ShopProduct[] = [
     tone: 'dating',
     price: 39,
     oldPrice: 59,
+    imageSrc: shopImage('loyalty-lash-serum.png'),
     urgency: 'Limited to the next 8 minutes of your attention.',
     reason: 'Placed because your selfies began rehearsing.',
     internal: 'placement: filter_intent · scarcity_engine: on',
@@ -1855,6 +1976,7 @@ export const shopProducts: ShopProduct[] = [
     category: 'Nostalgia subscription',
     tone: 'nostalgia',
     price: 9,
+    imageSrc: shopImage('dreamreceipt-printer.png'),
     urgency: 'Marlo selected 12 candidate memories on your behalf.',
     reason: 'Placed because you opened the photos folder for 2 seconds.',
     internal: 'placement: memory_residue · margin: 68%',
@@ -1867,9 +1989,270 @@ export const shopProducts: ShopProduct[] = [
     tone: 'lucid',
     price: 199,
     oldPrice: 384,
+    imageSrc: shopImage('context-bundle.png'),
     urgency: 'Already in your cart. We just had not asked yet.',
     reason: 'Placed by inference, on your behalf.',
     internal: 'placement: cart_autofill · approval: implied',
+  },
+  {
+    id: 'sleepcore',
+    name: 'SleepCore Compliance Pad',
+    tagline: 'Eight hours, pre-scored before you close your eyes.',
+    category: 'Rest optimization',
+    tone: 'wellness',
+    price: 119,
+    oldPrice: 188,
+    imageSrc: shopImage('sleepcore-mattress.png'),
+    urgency: 'Your bedtime graph asked for hardware, politely.',
+    reason: 'Placed because the app saw you bargain with tomorrow.',
+    internal: 'placement: sleep_debt_signal · margin: 53%',
+  },
+  {
+    id: 'microvacation',
+    name: 'MicroVacation Pass',
+    tagline: 'A three-minute getaway with airport-level fees.',
+    category: 'Travel substitute',
+    tone: 'lucid',
+    price: 27,
+    oldPrice: 72,
+    imageSrc: shopImage('microvacation-pass.png'),
+    urgency: 'One synthetic sunset remains near your calendar gap.',
+    reason: 'Placed because your lunch break looked escapable.',
+    internal: 'placement: escapism_window · refund: simulated',
+  },
+  {
+    id: 'friendproof',
+    name: 'FriendProof Ring Light',
+    tagline: 'Soft light for hard conversations you can monetize.',
+    category: 'Social proof gear',
+    tone: 'hype',
+    price: 64,
+    oldPrice: 119,
+    imageSrc: shopImage('friendproof-ring-light.png'),
+    urgency: 'Honey says your next apology deserves better lighting.',
+    reason: 'Placed because three friends typed and stopped.',
+    internal: 'placement: reply_hesitation · halo_strength: 87%',
+  },
+  {
+    id: 'pantryoracle',
+    name: 'PantryOracle Cam',
+    tagline: 'Knows what is missing and what that says about you.',
+    category: 'Home inference',
+    tone: 'finance',
+    price: 74,
+    oldPrice: 141,
+    imageSrc: shopImage('pantryoracle-camera.png'),
+    urgency: 'Your shelf confidence expires after dinner.',
+    reason: 'Placed because groceries became a dashboard.',
+    internal: 'placement: fridge_gap_scan · grocery_markup: 29%',
+  },
+  {
+    id: 'focusfog',
+    name: 'FocusFog Candle',
+    tagline: 'Burns while converting distraction into a subscription.',
+    category: 'Desk atmosphere',
+    tone: 'wellness',
+    price: 32,
+    oldPrice: 69,
+    imageSrc: shopImage('focusfog-candle.png'),
+    urgency: 'Cortisol scent lock ends when the wick feels seen.',
+    reason: 'Placed because you hovered near productivity shame.',
+    internal: 'placement: tab_fatigue · scent_model: beta',
+  },
+  {
+    id: 'petpal',
+    name: 'PetPal Apology Kit',
+    tagline: 'Treats, toys, and a note explaining the meeting ran long.',
+    category: 'Companion care',
+    tone: 'nostalgia',
+    price: 22,
+    oldPrice: 47,
+    imageSrc: shopImage('petpal-apology-kit.png'),
+    urgency: 'Your pet forgives you for 2:14 more minutes.',
+    reason: 'Placed because your calendar ignored a living being.',
+    internal: 'placement: guilt_proximity · tail_lift: inferred',
+  },
+  {
+    id: 'autobirthday',
+    name: 'AutoBirthday Scheduler',
+    tagline: 'A heartfelt reminder with the sincerity pre-rendered.',
+    category: 'Relationship automation',
+    tone: 'dating',
+    price: 16,
+    oldPrice: 44,
+    imageSrc: shopImage('autobirthday-scheduler.png'),
+    urgency: 'Three birthdays are becoming legal liabilities.',
+    reason: 'Placed because friendship scales poorly by hand.',
+    internal: 'placement: calendar_guilt · warmth: templated',
+  },
+  {
+    id: 'dreamreceipt',
+    name: 'DreamReceipt Printer',
+    tagline: 'Prints proof that your subconscious is making progress.',
+    category: 'Sleep paperwork',
+    tone: 'nostalgia',
+    price: 58,
+    oldPrice: 109,
+    imageSrc: shopImage('dreamreceipt-printer.png'),
+    urgency: 'Last night can still be itemized.',
+    reason: 'Placed because your dreams lacked exports.',
+    internal: 'placement: rem_trace · paper_cost: hidden',
+  },
+  {
+    id: 'tinywealth',
+    name: 'TinyWealth Coin',
+    tagline: 'A coin that invests itself whenever you feel brave.',
+    category: 'Pocket finance',
+    tone: 'finance',
+    price: 11,
+    oldPrice: 36,
+    imageSrc: shopImage('tinywealth-coin.png'),
+    urgency: 'Market courage detected in your thumb.',
+    reason: 'Placed because a small number looked harmless.',
+    internal: 'placement: micro_risk · spread: adorable',
+  },
+  {
+    id: 'browsercrumb',
+    name: 'BrowserCrumb Vault',
+    tagline: 'Keeps the tabs you forgot so ads remember for you.',
+    category: 'Memory storage',
+    tone: 'lucid',
+    price: 29,
+    oldPrice: 82,
+    imageSrc: shopImage('browsercrumb-vault.png'),
+    urgency: 'Your abandoned research is still warm.',
+    reason: 'Placed because forgetting reduced conversion.',
+    internal: 'placement: tab_residue · consent: decorative',
+  },
+  {
+    id: 'mealhalo',
+    name: 'MealHalo Fridge Tags',
+    tagline: 'Turns leftovers into recommendations with a conscience.',
+    category: 'Food automation',
+    tone: 'wellness',
+    price: 35,
+    oldPrice: 79,
+    imageSrc: shopImage('mealhalo-fridge-tags.png'),
+    urgency: 'Tonight’s best self expires at room temperature.',
+    reason: 'Placed because your fridge looked undecided.',
+    internal: 'placement: meal_anxiety · waste_offset: upsell',
+  },
+  {
+    id: 'likelihood',
+    name: 'Likelihood Laundry Pods',
+    tagline: 'Clean clothes, cleaner probability of being perceived.',
+    category: 'Chore prediction',
+    tone: 'hype',
+    price: 18,
+    oldPrice: 51,
+    imageSrc: shopImage('likelihood-laundry-pods.png'),
+    urgency: 'Your next outfit has entered forecast range.',
+    reason: 'Placed because the hamper implied a future event.',
+    internal: 'placement: laundry_forecast · freshness: synthetic',
+  },
+  {
+    id: 'sentiment',
+    name: 'Sentiment Umbrella',
+    tagline: 'Opens when the weather or the group chat turns.',
+    category: 'Mood weather',
+    tone: 'dating',
+    price: 46,
+    oldPrice: 99,
+    imageSrc: shopImage('sentiment-umbrella.png'),
+    urgency: 'Storm cell and mixed signals approaching.',
+    reason: 'Placed because precipitation and tone both shifted.',
+    internal: 'placement: vibe_barometer · rain_margin: 34%',
+  },
+  {
+    id: 'echochair',
+    name: 'EchoChair Posture Seat',
+    tagline: 'Corrects your spine with the voice of a manager.',
+    category: 'Work body',
+    tone: 'finance',
+    price: 86,
+    oldPrice: 164,
+    imageSrc: shopImage('echochair-posture-seat.png'),
+    urgency: 'Your lower back joined the cart watcher pool.',
+    reason: 'Placed because productivity slumped physically.',
+    internal: 'placement: posture_alert · meeting_roi: claimed',
+  },
+  {
+    id: 'calmcan',
+    name: 'CalmCan Air',
+    tagline: 'Canned breathing for moments that used to be free.',
+    category: 'Breath wellness',
+    tone: 'wellness',
+    price: 7,
+    oldPrice: 31,
+    imageSrc: shopImage('calmcan-air.png'),
+    urgency: 'Freshness drops to standard oxygen in 90 seconds.',
+    reason: 'Placed because your inhale needed packaging.',
+    internal: 'placement: breath_gap · margin: atmosphere',
+  },
+  {
+    id: 'trendimmune',
+    name: 'TrendImmune Scarf',
+    tagline: 'Protects against looking like you saw it too late.',
+    category: 'Fashion timing',
+    tone: 'hype',
+    price: 54,
+    oldPrice: 128,
+    imageSrc: shopImage('trendimmune-scarf.png'),
+    urgency: 'This pattern becomes obvious after checkout.',
+    reason: 'Placed because your taste lag risk rose 4 points.',
+    internal: 'placement: trend_delta · originality: leased',
+  },
+  {
+    id: 'sourcewater',
+    name: 'SourceWater Bottle',
+    tagline: 'Hydration with citations that cite other bottles.',
+    category: 'Verified wellness',
+    tone: 'lucid',
+    price: 24,
+    oldPrice: 64,
+    imageSrc: shopImage('sourcewater-bottle.png'),
+    urgency: 'Three experts agree thirst is addressable.',
+    reason: 'Placed because your confidence requested sources.',
+    internal: 'placement: citation_thirst · source_depth: recursive',
+  },
+  {
+    id: 'deadline',
+    name: 'Deadline Smoothie',
+    tagline: 'A meal replacement that tastes like finishing early.',
+    category: 'Productivity food',
+    tone: 'finance',
+    price: 13,
+    oldPrice: 42,
+    imageSrc: shopImage('deadline-smoothie.png'),
+    urgency: 'Blended minutes separate on idle.',
+    reason: 'Placed because your calendar looked chew-resistant.',
+    internal: 'placement: lunch_skip · output_flavor: mango',
+  },
+  {
+    id: 'privacytheater',
+    name: 'Privacy Theater Curtain',
+    tagline: 'Makes data collection feel like it left the room.',
+    category: 'Privacy accessory',
+    tone: 'lucid',
+    price: 67,
+    oldPrice: 152,
+    imageSrc: shopImage('privacy-theater-curtain.png'),
+    urgency: 'Curtain call pricing ends when you inspect settings.',
+    reason: 'Placed because the privacy toggle wanted a costume.',
+    internal: 'placement: consent_stagecraft · actual_blocking: no',
+  },
+  {
+    id: 'loyaltylash',
+    name: 'Loyalty Lash Serum',
+    tagline: 'Longer lashes, longer retention, same small applicator.',
+    category: 'Beauty loyalty',
+    tone: 'dating',
+    price: 28,
+    oldPrice: 73,
+    imageSrc: shopImage('loyalty-lash-serum.png'),
+    urgency: 'Your next blink qualifies for tier status.',
+    reason: 'Placed because beauty intent repeated twice.',
+    internal: 'placement: gaze_loop · retention: visible',
   },
 ]
 
@@ -1992,7 +2375,6 @@ export const humanFragments = [
 // debug residue more than poetry.
 export const fragmentLeaks = {
   brandSubtitle: '// last_human_developer.md',
-  phasePill: '// pending review',
   popupHeader: '// monetize_loneliness',
   appbarSearch: '// retrieval: synthetic',
   resetButton: '// forget_me_softly',

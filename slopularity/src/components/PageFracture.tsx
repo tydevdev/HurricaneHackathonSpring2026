@@ -3,7 +3,6 @@ import { hasPageFractures } from '../utils'
 
 type PageFractureProps = {
   stage: number
-  surfaceKey: string
 }
 
 type ShardStyle = CSSProperties & {
@@ -55,14 +54,13 @@ const shardStyles: ShardStyle[] = [
   },
 ]
 
-export function PageFracture({ stage, surfaceKey }: PageFractureProps) {
+export function PageFracture({ stage }: PageFractureProps) {
   if (!hasPageFractures(stage)) {
     return null
   }
 
   return (
     <div
-      key={`${surfaceKey}-${stage}`}
       className={`page-fracture-layer fracture-stage-${stage}`}
       aria-hidden="true"
     >
@@ -79,7 +77,7 @@ export function PageFracture({ stage, surfaceKey }: PageFractureProps) {
         <path className="fracture-stage-four" d="M45 42 L55 39 L63 44 L70 40" />
       </svg>
 
-      {stage >= 4 && (
+      {stage >= 5 && (
         <div className="page-fracture-shards">
           {shardStyles.map((style, index) => (
             <span

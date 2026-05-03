@@ -43,6 +43,7 @@ const replyProducts = ['GlowNest', 'AuraBank Select', 'SelfOS Beauty', 'MealHalo
 const scrollConfetti = Array.from({ length: 36 }, (_, index) => index)
 const feedCelebrationConfetti = Array.from({ length: 120 }, (_, index) => index)
 const feedCelebrationLasers = Array.from({ length: 22 }, (_, index) => index)
+const previewCommentCount = 3
 const scrollUnlockInterval = 10
 const initialFeedCycles = 2
 const maxFeedCycles = 5
@@ -924,7 +925,7 @@ export function FeedPage({
     const instanceId = `${lane}-${post.id}-${cycle}`
     const occurrence = cycle === 0 ? '' : ` loop ${cycle + 1}`
     const visibleCommentCount = post.sampleComments.length + localCommentsForPost.length
-    const commentPreview = post.sampleComments.slice(0, 2)
+    const commentPreview = post.sampleComments.slice(0, previewCommentCount)
 
     return (
       <article

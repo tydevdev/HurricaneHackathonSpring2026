@@ -416,7 +416,7 @@ export function ShopPage({ stage, onBuy, claimProductId, claimToken }: ShopPageP
             ) : null}
             {visibleDeals.map(({ product, index, gems, remaining }) => {
               const inflatedGems = gems * 100
-              const image = feedPosts[(index * 7) % feedPosts.length]?.imageSrc
+              const image = product.imageSrc || feedPosts[(index * 7) % feedPosts.length]?.imageSrc
               const soldCount = 900 + index * 311 + timerTick * (index + 1)
 
               return (

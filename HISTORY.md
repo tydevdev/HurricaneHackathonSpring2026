@@ -1,5 +1,11 @@
 # History
 
+## [2026-05-02 23:49] Center Viewport Dialogs
+
+- Updated `slopularity/src/index.css` so the shop bonus upsell uses a true centered viewport dialog instead of a bottom-sheet placement, with bounded internal scrolling for small screens.
+- Confirmed the existing viewport-portal dialog path keeps Feed scroll-unlock and Shop upsell overlays mounted to `document.body`, sized to the real viewport, and scroll-locked while open.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP at 1280x900 and 390x844 measured centered unlock and shop dialogs, full-viewport backdrops, `body` fixed while open, no background scroll, and no horizontal overflow.
+
 ## [2026-05-02 23:44] Gate Click Tab Shuffle Behind Stage 2
 
 - Updated `slopularity/src/App.tsx` so click-driven app tab shuffling only starts once visible decay reaches stage 2, matching the idle tab reorganization gate.
@@ -1012,3 +1018,14 @@
 - Updated `slopularity/DECAY_FEATURES.md`, `slopularity/DESIGN_BIBLE.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the new lottery odds and mode pool.
 - Regenerated `slopularity/dist/` so the published build includes the stacked page-warp modes.
 - Validation run: `node --experimental-strip-types --test tests/pageWarp.test.ts`; `npm run lint`; `npm run build`; headless Chromium/Playwright smoke against `vite preview` forced stage 3, stage 4, and stage 5 page switches, confirmed Helpy appeared, repair cleared the workspace warp while preserving stage/score, and desktop/phone overflow stayed at 0.
+
+## [2026-05-02 23:44] Trend-Aware Content Expansion
+
+- Researched current 2026 trend signals and folded them into `slopularity/src/content.ts` as Feed captions, Feed comments, News headlines, and News comment variants.
+- Updated `slopularity/src/pages/AssistantPage.tsx` so Helpy has larger product and culture-receipt pools that reference current viral food/drink, AI slop, raw-content, and agentic 10x engineer language.
+- Updated `slopularity/src/pages/FriendsPage.tsx` so human and brand DMs have larger response, memory, quick-reply, and cross-brand pressure pools with trend-aware dialogue.
+- Updated `slopularity/src/pages/ShopPage.tsx` so product cards, reasons, urgency labels, and bonus offers rotate richer copy tied to current commerce trends.
+- Updated `slopularity/scripts/create-route-pages.mjs` so generated GitHub Pages route folders are replaced cleanly before writing, preventing iCloud duplicate `feed 2` / `news 2` route folders.
+- Updated `slopularity/DESIGN_BIBLE.md` and `slopularity/IMPLEMENTATION_STATUS.md` to preserve the larger copy-depth contract.
+- Regenerated `slopularity/dist/` so the published app includes the richer content pools and fixed route pages.
+- Validation run: `npm run lint`; `node --experimental-strip-types --test tests/*.test.ts`; `npm run build`; generated bundle check for trend strings; route-page check confirmed normal nested app route files and no duplicate `* 2` route folders.

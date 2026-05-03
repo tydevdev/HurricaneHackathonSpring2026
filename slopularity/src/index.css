@@ -9772,7 +9772,7 @@ p {
   inset: 0;
   z-index: 60;
   display: grid;
-  place-items: end center;
+  place-items: center;
   padding: 16px;
   overflow: hidden;
   background: rgba(17, 19, 24, 0.46);
@@ -9783,8 +9783,10 @@ p {
 
 .bonus-sheet {
   width: min(680px, 100%);
+  max-height: calc(100svh - 32px);
   display: grid;
   gap: 12px;
+  overflow: auto;
   padding: 16px;
   background: #fff;
   border: 1px solid rgba(255, 255, 255, 0.72);
@@ -9988,12 +9990,10 @@ p {
     text-align: left;
   }
   .bonus-backdrop {
-    align-items: end;
     padding: 8px;
   }
   .bonus-sheet {
     max-height: calc(100svh - 16px);
-    overflow: auto;
     border-radius: 18px;
   }
 }

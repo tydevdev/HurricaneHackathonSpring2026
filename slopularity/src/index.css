@@ -4004,8 +4004,8 @@ p {
 /* ─────────────────────────────────────────────────────────────────────
    Visible collapse decay
    Stage 2 stays calm. Stage 3 introduces drift + chromatic shadow on
-   display headings. Stage 4 adds ghost duplicates of major cards, a
-   subtle scan-line overlay, and a slow text-shadow oscillation.
+   display headings. Stage 4 adds ghost duplicates of major cards and
+   a slow text-shadow oscillation.
    The user should be able to read everything throughout — decay is
    atmospheric, not destructive.
    ───────────────────────────────────────────────────────────────────── */
@@ -4097,28 +4097,6 @@ p {
   60%      { opacity: 0.32; transform: translate(4px, 1px); }
 }
 
-/* Body-wide scan-line overlay — soft, not seizure-y. */
-[data-stage="4"]::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 100;
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(15, 23, 42, 0) 0px,
-    rgba(15, 23, 42, 0) 3px,
-    rgba(239, 68, 68, 0.04) 3px,
-    rgba(239, 68, 68, 0.04) 4px
-  );
-  mix-blend-mode: multiply;
-  animation: decay-scan 6s linear infinite;
-}
-@keyframes decay-scan {
-  0%   { transform: translate3d(0, 0, 0); }
-  100% { transform: translate3d(0, 4px, 0); }
-}
-
 /* Stage 4 phase pill goes red-pulse. */
 [data-stage="4"] .phase-pill .phase-dot {
   animation: decay-pulse 1.4s ease-in-out infinite;
@@ -4187,7 +4165,6 @@ p {
   [data-stage="4"] .shop-card::after,
   [data-stage="4"] .games-stage::after,
   [data-stage="4"] .feature-card::after,
-  [data-stage="4"]::before,
   [data-stage="4"] .phase-pill .phase-dot,
   .bug-scatter-bug {
     animation: none !important;

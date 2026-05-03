@@ -37,23 +37,6 @@ body {
   overflow-x: hidden;
 }
 
-body::before {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  content: "";
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.06) 0,
-    rgba(255, 255, 255, 0.06) 1px,
-    transparent 1px,
-    transparent 5px
-  );
-  mix-blend-mode: soft-light;
-  opacity: 0.34;
-}
-
 a {
   color: inherit;
 }

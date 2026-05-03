@@ -1,5 +1,12 @@
 # History
 
+## [2026-05-02 19:56] Remove CRT Scanline Overlays
+
+- Removed the fixed root-page `body::before` scanline overlay from `styles.css`.
+- Removed Slopularity's stage-4 full-screen scanline pseudo-element and reduced-motion reference from `slopularity/src/index.css`.
+- Kept the rest of the stage-4 decay behavior intact: ghost duplicates, chromatic text, title leaks, bug crawl, and phase-pill pulse.
+- Validation run: `git pull --rebase --autostash origin main`; `npm run lint`; `npm run build`; source and `dist/` grep confirmed no remaining scanline selectors or CRT overlay tokens.
+
 ## [2026-05-02 19:10] Games Lobby And Playrooms
 
 - Reworked the Slopularity Games surface so `/app/games/` is a polished image-led arcade lobby and each game opens on its own playroom route under `/app/games/<game-id>/`.

@@ -478,8 +478,56 @@ export function ProfilePage({
               <button type="button" onClick={checkFlorida}>Refresh</button>
             </header>
             <div className="florida-map" aria-hidden="true">
-              <span className="florida-land" />
-              <span className="florida-water" style={{ height: `${waterPercent}%` }} />
+              <svg viewBox="0 0 200 200" className="florida-svg" preserveAspectRatio="xMidYMid meet">
+                <defs>
+                  <linearGradient id="florida-land-grad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#34d399" />
+                    <stop offset="100%" stopColor="#16a34a" />
+                  </linearGradient>
+                  <linearGradient id="florida-water-grad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="rgba(56, 189, 248, 0.85)" />
+                    <stop offset="100%" stopColor="rgba(14, 116, 165, 0.95)" />
+                  </linearGradient>
+                  <clipPath id="florida-clip">
+                    <path d="M 14 48 C 14 36 22 30 36 30 L 138 26 C 156 26 168 32 174 44 C 182 56 192 70 196 88 C 202 116 196 144 178 164 C 162 180 142 184 124 174 C 112 166 108 154 110 138 C 114 116 110 96 102 84 C 92 72 76 68 56 68 L 36 66 C 22 64 14 60 14 48 Z" />
+                  </clipPath>
+                </defs>
+
+                {/* Florida itself — visible green silhouette */}
+                <path
+                  d="M 14 48 C 14 36 22 30 36 30 L 138 26 C 156 26 168 32 174 44 C 182 56 192 70 196 88 C 202 116 196 144 178 164 C 162 180 142 184 124 174 C 112 166 108 154 110 138 C 114 116 110 96 102 84 C 92 72 76 68 56 68 L 36 66 C 22 64 14 60 14 48 Z"
+                  fill="url(#florida-land-grad)"
+                  stroke="#15803d"
+                  strokeWidth="1.2"
+                />
+
+                {/* Water rising — clipped to Florida outline so only the silhouette
+                    visibly drowns. Height is driven by waterPercent (0–100). */}
+                <g clipPath="url(#florida-clip)">
+                  <rect
+                    x="0"
+                    y={200 - waterPercent * 2}
+                    width="200"
+                    height={waterPercent * 2}
+                    fill="url(#florida-water-grad)"
+                  />
+                  {/* Two thin highlight bands that ride at the surface line. */}
+                  <rect
+                    x="0"
+                    y={200 - waterPercent * 2}
+                    width="200"
+                    height="1.2"
+                    fill="rgba(255, 255, 255, 0.78)"
+                  />
+                  <rect
+                    x="0"
+                    y={200 - waterPercent * 2 + 3}
+                    width="200"
+                    height="0.6"
+                    fill="rgba(255, 255, 255, 0.42)"
+                  />
+                </g>
+              </svg>
               <strong>{waterPercent}%</strong>
             </div>
             <div className="florida-readouts">

@@ -983,7 +983,7 @@
 - Updated `slopularity/src/App.tsx` so page fractures only become eligible at decay stage 5 and must wait at least 30 seconds after entering that stage before appearing.
 - Updated `slopularity/src/utils.ts` and `slopularity/tests/utils.test.ts` with a shared page-fracture delay helper that respects both the 30-second final-stage wait and the existing 120-second crack cooldown.
 - Updated `slopularity/DECAY_FEATURES.md`, `slopularity/DESIGN_BIBLE.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the stricter crack timing contract.
-- Validation run: pending.
+- Validation run: `node --experimental-strip-types --test tests/utils.test.ts`; `node --experimental-strip-types --test tests/*.test.ts`; `npm run lint`; `npm run build`.
 
 ## [2026-05-02 22:57] Expand Feed And News Image Pools
 - Updated `slopularity/src/content.ts` so Feed grows from 50 to 80 canonical posts and News grows from 30 to 60 canonical articles.

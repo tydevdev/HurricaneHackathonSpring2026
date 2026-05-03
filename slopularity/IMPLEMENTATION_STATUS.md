@@ -9,7 +9,7 @@ Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESI
 - Behavior changed: `src/utils.ts` now owns the page-fracture delay helper, which combines the 30-second final-stage entry delay with the existing 120-second crack cooldown and waits for whichever is longer.
 - Test updated: `tests/utils.test.ts` covers the final-stage entry delay and the cooldown override.
 - Documentation updated: `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, `IMPLEMENTATION_STATUS.md`, and root `HISTORY.md`.
-- Validation run: pending.
+- Validation run: `node --experimental-strip-types --test tests/utils.test.ts`; `node --experimental-strip-types --test tests/*.test.ts`; `npm run lint`; `npm run build`.
 
 ## [2026-05-02 23:44] Richer Trend-Aware Copy Pools
 

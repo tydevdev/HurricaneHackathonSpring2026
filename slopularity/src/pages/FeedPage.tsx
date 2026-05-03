@@ -517,6 +517,22 @@ export function FeedPage({
     onEngageRef.current = onEngage
   }, [onEngage])
 
+  // Escape-to-dismiss for the scroll-unlock modal so there's never a single
+  // point of failure on the dismiss path. Inlined so the effect's deps stay
+  // honest about what it reads.
+  useEffect(() => {
+    if (scrollPrompt === null) return undefined
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      setScrollMode(scrollPrompt)
+      setScrollPrompt(null)
+      setOpenMenu(null)
+      onEngageRef.current?.()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [scrollPrompt])
+
   useEffect(() => {
     if (typeof window === 'undefined') {
       return
@@ -1414,14 +1430,34 @@ export function FeedPage({
 
       {scrollPrompt && (
         <ViewportPortal>
-          <div className="modal-backdrop double-scroll-backdrop" role="dialog" aria-modal="true" aria-labelledby="scroll-unlock-title">
+          <div
+            className="modal-backdrop double-scroll-backdrop"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="scroll-unlock-title"
+            onClick={(event) => {
+              // Click anywhere outside the modal card dismisses. Stops the
+              // bug where the only dismiss path was an unreachable button.
+              if (event.target === event.currentTarget) unlockScrollMode()
+            }}
+          >
             <div className="confetti-field" aria-hidden="true">
               {scrollConfetti.map((piece) => <span key={piece} style={getConfettiStyle(piece)} />)}
             </div>
-            <div className="double-scroll-modal">
+            <div className="double-scroll-modal" onClick={(event) => event.stopPropagation()}>
+              <button
+                type="button"
+                className="double-scroll-close"
+                onClick={unlockScrollMode}
+                aria-label="Close and accept the trial"
+              >
+                ×
+              </button>
               <p className="double-scroll-kicker">Congratulations, Super Scroller</p>
               <h3 id="scroll-unlock-title">You have unlocked the {scrollPrompt.toUpperCase()} SCROLL feature trial *</h3>
-              <button type="button" onClick={unlockScrollMode}>Hooray! I love {scrollPrompt} scroll</button>
+              <button type="button" className="double-scroll-cta" onClick={unlockScrollMode}>
+                Hooray! I love {scrollPrompt} scroll
+              </button>
               <small>*trial stacks automatically. double is $49.99/week. triple is billed as enthusiasm. quadruple is a wellness incident.</small>
             </div>
           </div>

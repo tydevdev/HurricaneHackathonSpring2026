@@ -1,5 +1,11 @@
 # History
 
+## [2026-05-03 00:11] Refresh GitHub Pages Build
+
+- Pulled `main` and confirmed it was already current with `origin/main`.
+- Regenerated `slopularity/dist/` so the committed GitHub Pages app points at the newest Vite bundle hash and generated asset names.
+- Validation run: `npm run build`.
+
 ## [2026-05-03 00:02] Fix Modal Layer Clickability
 
 - Updated `slopularity/src/index.css` so viewport dialogs render above the newer idle, popup, page-warp, and repair overlays instead of sharing an older low modal layer.

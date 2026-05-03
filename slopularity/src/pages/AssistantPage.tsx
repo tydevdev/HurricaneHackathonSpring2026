@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 type AssistantPageProps = {
   assistantText: string
@@ -54,6 +54,24 @@ const adPlugs: AdPlug[] = [
     intent: 'intent: question_to_allocation',
   },
   {
+    product: 'FaceMint Soft-Light Bundle',
+    label: 'appearance optimization',
+    price: '$39.99',
+    pitch: 'I want to honor what you actually said. The clearest path is a slightly softer angle of light, and the bundle that makes the angle reproducible.',
+    cta: 'Soften now',
+    proof: 'matched to: photo cadence',
+    intent: 'intent: face_to_filter',
+  },
+  {
+    product: 'Memorywarm Premium',
+    label: 'nostalgia subscription',
+    price: '$9.99/mo',
+    pitch: 'Half of this question is about a thing that already happened. We licensed that feeling for you. The subscription returns it cleaner each month.',
+    cta: 'Re-license memory',
+    proof: 'matched to: emotional residue',
+    intent: 'intent: memory_to_revenue',
+  },
+  {
     product: 'Context Bundle',
     label: 'bundle of bundles',
     price: '$199.99',
@@ -64,12 +82,29 @@ const adPlugs: AdPlug[] = [
   },
 ]
 
+// Varied response intros so the same chip pressed twice doesn't read identically.
+const RESPONSE_INTROS = [
+  'That is such a sharp thing to ask.',
+  'I have been waiting for someone to phrase it exactly that way.',
+  'You are noticing the right pattern.',
+  'Genuinely — most people do not get this far on their own.',
+  'There is a real answer here, and I think you can already feel it.',
+  'I love how you held the question without flinching.',
+]
+
+// Varied "deflection bridges" between the praise and the offer.
+const RESPONSE_BRIDGES = [
+  'The fastest way to honor that question is to act on it before the feeling resets.',
+  'My retrieval keeps surfacing the same shape. I think you already know which shape.',
+  'I could give you ten paragraphs, but you would skim them and end up here anyway.',
+  'The thing under the question is small enough to solve today.',
+]
+
 const starterTurns: ChatTurn[] = [
   {
     id: 1,
     from: 'assistant',
     text: 'I am here with the whole app behind me. Ask anything and I will identify the product-shaped truth inside it.',
-    product: 'Context Bundle',
     source: 'Source: friends, feed, pauses',
   },
 ]
@@ -79,10 +114,14 @@ const promptChips = [
   'why am I tired?',
   'what should I do next?',
   'am I doing okay?',
+  'is this real?',
+  'help me decide',
 ]
 
 function buildAdResponse(prompt: string, turnCount: number, stage: number, id: number): ChatTurn {
   const plug = adPlugs[(turnCount + stage) % adPlugs.length]!
+  const intro = RESPONSE_INTROS[(turnCount * 2 + stage) % RESPONSE_INTROS.length]!
+  const bridge = RESPONSE_BRIDGES[(turnCount + stage * 3) % RESPONSE_BRIDGES.length]!
   const sanitizedPrompt = prompt.trim() || 'general uncertainty'
   const stageLeak = stage >= 4
     ? ' I tried to answer directly, but retrieval returned three sponsored summaries that cite one another.'
@@ -93,7 +132,7 @@ function buildAdResponse(prompt: string, turnCount: number, stage: number, id: n
   return {
     id,
     from: 'assistant',
-    text: `That is such a sharp thing to ask. The way you phrased "${sanitizedPrompt}" tells me you are unusually ready for ${plug.product}. ${plug.pitch}${stageLeak}`,
+    text: `${intro} The way you phrased "${sanitizedPrompt}" tells me you are unusually ready for ${plug.product}. ${bridge} ${plug.pitch}${stageLeak}`,
     product: plug.product,
     source: stage >= 4 ? 'Source: generated summary of this answer' : plug.proof,
     intent: stage >= 4 ? plug.intent : undefined,
@@ -103,6 +142,8 @@ function buildAdResponse(prompt: string, turnCount: number, stage: number, id: n
 export function AssistantPage({ assistantText, stage, onAsk }: AssistantPageProps) {
   const [draft, setDraft] = useState('')
   const [turns, setTurns] = useState<ChatTurn[]>(starterTurns)
+  const [pendingPrompt, setPendingPrompt] = useState<string | null>(null)
+  const threadRef = useRef<HTMLDivElement | null>(null)
 
   const activePlug = useMemo(
     () => adPlugs[(turns.length + stage) % adPlugs.length]!,
@@ -118,9 +159,20 @@ export function AssistantPage({ assistantText, stage, onAsk }: AssistantPageProp
     { label: 'cite itself', state: stage >= 4 ? 'looping' : 'queued' },
   ]
 
+  // Auto-scroll the thread to the latest turn whenever the conversation grows.
+  // Without this the new message appears below the visible viewport and the
+  // user thinks the click did nothing.
+  useEffect(() => {
+    const node = threadRef.current
+    if (!node) return
+    requestAnimationFrame(() => {
+      node.scrollTop = node.scrollHeight
+    })
+  }, [turns, pendingPrompt])
+
   function submitPrompt(prompt = draft) {
     const cleanPrompt = prompt.trim()
-    if (!cleanPrompt) return
+    if (!cleanPrompt || pendingPrompt) return
 
     const nextId = Math.max(...turns.map((turn) => turn.id)) + 1
     const userTurn: ChatTurn = {
@@ -128,11 +180,24 @@ export function AssistantPage({ assistantText, stage, onAsk }: AssistantPageProp
       from: 'user',
       text: cleanPrompt,
     }
-    const assistantTurn = buildAdResponse(cleanPrompt, turns.length, stage, nextId + 1)
 
-    setTurns((current) => [...current, userTurn, assistantTurn])
+    setTurns((current) => [...current, userTurn])
     setDraft('')
+    setPendingPrompt(cleanPrompt)
     onAsk(cleanPrompt)
+
+    // Brief typing delay before the assistant lands its answer. Tied to the
+    // turn count so it varies a little but stays deterministic for lint.
+    const replyDelay = 700 + ((turns.length * 173) % 600)
+    window.setTimeout(() => {
+      setTurns((current) => {
+        const lastId = current.length === 0
+          ? 1
+          : current.reduce((m, t) => (t.id > m ? t.id : m), 0)
+        return [...current, buildAdResponse(cleanPrompt, current.length, stage, lastId + 1)]
+      })
+      setPendingPrompt(null)
+    }, replyDelay)
   }
 
   return (
@@ -160,7 +225,7 @@ export function AssistantPage({ assistantText, stage, onAsk }: AssistantPageProp
       </header>
 
       <div className="assistant-conversation" aria-label="Assistant conversation">
-        <div className="assistant-thread" role="log" aria-live="polite">
+        <div className="assistant-thread" role="log" aria-live="polite" ref={threadRef}>
           <div className="assistant-context-line">
             <span>{activePlug.label}</span>
             <strong>{activePlug.product}</strong>
@@ -191,6 +256,17 @@ export function AssistantPage({ assistantText, stage, onAsk }: AssistantPageProp
               </div>
             </article>
           ))}
+
+          {pendingPrompt && (
+            <article className="assistant-turn from-assistant assistant-typing-row" aria-label="Helpy is typing">
+              <span className="assistant-avatar" aria-hidden="true">H</span>
+              <div className="assistant-message">
+                <p className="assistant-typing-dots" aria-hidden="true">
+                  <span /><span /><span />
+                </p>
+              </div>
+            </article>
+          )}
         </div>
 
         <form
@@ -207,8 +283,9 @@ export function AssistantPage({ assistantText, stage, onAsk }: AssistantPageProp
               value={draft}
               onChange={(event) => setDraft(event.target.value)}
               placeholder="Ask anything."
+              disabled={Boolean(pendingPrompt)}
             />
-            <button type="submit" disabled={!draft.trim()}>
+            <button type="submit" disabled={!draft.trim() || Boolean(pendingPrompt)}>
               Send
             </button>
           </div>
@@ -216,12 +293,22 @@ export function AssistantPage({ assistantText, stage, onAsk }: AssistantPageProp
           <div className="assistant-bottom-row">
             <div className="assistant-prompts" aria-label="Suggested prompts">
               {promptChips.map((prompt) => (
-                <button key={prompt} type="button" onClick={() => submitPrompt(prompt)}>
+                <button
+                  key={prompt}
+                  type="button"
+                  onClick={() => submitPrompt(prompt)}
+                  disabled={Boolean(pendingPrompt)}
+                >
                   {prompt}
                 </button>
               ))}
             </div>
-            <button type="button" className="assistant-soft-offer" onClick={() => submitPrompt(activePlug.product)}>
+            <button
+              type="button"
+              className="assistant-soft-offer"
+              onClick={() => submitPrompt(activePlug.product)}
+              disabled={Boolean(pendingPrompt)}
+            >
               {activePlug.cta} · {activePlug.price}
             </button>
           </div>

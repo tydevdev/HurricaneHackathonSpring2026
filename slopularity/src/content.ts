@@ -1189,16 +1189,15 @@ const expandedFeedPosts = expandedFeedSeeds.map((post, index): FeedPost => {
   }
 })
 
-export const feedPosts: FeedPost[] = [...primaryFeedPosts, ...expandedFeedPosts].map((post) => {
-  const cultureSignal = cultureSignalFor(post.id)
-  const title = post.baseLikes % 2 === 0 ? `${post.title} ${cultureSignal.feedCaption}` : post.title
-  const trendPost = { ...post, title }
-
-  return {
-    ...trendPost,
-    sampleComments: expandFeedComments(trendPost),
-  }
-})
+// Captions stay as the author wrote them. Stage-driven caption mutation
+// already lives in FeedPage (`isDegrading ? \`${post.title} // caption
+// regenerated from caption\` : post.title`); we don't want every
+// even-baseLikes post to silently double its caption at stage 1.
+// Culture signals still feed into expandFeedComments below.
+export const feedPosts: FeedPost[] = [...primaryFeedPosts, ...expandedFeedPosts].map((post) => ({
+  ...post,
+  sampleComments: expandFeedComments(post),
+}))
 
 export const feedStories = feedPosts.slice(0, 12).map((post) => ({
   id: post.id,

@@ -660,3 +660,8 @@
 - Added cross-tab memory references where brands dynamically reference recent activities in Feed, Shop, Games, Search, and Assistant.
 - Added product cards embedded directly in chat and typing indicators.
 - Verified changes via `npm run lint` and `npm run build`.
+
+## [2026-05-03 00:48] Fix Published Slopularity Landing Reveal
+- Updated `slopularity/src/pages/LandingPage.tsx` so landing `data-reveal` elements receive `is-revealed` after mount instead of staying transparent on GitHub Pages.
+- Regenerated `slopularity/dist/` so the published `/slopularity/dist/` page uses the fixed landing bundle.
+- Validation run: `npm run lint`; `npm run build`; Playwright smoke against `vite preview` at desktop and 390x844 confirmed the landing headline and enter button render, all reveal elements compute to opacity 1, there are zero console errors, and there is no mobile horizontal overflow.

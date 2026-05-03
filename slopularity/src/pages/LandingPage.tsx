@@ -60,6 +60,22 @@ export function LandingPage({ onEnter }: LandingPageProps) {
   const landingRef = useRef<HTMLDivElement | null>(null)
   const btnRef = useRef<HTMLButtonElement | null>(null)
 
+  useEffect(() => {
+    const landing = landingRef.current
+    if (!landing) {
+      return
+    }
+
+    const revealables = Array.from(landing.querySelectorAll('[data-reveal]'))
+    const frame = window.requestAnimationFrame(() => {
+      revealables.forEach((element) => {
+        element.classList.add('is-revealed')
+      })
+    })
+
+    return () => window.cancelAnimationFrame(frame)
+  }, [])
+
   // Button position offsets per stage (percentage-based for responsive)
   const buttonStyles: React.CSSProperties[] = [
     {}, // stage 0: default position

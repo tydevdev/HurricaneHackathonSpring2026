@@ -390,7 +390,7 @@ The score resets to 0 when a mechanic explicitly repairs the system, but the vis
 
 At stage 4+, the interface may also leak small ambient impossibilities that feel like production debris rather than a modal or explanation. One implemented example is a bug emoji that occasionally crosses diagonally from offscreen to offscreen at a random interval between 30 seconds and 5 minutes. It must stay pointer-events-none, respect reduced motion, and remain rare enough that it feels like the app is rotting at the edge of attention instead of becoming a game mechanic.
 
-When cracks first appear at stages 3 and 4, Helpy should re-enter as a corner repair assistant rather than an explanation modal. The Spackle interaction is intentionally silly but functional: dragging the paintbrush emoji around the screen for two seconds resets the shared score to 0, which removes cracks through the same global stage model used everywhere else.
+Whenever cracks are visible, Helpy should re-enter as the repair assistant rather than an explanation modal. The fracture overlay and the Spackle assistant must share the same visibility contract, so late-stage cracks never appear without a repair path. The Spackle interaction is intentionally silly but functional: dragging the paintbrush emoji around the screen for two seconds resets the shared score to 0, which removes cracks through the same global stage model used everywhere else.
 
 Profile is allowed to expose a compact `Decay demo` control because this project is presented live. That control should change the same persisted instability score that normal behavior uses, show the current stage honestly, and stay visually subordinate to the profile stats/trophy/waterline surfaces.
 
@@ -567,6 +567,8 @@ The stats row shows fractional credits and a percentage toward the 47,000-credit
 ### Game Becomes Work (SnackSort)
 
 Intention: a fun sorting game silently transitions into unpaid labor.
+
+The primary physical interaction is dragging a snack chip directly into a basket. Click-to-select remains as a fallback for keyboard and low-precision input, but the play surface should feel like moving food around the picnic blanket rather than operating a form.
 
 SnackSort tracks how many rounds the user has played. Each round after the first strips more game-ness:
 

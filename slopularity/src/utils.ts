@@ -14,6 +14,10 @@ export function stageFor(score: number) {
   return Math.min(maxDecayStage, Math.max(1, Math.floor(score / decayStageStep) + 1))
 }
 
+export function hasPageFractures(stage: number) {
+  return stage >= 3
+}
+
 export function getEngagementLabels(stage: number) {
   if (stage <= 1) {
     return ['Like', 'Save', 'Share', 'More']

@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react'
+import { hasPageFractures } from '../utils'
 
 type PageFractureProps = {
   stage: number
@@ -55,7 +56,7 @@ const shardStyles: ShardStyle[] = [
 ]
 
 export function PageFracture({ stage, surfaceKey }: PageFractureProps) {
-  if (stage < 3) {
+  if (!hasPageFractures(stage)) {
     return null
   }
 

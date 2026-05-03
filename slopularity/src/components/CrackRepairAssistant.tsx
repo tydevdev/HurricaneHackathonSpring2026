@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState, type PointerEvent } from 'react'
+import { hasPageFractures } from '../utils'
 
 type CrackRepairAssistantProps = {
   stage: number
   onRepair: () => void
 }
 
-const repairStages = new Set([3, 4])
 const requiredDragMs = 2000
 
 export function CrackRepairAssistant({ stage, onRepair }: CrackRepairAssistantProps) {
@@ -21,7 +21,7 @@ export function CrackRepairAssistant({ stage, onRepair }: CrackRepairAssistantPr
   const repairedRef = useRef(false)
   const rafRef = useRef(0)
 
-  const visible = repairStages.has(stage) && !repaired
+  const visible = hasPageFractures(stage) && !repaired
 
   const finishRepair = useCallback(() => {
     if (repairedRef.current) return

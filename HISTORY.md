@@ -1,5 +1,18 @@
 # History
 
+## [2026-05-02 22:39] Add Snack Sort Drag Placement
+
+- Updated `slopularity/src/games/SnackSort.tsx` so snack chips can be dragged directly into baskets with pointer input while preserving the click-to-select fallback.
+- Updated `slopularity/src/index.css` with grab cursors, dragged-chip opacity, active basket highlighting, and a floating snack ghost that follows the pointer.
+- Updated `slopularity/DESIGN_BIBLE.md` and `slopularity/IMPLEMENTATION_STATUS.md` to record the direct manipulation behavior.
+- Validation run: pending in this session.
+
+## [2026-05-02 22:39] Link Appbar Me Avatar To Profile
+
+- Updated `slopularity/src/App.tsx` so the top-right `ME` avatar is a real Profile link that preserves the app shell route and active tab state.
+- Updated `slopularity/src/index.css` with link-safe avatar styling and visible hover/focus treatment.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` forced score `480`/stage 5, confirmed cracks, Helpy, and the brush all render together with no horizontal overflow, then simulated a 2+ second brush drag and confirmed score `0`, stage 1, and no crack/repair layers.
+
 ## [2026-05-02 20:12] Add Page Fracture Decay
 
 - Added `slopularity/src/components/PageFracture.tsx` and wired it into `slopularity/src/App.tsx` so stage 3+ decay can render physical page damage.
@@ -807,3 +820,12 @@
 - Updated `slopularity/DECAY_FEATURES.md` to describe the new card-integrated interaction.
 - Files changed: `CrackRepairAssistant.tsx`, `index.css`, `DECAY_FEATURES.md`, `HISTORY.md`.
 - Validation run: `npm run lint`; `npm run build`; both clean.
+
+## [2026-05-02 22:36] Couple Cracks To Spackle Repair
+
+- Updated `slopularity/src/utils.ts` with a shared fracture-visibility helper.
+- Updated `slopularity/src/components/PageFracture.tsx` and `slopularity/src/components/CrackRepairAssistant.tsx` so cracks and Helpy use the same stage contract.
+- Fixed the stage 5 gap where cracks could appear without Helpy, the brush, or any repair path.
+- Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record that visible cracks must always come with Spackle repair.
+- Regenerated `slopularity/dist/` so the published app includes the repair coupling.
+- Validation run: pending in this session.

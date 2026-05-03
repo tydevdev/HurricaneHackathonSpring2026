@@ -1,5 +1,11 @@
 # History
 
+## [2026-05-02 23:57] Refresh Pages Build Artifacts
+
+- Regenerated `slopularity/dist/` from the current Slopularity source so GitHub Pages route pages reference the current hashed app bundle and published asset names.
+- Removed stale generated references to `app-Bj8y1MTR.js` and the old `news-40` asset emitted by the previous build.
+- Validation run: `git pull --ff-only`; `npm run lint`; `npm run build`.
+
 ## [2026-05-02 23:49] Center Viewport Dialogs
 
 - Updated `slopularity/src/index.css` so the shop bonus upsell uses a true centered viewport dialog instead of a bottom-sheet placement, with bounded internal scrolling for small screens.

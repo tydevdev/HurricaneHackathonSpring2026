@@ -1,5 +1,12 @@
 # History
 
+## [2026-05-02 22:45] Start Ambient Bugs At Phase 3
+
+- Updated `slopularity/src/components/BugScatter.tsx` so crawling bug scheduling and rendering begin at phase 3 instead of phase 4.
+- Updated `slopularity/DECAY_FEATURES.md` and `slopularity/DESIGN_BIBLE.md` to record the phase 3-5 bug crawl contract.
+- Regenerated `slopularity/dist/` so the published app uses the earlier crawl threshold.
+- Validation run: `npm run lint`; `npm run build`; checked generated `dist/assets/app-*.js` for the phase 3 crawl gate.
+
 ## [2026-05-02 22:40] Expand Ambient Bug Crawl
 
 - Updated `slopularity/src/components/BugScatter.tsx` so stage 4+ ambient crawls now pick from caterpillar, beetle, cockroach, ant, spider, and cricket emoji variants.

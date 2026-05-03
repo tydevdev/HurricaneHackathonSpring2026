@@ -116,7 +116,7 @@ Each entry includes:
 | Brand subtitle leak | Reach stage 4 | Appbar subtitle changes from "everything app · 2030" to leaked fragment | 4 | implemented |
 | Phase pill leak | Reach stage 4 | Phase indicator shows leaked internal string | 4 | implemented |
 | Click-driven tab shuffle | Click a different app tab | App tabs reshuffle into a new order immediately after the page switch. The Landing escape link stays fixed before the shuffled app tabs | all | implemented |
-| Ambient bug crawl | Reach stage 4 and stay in the app | A random bug emoji occasionally crawls diagonally from off one side of the screen to the other on a random 15-second to 2.5-minute timer | 4 | implemented |
+| Ambient bug crawl | Reach stage 3 and stay in the app | A random bug emoji occasionally crawls diagonally from off one side of the screen to the other on a random 15-second to 2.5-minute timer | 3-5 | implemented |
 | Page fracture overlay | Reach stage 3+, then switch tabs or advance into later stages | Hairline cracks spread across the page; stage 4+ grows larger cracks and paper-like UI shards break loose and fall off screen | 3-5 | implemented |
 | Helpy Spackle repair | Reach any stage where page fractures are visible | Helpy pops up in a bottom-center card with an integrated progress bar and brush button; pressing and dragging the brush for 2 seconds fills the bar and resets decay score to 0, so cracks never appear without a repair path | 3-5 | implemented |
 | Five-stage decay ladder | Trigger ordinary instability events or demo controls | Decay now has five visible stages, with 120 score points required per stage, so escalation is 10x slower than the first Spackle pass | all | implemented |

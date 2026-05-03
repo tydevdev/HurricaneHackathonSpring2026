@@ -88,7 +88,7 @@ export function BugScatter({ stage }: BugScatterProps) {
   useEffect(() => {
     clearTimers()
 
-    if (stage < 4 || typeof window === 'undefined') {
+    if (stage < 3 || typeof window === 'undefined') {
       return undefined
     }
 
@@ -125,7 +125,7 @@ export function BugScatter({ stage }: BugScatterProps) {
   const prefersReducedMotion = typeof window !== 'undefined'
     && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-  if (stage < 4 || prefersReducedMotion || bugRun === null) {
+  if (stage < 3 || prefersReducedMotion || bugRun === null) {
     return null
   }
 

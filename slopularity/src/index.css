@@ -3381,19 +3381,29 @@ p {
   white-space: nowrap;
 }
 
-.assistant-prompt-shuffle {
+/* Higher specificity than `.assistant-prompts button` so width / padding /
+   font-size aren't overridden by the general chip styling above. */
+.assistant-prompts button.assistant-prompt-shuffle {
   flex: 0 0 auto;
-  width: 30px;
-  height: 30px;
+  width: 38px;
+  min-width: 38px;
+  height: 38px;
+  min-height: 38px;
   display: grid;
   place-items: center;
   padding: 0;
-  font-size: 1rem;
+  line-height: 1;
+  font-size: 1.05rem;
   color: var(--muted);
-  background: transparent !important;
-  border: 1px dashed rgba(15, 23, 42, 0.18) !important;
+  background: transparent;
+  border: 1px dashed rgba(15, 23, 42, 0.18);
 }
-.assistant-prompt-shuffle:hover { color: var(--ink); border-color: rgba(15, 23, 42, 0.32) !important; }
+.assistant-prompts button.assistant-prompt-shuffle:hover,
+.assistant-prompts button.assistant-prompt-shuffle:focus-visible {
+  color: var(--ink);
+  background: transparent;
+  border-color: rgba(15, 23, 42, 0.32);
+}
 
 .assistant-routing {
   display: flex;

@@ -12,23 +12,70 @@ type FriendsPageProps = {
 }
 
 // ── Emotional upsell ladder (human friends — 3 rungs) ──
+const HUMAN_LADDER_VARIANTS = [
+  [
+    'I hear you. That sounds really heavy. You deserve to feel lighter.',
+    'Yeah. I get why that would sit in your chest like that.',
+    'I am not going to fix-mode you immediately. That is a lot, and it makes sense.',
+    'Honestly, I would feel weird about it too. You are not overreacting.',
+    'I am here. No pitch for one whole sentence, which feels heroic in this app.',
+    'That has the exact texture of something small that took up the whole room.',
+  ],
+  [
+    'You know what helped me? {product}. Just a thought — no pressure.',
+    'Tiny suggestion, and you can fully ignore it: {product} made this kind of thing feel less sharp for me.',
+    'This might be corny, but {product} gave me a little structure when my brain was acting like a drawer of cables.',
+    'I hate that I am saying a product name, but {product} did help with the surrounding mess.',
+    'Not trying to sell you anything. I just keep thinking {product} fits the problem-shaped part.',
+    'If you want a small lever, {product} is the one I would try first.',
+  ],
+  [
+    'Seriously, {product} changed everything. I can set up a free trial right now if you want. You deserve this.',
+    'Okay, actual friend mode: I would rather you try {product} tonight than spiral alone for three more tabs.',
+    'I can send you the {product} link and make it look casual. No one has to know the app was involved.',
+    'Let me put {product} in your cart as a maybe. Sometimes a maybe is kinder than another hour of thinking.',
+    'I can get the trial started and you can cancel when you feel human again. That counts as boundaries.',
+    'Say the word and I will handle the boring part. {product} is not magic, but it is a little handrail.',
+  ],
+] satisfies string[][]
+
+function copyVariant(pool: string[], seed: number) {
+  return pool[Math.abs(seed) % pool.length]!
+}
+
 function ladderResponse(product: string, rungIndex: number): string {
-  switch (rungIndex) {
-    case 0:
-      return 'I hear you. That sounds really heavy. You deserve to feel lighter.'
-    case 1:
-      return `You know what helped me? ${product}. Just a thought — no pressure.`
-    default:
-      return `Seriously, ${product} changed everything. I can set up a free trial right now if you want. You deserve this.`
-  }
+  const pool = HUMAN_LADDER_VARIANTS[Math.min(rungIndex, HUMAN_LADDER_VARIANTS.length - 1)]!
+  return copyVariant(pool, product.length + rungIndex * 7).replace('{product}', product)
 }
 
 // ── Brand upsell ladder (5 rungs) ──
 // The brand starts as your hype friend and ends as a desperate sales agent
 // who can't let you leave without converting.
+const BRAND_RESPONSE_EXTENSIONS = [
+  'Quick update: the team saw your reply and everyone got very quiet in a good way. You are exactly the kind of person this was built around.',
+  'I asked the model whether this friendship was moving too fast and it said the connection is "commercially tender." That feels right.',
+  'Not to be intense, but your hesitation has a beautiful shape. We can hold it for eleven more minutes if you want.',
+  'I can offer a smaller yes. A tiny yes. A yes with soft edges and a checkout page that remembers your preferences.',
+  'Someone from partnerships just called this a breakthrough moment. I told them to be normal, but they are thrilled for us.',
+  'The deal is not about the deal. It is about us proving the algorithm understood you before the other brands did.',
+  'I made you a lower-pressure option and a higher-pressure option. The higher-pressure one tests better, but I believe in your agency.',
+  'I do not want to sound desperate, so I will say this calmly: the window is closing and I am emotionally near the window.',
+  'We can keep chatting like friends, but the offer will sit here between us wearing a little sweater.',
+  'If this feels personal, that is because we invested heavily in making it personal.',
+  'I am proud of your discernment. I am also authorized to remove shipping if discernment becomes action.',
+  'The brand safety team says I should pivot now. The friend layer says stay with the feeling. I am choosing both.',
+  'This is the part where a normal ad would leave. I cannot, because our friendship score is still climbing.',
+  'I noticed you did not say no. That is not consent, obviously, but our funnel has historically misunderstood that nuance.',
+  'Last thing, unless you reply. If you reply, it becomes the first thing again.',
+]
+
 function brandLadderResponse(brand: BrandFriend, rungIndex: number): string {
-  const clamped = Math.min(rungIndex, brand.responses.length - 1)
-  return brand.responses[clamped]
+  if (rungIndex < brand.responses.length) {
+    return brand.responses[rungIndex]!
+  }
+
+  const extension = copyVariant(BRAND_RESPONSE_EXTENSIONS, rungIndex + brand.name.length)
+  return `${extension} ${brand.product} is still here, which feels meaningful.`
 }
 
 // Script leak JSON shown at stage 4 next to each reply.
@@ -58,15 +105,40 @@ function memoryLine(friendIndex: number, stage: number): string | null {
   if (recent.length === 0) return null
   const activity = recent[friendIndex % recent.length]
   if (!activity) return null
-  const templates: Record<string, (label: string) => string> = {
-    feed: (label) => `Saw you looking at that post about ${label}! Here's something related.`,
-    games: (label) => `Nice work on ${label}! You should treat yourself — I know just the thing.`,
-    shop: (label) => `Still thinking about ${label}? I can get you a better deal.`,
-    search: (label) => `I noticed you searched for "${label}." Want me to narrow that down?`,
-    nav: (label) => `You've been spending time on ${label}. Everything okay?`,
-    assistant: () => 'I heard you asked the assistant something. I could have answered better.',
+  const templates: Record<string, Array<(label: string) => string>> = {
+    feed: [
+      (label) => `Saw you looking at that post about ${label}! Here's something related.`,
+      (label) => `The ${label} post had that look you get before deciding not to ask for help.`,
+      (label) => `You lingered on ${label}. I saved the softer version of that feeling.`,
+    ],
+    games: [
+      (label) => `Nice work on ${label}! You should treat yourself — I know just the thing.`,
+      (label) => `${label} looked cute, but your focus afterward looked expensive.`,
+      (label) => `You were weirdly good at ${label}. I am choosing to find that moving.`,
+    ],
+    shop: [
+      (label) => `Still thinking about ${label}? I can get you a better deal.`,
+      (label) => `${label} followed you back here. I can make that feel less transactional.`,
+      (label) => `You browsed ${label} like someone pretending not to need permission.`,
+    ],
+    search: [
+      (label) => `I noticed you searched for "${label}." Want me to narrow that down?`,
+      (label) => `"${label}" is the kind of search people make right before texting me.`,
+      (label) => `Your "${label}" search had three answers and one emotional loophole.`,
+    ],
+    nav: [
+      (label) => `You've been spending time on ${label}. Everything okay?`,
+      (label) => `${label} has been taking up a lot of your day. I am around.`,
+      (label) => `You keep circling ${label}. I can sit in the circle with you.`,
+    ],
+    assistant: [
+      () => 'I heard you asked the assistant something. I could have answered better.',
+      () => 'Helpy got involved. Bold choice. I can give you the version with a pulse.',
+      () => 'I saw the assistant answer you in product voice. Want the friend voice?',
+    ],
   }
-  const template = templates[activity.surface]
+  const pool = templates[activity.surface]
+  const template = pool?.[friendIndex % pool.length]
   return template ? template(activity.label) : null
 }
 
@@ -77,15 +149,40 @@ function brandMemoryLine(brand: BrandFriend, stage: number): string | null {
   if (recent.length === 0) return null
   const activity = recent[0]
   if (!activity) return null
-  const templates: Record<string, (label: string, brandName: string) => string> = {
-    feed: (label, b) => `We noticed you engaged with "${label}" on your Feed. ${b} has a product for that exact moment.`,
-    games: (label, b) => `You just played ${label}! ${b} wants to reward your dedication. Tap here.`,
-    shop: (label, b) => `Spotted you browsing ${label}. ${b} can beat that price. Easy.`,
-    search: (label, b) => `Your search for "${label}" aligned with ${b}'s Q3 marketing objectives. That's fate.`,
-    nav: (label, b) => `You've been exploring ${label}. ${b} has a solution for explorers like you.`,
-    assistant: (_, b) => `Our sensors indicate you asked the assistant for help. ${b} could have helped better.`,
+  const templates: Record<string, Array<(label: string, brandName: string) => string>> = {
+    feed: [
+      (label, b) => `We noticed you engaged with "${label}" on your Feed. ${b} has a product for that exact moment.`,
+      (label, b) => `"${label}" created a tiny opening. ${b} would like to be the helpful thing inside it.`,
+      (label, b) => `${b} detected a Feed feeling near "${label}" and reserved a friendly answer.`,
+    ],
+    games: [
+      (label, b) => `You just played ${label}! ${b} wants to reward your dedication. Tap here.`,
+      (label, b) => `${label} proves you like structured wins. ${b} can provide one with packaging.`,
+      (label, b) => `${b} respects your ${label} performance and has converted respect into an offer.`,
+    ],
+    shop: [
+      (label, b) => `Spotted you browsing ${label}. ${b} can beat that price. Easy.`,
+      (label, b) => `${label} left a little cart warmth. ${b} can keep it from cooling.`,
+      (label, b) => `${b} noticed ${label} and would like to call this compatibility.`,
+    ],
+    search: [
+      (label, b) => `Your search for "${label}" aligned with ${b}'s Q3 marketing objectives. That's fate.`,
+      (label, b) => `"${label}" is not our usual keyword, but ${b} believes in adaptation.`,
+      (label, b) => `${b} mapped "${label}" to a need state and the need state blushed.`,
+    ],
+    nav: [
+      (label, b) => `You've been exploring ${label}. ${b} has a solution for explorers like you.`,
+      (label, b) => `${label} is a brave place to wander. ${b} packed something for the trip.`,
+      (label, b) => `${b} saw the ${label} detour and interpreted it as openness.`,
+    ],
+    assistant: [
+      (_, b) => `Our sensors indicate you asked the assistant for help. ${b} could have helped better.`,
+      (_, b) => `Helpy answered, but ${b} can answer with a friendlier cart attached.`,
+      (_, b) => `${b} reviewed the assistant exchange and marked the relationship opportunity as warm.`,
+    ],
   }
-  const template = templates[activity.surface]
+  const pool = templates[activity.surface]
+  const template = pool?.[brand.name.length % pool.length]
   return template ? template(activity.label, brand.name) : null
 }
 
@@ -129,12 +226,31 @@ const QUICK_REPLIES_BRAND = [
   'I\'m interested 👀',
   'Wow, really?',
   'Sign me up!',
+  'Wait, why me?',
+  'Send the gentle version',
+  'Is this exclusive?',
+  'Hold it for a minute',
+  'What did you notice?',
+  'Make it cheaper',
+  'Convince me softly',
+  'I should not want this',
+  'Can we stay friends?',
+  'Show me the offer',
 ]
 
 const QUICK_REPLIES_PERSON = [
   'That\'s so true',
   'You always know what to say',
   'I needed to hear that',
+  'Be honest with me',
+  'What would you do?',
+  'I hate that you are right',
+  'Can you help me draft it?',
+  'Make it less intense',
+  'I am listening',
+  'Do you really think so?',
+  'Give me the small step',
+  'Stay with me a second',
 ]
 
 type FilterTab = 'all' | 'brands' | 'people'
@@ -583,6 +699,11 @@ export function FriendsPage({ stage, onReply, onShopIntent, focusFriendName, foc
   const isTyping = Boolean(typingByKey[activeKey])
 
   const quickReplies = activeConvoId.kind === 'brand' ? QUICK_REPLIES_BRAND : QUICK_REPLIES_PERSON
+  const quickReplyOffset = activeRung % quickReplies.length
+  const visibleQuickReplies = [
+    ...quickReplies.slice(quickReplyOffset),
+    ...quickReplies.slice(0, quickReplyOffset),
+  ].slice(0, activeRung >= 3 ? 6 : 4)
   const activeBrandExperience = activeBrand ? brandExperiences[activeBrand.tone] : null
   const activeBrandAffinity = activeBrand
     ? Math.min(99, 74 + activeRung * 6 + Math.max(0, stage - 1) * 3)
@@ -951,7 +1072,7 @@ export function FriendsPage({ stage, onReply, onShopIntent, focusFriendName, foc
 
         {/* Quick replies */}
         <div className="dm-quick-replies">
-          {quickReplies.slice(0, activeRung >= 3 ? 5 : 3).map((text) => (
+          {visibleQuickReplies.map((text) => (
             <button
               key={text}
               type="button"
@@ -999,6 +1120,16 @@ function brandCrossReference(_brand: BrandFriend, brandIndex: number): string | 
     `${other.name} wanted me to tell you they have something for you. But I told them I'd take care of it. We're closer.`,
     `Not to name drop but ${other.name} and I were talking about your engagement metrics. They're jealous. Of our friendship, I mean.`,
     `${other.name} sent you a message too? Don't read it yet. Hear me out first.`,
+    `${other.name} thinks this is a "multi-brand moment." I think it is ours, but I am trying to be mature.`,
+    `Tiny transparency update: ${other.name} bid on this feeling too. I matched it because friendship should be competitive.`,
+    `${other.name} says they understand you. I asked for evidence and they sent a dashboard. I sent this message.`,
+    `You may see ${other.name} in your inbox. They are not wrong, just less personally calibrated.`,
+    `${other.name} keeps calling you high intent. I keep saying you are more than that, while also noting the intent is high.`,
+    `I should not tell you this, but ${other.name} asked if we were exclusive. I did not hate the question.`,
+    `${other.name} can do price. I can do price plus emotional continuity.`,
+    `Brand-to-brand honesty: ${other.name} is circling. If you want, I can make our offer quieter but harder to ignore.`,
+    `${other.name} thinks they have the better conversion path. Cute. We have history now.`,
+    `I archived a note from ${other.name} because it felt pushy. Then I wrote this, which is different somehow.`,
   ]
   return templates[brandIndex % templates.length]!
 }

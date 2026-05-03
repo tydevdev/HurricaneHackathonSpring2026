@@ -1,5 +1,13 @@
 # History
 
+## [2026-05-02 23:40] Expand Feed And News Comment Pools
+
+- Updated `slopularity/src/content.ts` with larger generated comment pools for Feed posts and News articles so expanded threads have more variety before repeating.
+- Updated `slopularity/src/pages/FeedPage.tsx` with additional commenter handles and reply-product names for richer synthetic replies.
+- Updated `slopularity/src/pages/AssistantPage.tsx` with more product plugs, prompt chips, and response closers so repeat assistant prompts feel less canned.
+- Updated `slopularity/src/pages/FriendsPage.tsx` with larger human, brand, and activity-memory response pools so friend conversations repeat less.
+- Validation run: `npm run lint`; `node --experimental-strip-types --test tests/*.test.ts`; `npm run build`.
+
 ## [2026-05-02 23:31] Delay Human Dev Rescue
 
 - Updated `slopularity/src/components/HumanDevRescue.tsx` so the stage-5 developer waits 30-60 seconds before appearing and the red `Ignore` button dismisses him for another 30-60 seconds.

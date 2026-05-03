@@ -1055,9 +1055,29 @@ function expandFeedComments(post: FeedPost) {
     `saving this for later, which the app has classified as pre-purchase grief`,
     `the comments are agreeing too quickly and yet i also agree`,
     `need the routine, the filter, and whatever made the ${location} look contractual`,
-  ], post.id, 6)
+    `the ${primaryWord} arc is aspirational but the receipt energy is screaming`,
+    `${sponsor} really saw a normal human moment and put a velvet rope around it`,
+    `i can tell the ${location} was selected by someone who has never been alone offline`,
+    `${handleName} posts like the app gives bonuses for emotional conversion`,
+    `the ${secondaryWord} detail feels too intimate for a sponsored caption and yet here we are`,
+    `i saved this and immediately got a calmer version of the same product in Shop`,
+    `not the comments becoming a support group for the sponsor`,
+    `every object in this photo has a tiny affiliate aura`,
+    `i want to be above this but the lighting is doing excellent litigation`,
+    `the algorithm found the exact corner of my personality that compares itself to ${post.storyName.toLowerCase()}`,
+    `this is what happens when wellness hires a growth team and a poet on the same day`,
+    `i respect the hustle but the caption just filed paperwork on my insecurity`,
+    `the brand integration is so smooth it almost counts as furniture`,
+    `someone in compliance approved this level of longing`,
+    `this photo makes my apartment feel unsubscribed`,
+    `i would like the outfit, the context, and a refund for the feeling`,
+    `the ${location} was probably chosen from my unresolved tabs`,
+    `${sponsor} has entered the group chat wearing a soft sweater`,
+    `my feed keeps calling this self-care but the buy button is breathing hard`,
+    `this post knows too much about how i look at other people's mornings`,
+  ], post.id, 16)
 
-  return uniqueComments([...post.sampleComments, ...generated]).slice(0, 8)
+  return uniqueComments([...post.sampleComments, ...generated]).slice(0, 18)
 }
 
 const expandedFeedPosts = expandedFeedSeeds.map((post, index): FeedPost => {
@@ -1092,6 +1112,19 @@ const clickbaitCommentPairs = [
   ['the last photo explains everything', 'this is why I keep tape over my toaster'],
   ['number seven is literally illegal in three loyalty programs', 'open the box inside the box, coward'],
   ['doctors hate that I clicked but advertisers respect it', 'this changed how I look at nightstands'],
+  ['read the whole thing and now my thermostat is acting innocent', 'comments loaded before the facts and honestly same'],
+  ['this is the first article that made my cart feel subpoenaed', 'the sponsor line blinked at me in paragraph three'],
+  ['I knew it was bad when the expert had a promo code', 'why does every quote sound pre-approved by soup'],
+  ['my group chat is pretending not to care but everyone opened it', 'the embedded quiz guessed my middle drawer'],
+  ['not fearmongering if the headline has receipts, probably', 'someone archive this before it becomes a feature'],
+  ['the update at the bottom made the entire first half worse', 'I am calm but my smart lamp is not'],
+  ['clicked for outrage, stayed because the diagram accused me', 'this is what I have been saying about premium benches'],
+  ['a twelve-minute read with a nine-minute checkout path', 'the comments are too clean and that is how you know'],
+  ['I sent this to my landlord and my toaster', 'the final paragraph has shareholder energy'],
+  ['every sentence feels like it knows my pantry', 'my cousin works in dashboards and says this is real-adjacent'],
+  ['the photo caption did more reporting than the article', 'if this is sponsored why am I personally nervous'],
+  ['opened this as a joke and left with three tabs and a rebate', 'the expert quote has a ring light'],
+  ['this sounds fake until you remember everything sounds like this now', 'I hate how specifically the warning applies to my kitchen'],
 ]
 
 function expandNewsComments(article: NewsArticleSeed, baseComments: string[]) {
@@ -1110,9 +1143,29 @@ function expandNewsComments(article: NewsArticleSeed, baseComments: string[]) {
     `I hate that the panic funnel is working on me`,
     `${sponsor} being in the sponsor line makes the whole story feel pre-approved`,
     `bookmarking for evidence, which the app categorized as high-intent concern`,
-  ], article.id, 6)
+    `the ${primaryWord} part is framed like a warning but priced like a bundle`,
+    `${publisher} has a gift for making ordinary appliances sound legally urgent`,
+    `I trust the first half and distrust how much the second half knows about my cart`,
+    `the source box citing a vibes analyst should be illegal but the headline ate`,
+    `everyone in here is panicking in complete sentences and that feels sponsored`,
+    `the ${section} category was invented so I would feel responsible for reading it`,
+    `this is either journalism or a very literate retargeting ad`,
+    `I came for the ${secondaryWord} detail and left suspicious of every drawer`,
+    `${sponsor} keeps appearing right when the article needs comfort`,
+    `the update note at the bottom somehow made the original claim more profitable`,
+    `my phone dimmed itself like it had seen enough`,
+    `why does the pull quote sound like it has a referral ladder`,
+    `this story is doing that thing where fear becomes a checkout state`,
+    `the comments are split between "this happened to me" and "use my code"`,
+    `I want a serious source and instead got an extremely persuasive caption`,
+    `the article says experts are divided, then only quotes the confident one`,
+    `the sponsor would like us to call this public awareness`,
+    `not the related articles forming a little panic necklace`,
+    `I sent this to one person and the share sheet suggested a mattress`,
+    `if you read paragraph four out loud, your smart speaker starts negotiating`,
+  ], article.id, 16)
 
-  return uniqueComments([...baseComments, ...generated]).slice(0, 8)
+  return uniqueComments([...baseComments, ...generated]).slice(0, 18)
 }
 
 type NewsArticleSeed = Omit<FeedPost, 'imageSrc' | 'comments' | 'stats' | 'altStats' | 'sampleComments'> & {

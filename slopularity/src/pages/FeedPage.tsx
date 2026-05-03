@@ -37,9 +37,40 @@ const botCommenters = [
   'actualperson_77',
   'BrandFriendOS',
   'SoftLaunchSam',
+  'ReceiptGirlie',
+  'AlmostOrganic',
+  'DadFromBeta',
+  'ShelfWitness',
+  'MothershipMara',
+  'Human_User_204',
+  'SponsoredByAccident',
+  'NeedfulNeighbor',
+  'CalmAccountant',
+  'PastaWithProof',
+  'LoopedButLearning',
+  'Trusted_Commenter',
 ]
 
-const replyProducts = ['GlowNest', 'AuraBank Select', 'SelfOS Beauty', 'MealHalo', 'FormCloud', 'CalmCan']
+const replyProducts = [
+  'GlowNest',
+  'AuraBank Select',
+  'SelfOS Beauty',
+  'MealHalo',
+  'FormCloud',
+  'CalmCan',
+  'FaceMint',
+  'Needful',
+  'FocusPalm',
+  'DreamVault',
+  'FriendLayer',
+  'VitaSignal',
+  'OrbitPlus',
+  'HomeKind',
+  'SnapWake',
+  'ConsentCloud',
+  'PeakNest',
+  'LedgerGlow',
+]
 const scrollConfetti = Array.from({ length: 36 }, (_, index) => index)
 const feedCelebrationConfetti = Array.from({ length: 120 }, (_, index) => index)
 const feedCelebrationLasers = Array.from({ length: 22 }, (_, index) => index)

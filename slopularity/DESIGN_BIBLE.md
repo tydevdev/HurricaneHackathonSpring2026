@@ -184,6 +184,16 @@ Current testing posture:
 - It is acceptable for feed interactions to increment the underlying instability score while visible collapse stays off; this preserves the future plan without interrupting feed design work.
 - Use in-world captions and sponsor texture for satire before reintroducing noisy mechanics.
 
+### News
+
+Intention: curiosity as a conversion funnel.
+
+News is an exact feed-shaped clone of Feed, not a separate publication layout. Preserve the same topbar anatomy, app switcher placement, story strip, post stack, reaction chips, comments sheet, photo viewer, and `DOUBLE SCROLL` / `TRIPLE SCROLL` behavior. The section should feel like the product simply renamed the feed and swapped the source material underneath.
+
+The canonical news pool contains 30 image-backed clickbait articles. Keep the article language short, highly clickable, and product-native: headlines should sound like sponsored internet panic in 2030 without visible meta-explanation. Images should remain square editorial thumbnails with no embedded text so the code-native headline and comment surfaces carry the article voice.
+
+News uses its own storage namespace for scroll unlocks and local generated posts. Do not let Feed's local posts or scroll mode leak into News, and do not let News reset Feed state.
+
 ### Friends
 
 Intention: affirmation as conversion.

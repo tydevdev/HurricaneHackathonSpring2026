@@ -2,6 +2,14 @@
 
 Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESIGN_BIBLE.md` stays the product/design execution guide. This file records what is actively intentional in the app right now, what is still a skeleton, and which feature flags are keeping unfinished mechanics out of the way.
 
+## [2026-05-02 19:04] News Feed Clone
+
+- Active focus: adding `News` as a feed-shaped app section.
+- Behavior changed: the app now includes a News tab and route using the same feed renderer, mobile switcher placement, story strip, reaction/comment surfaces, photo viewer, and multi-scroll unlock behavior as Feed.
+- Behavior changed: News has 30 canonical clickbait article posts backed by generated square JPG thumbnails under `src/assets/news/`, plus a separate `news` storage namespace so Feed scroll/local post state does not leak into News.
+- Files changed: `src/content.ts`, `src/pages/FeedPage.tsx`, `src/App.tsx`, `src/index.css`, `src/types.ts`, `scripts/create-route-pages.mjs`, `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, generated `src/assets/news/news-01.jpg` through `news-30.jpg`, and regenerated `dist/`.
+- Validation run: verified `src/assets/news/news-01.jpg` through `news-30.jpg` are 30 real 1200x1200 JPEGs with no duplicate hashes; `npm run lint`; `npm run build`; headless Chrome/CDP against `vite preview` at 1280x900 and 390x844 confirmed `/app/news/` renders the News heading, active News tab, 60 live post cards from the two-cycle feed clone, News image assets in posts and stories, mobile inline switcher visibility, hidden mobile global switcher, and no horizontal overflow.
+
 ## [2026-05-02 19:11] Profile Decay Demo Control
 
 - Active focus: Profile demo controls in `ProfilePage.tsx`, score mutation in `App.tsx`, and Profile-specific styling in `index.css`.

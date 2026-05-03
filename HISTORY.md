@@ -1,5 +1,14 @@
 # History
 
+## [2026-05-02 19:04] Add News Feed Clone
+
+- Added News as a first-class app tab and `/app/news/` route while reusing the exact Feed surface instead of creating a separate article layout.
+- Updated `slopularity/src/pages/FeedPage.tsx` so Feed can render a supplied canonical post pool, section title, and storage namespace without leaking scroll or local post state across sections.
+- Added 30 clickbait article posts in `slopularity/src/content.ts` and wired generated square thumbnails at `slopularity/src/assets/news/news-01.jpg` through `news-30.jpg`.
+- Updated `slopularity/src/App.tsx`, `slopularity/src/index.css`, `slopularity/src/types.ts`, and `slopularity/scripts/create-route-pages.mjs` so News behaves like Feed on desktop and phone and gets a published route page.
+- Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the News section intention and decay hooks.
+- Validation run: verified `news-01.jpg` through `news-30.jpg` are 30 real 1200x1200 JPEGs with no duplicate hashes; `npm run lint`; `npm run build`; headless Chrome/CDP against `vite preview` at 1280x900 and 390x844 confirmed `/app/news/` renders the News heading, active News tab, 60 live post cards from the two-cycle feed clone, News images in posts and stories, correct mobile switcher behavior, and no horizontal overflow.
+
 ## [2026-05-02 19:11] Add Profile Decay Demo Control
 
 - Added manual Profile decay controls in `slopularity/src/pages/ProfilePage.tsx` with a four-stage meter, next-stage advance, and direct stage-4 jump for live demos.

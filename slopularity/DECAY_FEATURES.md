@@ -36,6 +36,13 @@ Each entry includes:
 | Repeated post loop | Keep scrolling | Canonical 50 posts repeat in rendered cycles, loop instances get unique labels | 0+ | implemented |
 | Post overflow menu | Tap three-dot menu | Menu options include "cancel", "envision as yourself with AI", product-oriented actions | 0+ | implemented |
 
+## News
+
+| Feature | Trigger | What Degrades | Stage | Status |
+|---------|---------|---------------|-------|--------|
+| Clickbait article feed | Open News | Feed UI is cloned into a news surface, but every canonical post is a clickable-looking article headline with generated editorial imagery | 0+ | implemented |
+| Separate news scroll state | Scroll News | News keeps its own double/triple scroll unlocks and local generated posts separate from Feed | 0+ | implemented |
+
 ## Friends
 
 | Feature | Trigger | What Degrades | Stage | Status |

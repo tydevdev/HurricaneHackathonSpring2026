@@ -697,7 +697,18 @@ function App() {
           <button type="button" className="appbar-quiet" onClick={reset} aria-label="Reset everything app to its first impression">
             Reset
           </button>
-          <span className="appbar-avatar" aria-hidden="true">ME</span>
+          <a
+            className="appbar-avatar"
+            href={pathForTab('profile')}
+            aria-label="Open profile"
+            aria-current={activeTab === 'profile' ? 'page' : undefined}
+            onClick={(event) => {
+              event.preventDefault()
+              handleTab('profile')
+            }}
+          >
+            ME
+          </a>
         </div>
       </header>
 

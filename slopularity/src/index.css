@@ -253,6 +253,16 @@ button {
   color: #fff;
   background: linear-gradient(135deg, #6366f1, #ec4899);
   letter-spacing: 0.04em;
+  text-decoration: none;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.72), 0 8px 18px rgba(99, 102, 241, 0.22);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+
+.appbar-avatar:hover,
+.appbar-avatar:focus-visible {
+  filter: saturate(1.08);
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(99, 102, 241, 0.22), 0 10px 22px rgba(99, 102, 241, 0.28);
 }
 
 .system-line,

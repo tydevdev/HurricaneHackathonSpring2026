@@ -11,7 +11,7 @@
 
 - Updated `slopularity/src/App.tsx` so the top-right `ME` avatar is a real Profile link that preserves the app shell route and active tab state.
 - Updated `slopularity/src/index.css` with link-safe avatar styling and visible hover/focus treatment.
-- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` forced score `480`/stage 5, confirmed cracks, Helpy, and the brush all render together with no horizontal overflow, then simulated a 2+ second brush drag and confirmed score `0`, stage 1, and no crack/repair layers.
+- Validation run: `npm run lint`; `npm run build`; Playwright smoke against `vite preview` clicked the `ME` avatar and confirmed `/app/profile/`, `You, quantified`, the active Profile tab, and `aria-current="page"` on the avatar link.
 
 ## [2026-05-02 20:12] Add Page Fracture Decay
 

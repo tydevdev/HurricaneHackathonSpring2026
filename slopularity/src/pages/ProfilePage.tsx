@@ -7,6 +7,8 @@ type ProfilePageProps = {
   scrollStats: ScrollStats
   stage: number
   score: number
+  onIncreaseDecay: () => void
+  onMaxDecay: () => void
   onReveal: () => void
 }
 
@@ -52,6 +54,8 @@ const LEADERBOARD_GHOSTS = [
   { name: 'Mira_C_dealflow', seconds: 286 },
   { name: 'WellnessAunt2049', seconds: 144 },
 ]
+
+const DECAY_STAGES = [1, 2, 3, 4]
 
 function loadProfileProgress(): ProfileProgress {
   if (typeof window === 'undefined') {
@@ -114,7 +118,15 @@ function getConfettiStyle(piece: number): ConfettiStyle {
   }
 }
 
-export function ProfilePage({ completedTaskCount, scrollStats, stage, score, onReveal }: ProfilePageProps) {
+export function ProfilePage({
+  completedTaskCount,
+  scrollStats,
+  stage,
+  score,
+  onIncreaseDecay,
+  onMaxDecay,
+  onReveal,
+}: ProfilePageProps) {
   const [progress, setProgress] = useState<ProfileProgress>(loadProfileProgress)
   const [confettiBurst, setConfettiBurst] = useState(0)
   const sellability = Math.min(99, 62 + score + Math.floor(scrollStats.activeSeconds / 45))
@@ -400,6 +412,35 @@ export function ProfilePage({ completedTaskCount, scrollStats, stage, score, onR
         </div>
 
         <aside className="profile-secondary-column" aria-label="Profile side panels">
+          <section className="profile-panel profile-demo-decay" aria-labelledby="demo-decay-title">
+            <header className="profile-panel-head">
+              <div>
+                <h3 id="demo-decay-title">Decay demo</h3>
+                <small>instability {score}/30 · stage {stage}/4</small>
+              </div>
+              <span>Manual</span>
+            </header>
+            <div className="profile-decay-meter" aria-label={`Current decay stage ${stage} of 4`}>
+              {DECAY_STAGES.map((step) => (
+                <span
+                  key={step}
+                  className={`${step <= stage ? 'is-active' : ''} ${step === stage ? 'is-current' : ''}`}
+                >
+                  {step}
+                </span>
+              ))}
+            </div>
+            <div className="profile-demo-actions">
+              <button type="button" onClick={onIncreaseDecay}>
+                {stage >= 4 ? 'Add pressure' : 'Increase decay'}
+              </button>
+              <button type="button" onClick={onMaxDecay} disabled={stage >= 4}>
+                Stage 4
+              </button>
+            </div>
+            <p>{stage >= 4 ? 'Source leakage is active across the shell.' : 'Advance the same decay score used by every surface.'}</p>
+          </section>
+
           <section className="profile-panel profile-trophy-panel" aria-labelledby="trophy-title">
             <header className="profile-panel-head">
               <div>

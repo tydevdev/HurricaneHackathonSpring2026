@@ -350,6 +350,8 @@ Recommended thresholds:
 
 At stage 4, the interface may also leak small ambient impossibilities that feel like production debris rather than a modal or explanation. One implemented example is a bug emoji that occasionally crosses diagonally from offscreen to offscreen at a random interval between 30 seconds and 5 minutes. It must stay pointer-events-none, respect reduced motion, and remain rare enough that it feels like the app is rotting at the edge of attention instead of becoming a game mechanic.
 
+Profile is allowed to expose a compact `Decay demo` control because this project is presented live. That control should change the same persisted instability score that normal behavior uses, show the current stage honestly, and stay visually subordinate to the profile stats/trophy/waterline surfaces.
+
 Do not scatter one-off state mutations across page files. Keep global phase, popup orchestration, idle handling, and demo controls centralized enough that future agents can reason about the system quickly.
 
 ## Source Narrative

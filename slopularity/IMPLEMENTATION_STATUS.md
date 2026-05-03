@@ -2,6 +2,14 @@
 
 Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESIGN_BIBLE.md` stays the product/design execution guide. This file records what is actively intentional in the app right now, what is still a skeleton, and which feature flags are keeping unfinished mechanics out of the way.
 
+## [2026-05-02 19:11] Profile Decay Demo Control
+
+- Active focus: Profile demo controls in `ProfilePage.tsx`, score mutation in `App.tsx`, and Profile-specific styling in `index.css`.
+- Behavior changed: Profile now includes a `Decay demo` panel with current instability score, a four-stage meter, an `Increase decay` control that advances to the next real threshold, and a `Stage 4` control for live demos.
+- Behavior preserved: the controls mutate the same persisted `slopularity-state-v1` score, so every surface reacts through the existing `stageFor(score)` decay path.
+- Files changed: `src/App.tsx`, `src/pages/ProfilePage.tsx`, `src/index.css`, `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
+- Validation run: `npm run lint`; `npm run build`; Playwright smoke opened Profile, clicked `Increase decay` and `Stage 4`, and confirmed the document stage advanced to 2 then 4 without horizontal overflow.
+
 ## [2026-05-02 19:00] Stage 4 Ambient Bug Crawl
 
 - Active focus: app-level late-stage ambient decay in `App.tsx`, `src/components/BugScatter.tsx`, and `index.css`.

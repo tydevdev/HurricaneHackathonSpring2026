@@ -449,6 +449,23 @@ function App() {
     pushActivity('games', 'complete', title)
   }
 
+  function increaseDecayFromProfile() {
+    setScore((current) => {
+      const currentStage = stageFor(current)
+      if (currentStage >= 4) {
+        return Math.min(30, current + 3)
+      }
+
+      return Math.min(30, Math.max(current + 1, currentStage * 6))
+    })
+    pushActivity('profile', 'demo_decay', 'increase')
+  }
+
+  function maximizeDecayFromProfile() {
+    setScore((current) => Math.max(current, 18))
+    pushActivity('profile', 'demo_decay', 'stage_4')
+  }
+
   function handleLonelinessDismiss() {
     setLonelinessVisible(false)
     addInstability(1)
@@ -601,6 +618,8 @@ function App() {
               scrollStats={scrollStats}
               stage={visibleStage}
               score={score}
+              onIncreaseDecay={increaseDecayFromProfile}
+              onMaxDecay={maximizeDecayFromProfile}
               onReveal={() => addInstability(2)}
             />
           )}

@@ -1,5 +1,13 @@
 # History
 
+## [2026-05-02 19:11] Add Profile Decay Demo Control
+
+- Added manual Profile decay controls in `slopularity/src/pages/ProfilePage.tsx` with a four-stage meter, next-stage advance, and direct stage-4 jump for live demos.
+- Updated `slopularity/src/App.tsx` so the controls mutate the same persisted instability score used by every decay surface.
+- Updated `slopularity/src/index.css` with compact desktop/mobile styling for the Profile demo panel.
+- Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the sanctioned demo override.
+- Validation run: `npm run lint`; `npm run build`; Playwright smoke opened Profile, clicked `Increase decay` and `Stage 4`, and confirmed the document stage advanced to 2 then 4 without horizontal overflow.
+
 ## [2026-05-02 19:00] Stage 4 Ambient Bug Crawl
 
 - Added `slopularity/src/components/BugScatter.tsx` so stage 4 occasionally sends a bug emoji diagonally across the viewport from offscreen to offscreen on a randomized 30-second to 5-minute timer.

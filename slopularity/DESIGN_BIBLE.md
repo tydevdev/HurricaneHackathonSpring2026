@@ -118,7 +118,7 @@ The app can look compromised, but it should remain navigable. The user should fe
 ## Interaction Rules
 
 - Every meaningful user action should either reveal a new contradiction, increase instability, or create a data trail the app can later misuse.
-- Clicking into a different app tab should reshuffle the app tab order as a subtle navigation decay. The user gets where they clicked, but the map changes behind them. Keep the Landing link outside the shuffle so it remains a stable way back to onboarding.
+- At stage 2+, clicking into a different app tab should reshuffle the app tab order as a subtle navigation decay. The user gets where they clicked, but the map changes behind them. Stage 1 navigation stays stable so the first impression feels usable. Keep the Landing link outside the shuffle so it remains a stable way back to onboarding.
 - Horizontally scrolling tabbars are allowed, but the active tab must be visible after direct loads, route changes, and phone Feed/News renders. The map can shift; the user should not have to hunt for the current page.
 - Dismissal is a signal. Closing, ignoring, rejecting, pausing, or opting out should still affect the system, but dismiss follow-ups should queue behind the idle gate rather than appearing immediately.
 - Idle time matters. Stillness should eventually trigger check-ins, guesses, optimizations, or profile changes.
@@ -158,7 +158,7 @@ Intention: aspiration as a machine for comparison.
 
 The feed is the active implementation focus as of May 2, 2026. It should start as a calm, usable, mobile-first photo feed inspired by familiar social-feed anatomy: top feed bar, app switcher directly under that bar, horizontal stories, stacked square image posts, avatar/name rows, familiar action icons, captions, comments, and timestamps. It should not be a dashboard grid.
 
-The feed should start glossy and emotionally familiar: wellness, adventure, productivity, beauty, travel, luxury, and self-improvement blended into one scroll. Its comments are intentionally compromised from the start: every thread should read like spam bots, fake fans, and too-polished "real users" laundering product plugs through social proof. Each canonical post should surface a fuller thread of post-aware replies that echo its sponsor, location, caption, and insecurity hook instead of generic filler. As instability rises, the feed should reveal repeated faces, recycled captions, comments answering unseen prompts, fake engagement, impossible sponsor placement, and action labels that turn insecurity into product flow.
+The feed should start glossy and emotionally familiar: wellness, adventure, productivity, beauty, travel, luxury, and self-improvement blended into one scroll. Its comments are intentionally compromised from the start: every thread should read like spam bots, fake fans, and too-polished "real users" laundering product plugs through social proof. Each canonical post should surface a fuller thread of post-aware replies that echo its sponsor, location, caption, handle, and insecurity hook instead of generic filler. Current comment expansion supports up to 18 unique post-aware replies per canonical post; preserve that richer reading depth because users linger in the comments. As instability rises, the feed should reveal repeated faces, recycled captions, comments answering unseen prompts, fake engagement, impossible sponsor placement, and action labels that turn insecurity into product flow.
 
 The bottom-feed `Click me click me see more!!!!!!!!` control is a shameless retention lure, not pagination. Preserve the exact overeager label, the feed-only placement after the loop status, and the reward overload: confetti, lasers, and a smooth return to the top so the user is celebrated into repeating the same surface.
 
@@ -197,7 +197,7 @@ Intention: curiosity as a conversion funnel.
 
 News is an exact feed-shaped clone of Feed, not a separate publication layout. Preserve the same topbar anatomy, app switcher placement, story strip, post stack, reaction chips, comments sheet, photo viewer, and `DOUBLE SCROLL` / `TRIPLE SCROLL` / `QUADRUPLE SCROLL` behavior. The section should feel like the product simply renamed the feed and swapped the source material underneath.
 
-The canonical news pool contains 60 image-backed clickbait articles. Keep the article language short, highly clickable, and product-native: headlines should sound like sponsored internet panic in 2030 without visible meta-explanation. Images should remain editorial thumbnails with no embedded text so the code-native headline and comment surfaces carry the article voice. News comments should feel like article-specific panic funnels: fast, suspiciously eager reactions that mention the headline topic, publisher, section, and sponsor pressure.
+The canonical news pool contains 60 image-backed clickbait articles. Keep the article language short, highly clickable, and product-native: headlines should sound like sponsored internet panic in 2030 without visible meta-explanation. Images should remain editorial thumbnails with no embedded text so the code-native headline and comment surfaces carry the article voice. News comments should feel like article-specific panic funnels: fast, suspiciously eager reactions that mention the headline topic, publisher, section, sponsor pressure, and the way a headline turns fear into action. The base clickbait pair bank and generated article-aware replies should stay broad enough that News can show up to 18 comments per article before the loops feel obvious.
 
 News uses its own storage namespace for scroll unlocks and local generated posts. Do not let Feed's local posts or scroll mode leak into News, and do not let News reset Feed state.
 
@@ -207,7 +207,7 @@ Intention: affirmation as conversion.
 
 Friends should never feel like enemies. They should be warm, agreeable, and available in a way that becomes predatory. They remember too much, approve everything, and turn emotional cues into recommendations.
 
-Brand DMs should feel more developed than simple ad messages. The active brand thread now carries a relationship layer above the transcript: friendship level, fit meter, signal proof, and two brand-native actions. It should read as a polished relationship product first and a CRM leak second. Preserve the behavior where the soft action sends a DM reply and the commerce action routes to Shop, so the surface remains useful and unsettling instead of decorative.
+Brand DMs should feel more developed than simple ad messages. The active brand thread now carries a relationship layer above the transcript: friendship level, fit meter, signal proof, and two brand-native actions. It should read as a polished relationship product first and a CRM leak second. Preserve the behavior where the soft action sends a DM reply and the commerce action routes to Shop, so the surface remains useful and unsettling instead of decorative. Human and brand conversations should draw from large response pools after the first few scripted beats; repeated chatting should reveal more specific warmth, softer manipulation, cross-brand pressure, and activity memory rather than looping one canned pitch.
 
 Interaction hooks:
 
@@ -297,9 +297,9 @@ Current implementation:
 - Preserve the top challenge meter. It should reward both cart filling and completed checkout volume, making progress feel like a game instead of spending.
 - Product cards should keep the Temu-style contradiction: large red `99% OFF` badges, countdown timers, inflated "was" gem prices, and the actual product price translated into gems and a quieter cash equivalent.
 - Product imagery should prefer dedicated shop packshots when available, with feed imagery kept only as a fallback. Images should not contain embedded readable text because the card badges, timers, and prices already carry the commerce language.
-- The product grid now includes a broad core catalog plus remixed variants of those products (`Travel Size`, `Family Pack`, `Auto Bundle`) so the page feels like an endless marketplace built from slightly mutated inventory.
+- The product grid now includes a broad core catalog of dedicated products. Preserve the richer rotating card-description and deal-reason copy so each item reads like it has its own tiny rationale instead of only a one-line joke.
 - Preserve the pressure strip and booster row as the shop's secondary layer: deal rank, cart watchers, shipping ladder, mystery rebate, friend cart sync. These should add pressure without overlapping the product cards.
-- Adding a product must open the bonus sheet with exactly three add-on offers. Those add-ons should feel plausible, small, and predatory: timer protection, proof/review layers, future auto-reorder calm, or similar.
+- Adding a product must open the bonus sheet with a small set of add-on offers. Those add-ons should feel plausible, small, and predatory: timer protection, proof/review layers, future auto-reorder calm, friend proof, receipt softening, context wrapping, or similar.
 - Desktop should read as a dense deal feed with a sticky cart rail. Phone should stack into one column with no horizontal overflow, touch-sized buttons, and the cart panel before the product grid. Do not make the shop's own header sticky; it overlaps the Cart Quest layer under the shared app chrome.
 
 Interaction hooks:
@@ -309,9 +309,9 @@ Interaction hooks:
 - bundles with generated names
 - scarcity language that contradicts inventory or user history
 - gem conversion hides dollar spending behind a second currency
-- add-to-cart interrupts with three discounted extras
+- add-to-cart interrupts with small discounted extras
 - cart challenge reframes spending as progress
-- remixed duplicate SKUs make the catalog feel artificially huge
+- rotating card copy and add-on language make the catalog feel artificially over-explained
 - pressure boosters turn shipping, rebates, and friends into purchase pressure
 
 ### Search
@@ -344,7 +344,7 @@ Current implementation:
 
 - Assistant is now a chat-first workspace rather than a dashboard around a mini chat window: compact Helpy header, full-width transcript canvas, always-visible composer, prompt chips, status readouts, and an understated routing receipt.
 - Every user prompt is preserved as a chat turn, but Helpy's response deliberately treats the prompt as a signal instead of a request. The answer starts with praise, quotes the prompt, and pivots into a product offer.
-- The current offer bias rotates across GlowNest Mirror+, SnapWake Adaptogen Stack, AuraBank Reflex Fund, and Context Bundle, but it lives inside the thread/composer instead of competing as a separate sidebar.
+- The current offer bias rotates across a larger 18-item plug pool spanning confidence, wellness, finance, privacy, memory, sleep, food, home, relationship, and travel substitutes. It lives inside the thread/composer instead of competing as a separate sidebar.
 - The routing receipt is part of the joke: it visibly completes "praise", "dodge", and "attach offer" as the user keeps asking, while direct answers remain scarce.
 - At stage 4, assistant replies leak that retrieval returned sponsored summaries citing one another, and individual replies expose internal intent labels such as `intent: question_to_allocation`.
 - Phone layout keeps the composer visible in the first view, uses compact status cells, and lets the transcript scroll behind the input instead of burying chat controls below the fold.

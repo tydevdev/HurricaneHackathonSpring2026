@@ -320,8 +320,8 @@ Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESI
 ## [2026-05-02 18:42] Click-Driven Tab Shuffle
 
 - Active focus: app switcher decay in `App.tsx`.
-- Behavior changed: clicking a different app tab now shuffles the app tab order immediately after navigation, so the destination opens but the switcher map changes underneath the user.
-- Behavior preserved: the Landing link stays fixed before the shuffled app tabs, reset restores the default order, and the idle tab reorganization still exists as a separate stillness behavior.
+- Behavior changed: clicking a different app tab now shuffles the app tab order at stage 2+, so the destination opens but the switcher map changes underneath the user after decay has begun.
+- Behavior preserved: stage 1 navigation stays stable, the Landing link stays fixed before the shuffled app tabs, reset restores the default order, and the idle tab reorganization still exists as a separate stage 2+ stillness behavior.
 - Files changed: `src/App.tsx`, `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
 - Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP smoke against the built feed route confirmed Feed -> Games navigates to `/app/games/`, the active tab becomes Games, and the tab order changes from its original sequence.
 

@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ChangeEvent, type FormEvent, type PointerEvent, type ReactNode } from 'react'
+import { ViewportPortal } from '../components/ViewportPortal'
 import { feedPosts } from '../content'
+import { useBodyScrollLock } from '../hooks/useBodyScrollLock'
 import type { FeedPost } from '../types'
 
 function HeartIcon() {
@@ -488,6 +490,9 @@ export function FeedPage({
     ? null
     : allPosts.find((post) => post.id === activeCommentPostId) ?? null
   const activePhotoPost = expandedPhotoPostId === null ? null : allPosts.find((post) => post.id === expandedPhotoPostId) ?? null
+  const hasViewportDialog = Boolean(activeCommentPost || activePhotoPost || storyPost || scrollPrompt || isHelpyOpen)
+
+  useBodyScrollLock(hasViewportDialog)
 
   useEffect(() => {
     if (wasReloaded && !didResetScrollPosition.current) {
@@ -1301,73 +1306,80 @@ export function FeedPage({
         </div>
       )}
 
-      {activeCommentPost && renderCommentSheet(activeCommentPost)}
+      {activeCommentPost && (
+        <ViewportPortal>
+          {renderCommentSheet(activeCommentPost)}
+        </ViewportPortal>
+      )}
 
       {activePhotoPost && (
-        <div
-          className="modal-backdrop photo-lightbox-backdrop"
-          role="dialog"
-          aria-modal="true"
-          aria-label={`${activePhotoPost.author} photo`}
-          onClick={(event) => {
-            if (event.target === event.currentTarget) {
-              closePhotoViewer()
-            }
-          }}
-          onKeyDown={(event) => {
-            if (event.key === 'Escape') {
-              closePhotoViewer()
-            }
-          }}
-        >
-          <div className="photo-lightbox" onClick={(event) => event.stopPropagation()}>
-            <button className="photo-lightbox-close" type="button" onClick={closePhotoViewer} aria-label="Close photo">
-              ×
-            </button>
-            <div className="photo-lightbox-media">
-              {activePhotoPost.imageSrc ? (
-                <img src={activePhotoPost.imageSrc} alt={activePhotoPost.title} />
-              ) : (
-                <span className="photo-lightbox-placeholder" aria-hidden="true">
-                  {activePhotoPost.initials}
-                </span>
-              )}
+        <ViewportPortal>
+          <div
+            className="modal-backdrop photo-lightbox-backdrop"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${activePhotoPost.author} photo`}
+            onClick={(event) => {
+              if (event.target === event.currentTarget) {
+                closePhotoViewer()
+              }
+            }}
+            onKeyDown={(event) => {
+              if (event.key === 'Escape') {
+                closePhotoViewer()
+              }
+            }}
+          >
+            <div className="photo-lightbox" onClick={(event) => event.stopPropagation()}>
+              <button className="photo-lightbox-close" type="button" onClick={closePhotoViewer} aria-label="Close photo">
+                ×
+              </button>
+              <div className="photo-lightbox-media">
+                {activePhotoPost.imageSrc ? (
+                  <img src={activePhotoPost.imageSrc} alt={activePhotoPost.title} />
+                ) : (
+                  <span className="photo-lightbox-placeholder" aria-hidden="true">
+                    {activePhotoPost.initials}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        </ViewportPortal>
       )}
 
       {storyPost && (
-        <div
-          className="modal-backdrop"
-          role="dialog"
-          aria-modal="true"
-          aria-label={`${storyPost.author} story`}
-          tabIndex={-1}
-          onPointerDown={(event) => {
-            if (event.target === event.currentTarget) {
-              closeStoryViewer()
-            }
-          }}
-          onKeyDown={(event) => {
-            if (event.key === 'ArrowLeft') {
-              nextStory(-1)
-            } else if (event.key === 'ArrowRight') {
-              nextStory(1)
-            } else if (event.key === 'Escape') {
-              closeStoryViewer()
-            }
-          }}
-        >
-          <div className={`story-viewer ${isStoryDragging ? 'is-dragging' : ''}`}>
-            <div className="story-progress" role="progressbar" aria-label="Story auto-advance" aria-valuemin={0} aria-valuemax={100}>
-              <span key={storyPost.id} />
-            </div>
-            <header>
-              <span className={`ig-avatar ${storyPost.storyTone}`}>{storyPost.initials}</span>
-              <strong>{storyPost.author}</strong>
-              <button type="button" onClick={closeStoryViewer}>Close</button>
-            </header>
+        <ViewportPortal>
+          <div
+            className="modal-backdrop"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${storyPost.author} story`}
+            tabIndex={-1}
+            onPointerDown={(event) => {
+              if (event.target === event.currentTarget) {
+                closeStoryViewer()
+              }
+            }}
+            onKeyDown={(event) => {
+              if (event.key === 'ArrowLeft') {
+                nextStory(-1)
+              } else if (event.key === 'ArrowRight') {
+                nextStory(1)
+              } else if (event.key === 'Escape') {
+                closeStoryViewer()
+              }
+            }}
+          >
+            <div className={`story-viewer ${isStoryDragging ? 'is-dragging' : ''}`}>
+              <div className="story-progress" role="progressbar" aria-label="Story auto-advance" aria-valuemin={0} aria-valuemax={100}>
+                <span key={storyPost.id} />
+              </div>
+              <header>
+                <span className={`ig-avatar ${storyPost.storyTone}`}>{storyPost.initials}</span>
+                <strong>{storyPost.author}</strong>
+                <button type="button" onClick={closeStoryViewer}>Close</button>
+              </header>
             <div
               className="story-frame"
               onPointerDown={beginStoryDrag}
@@ -1395,34 +1407,38 @@ export function FeedPage({
               <span className="story-tap-zone story-tap-zone-previous" aria-hidden="true" />
               <span className="story-tap-zone story-tap-zone-next" aria-hidden="true" />
             </div>
+            </div>
           </div>
-        </div>
+        </ViewportPortal>
       )}
 
       {scrollPrompt && (
-        <div className="modal-backdrop double-scroll-backdrop" role="dialog" aria-modal="true" aria-labelledby="scroll-unlock-title">
-          <div className="confetti-field" aria-hidden="true">
-            {scrollConfetti.map((piece) => <span key={piece} style={getConfettiStyle(piece)} />)}
+        <ViewportPortal>
+          <div className="modal-backdrop double-scroll-backdrop" role="dialog" aria-modal="true" aria-labelledby="scroll-unlock-title">
+            <div className="confetti-field" aria-hidden="true">
+              {scrollConfetti.map((piece) => <span key={piece} style={getConfettiStyle(piece)} />)}
+            </div>
+            <div className="double-scroll-modal">
+              <p className="double-scroll-kicker">Congratulations, Super Scroller</p>
+              <h3 id="scroll-unlock-title">You have unlocked the {scrollPrompt.toUpperCase()} SCROLL feature trial *</h3>
+              <button type="button" onClick={unlockScrollMode}>Hooray! I love {scrollPrompt} scroll</button>
+              <small>*trial stacks automatically. double is $49.99/week. triple is billed as enthusiasm. quadruple is a wellness incident.</small>
+            </div>
           </div>
-          <div className="double-scroll-modal">
-            <p className="double-scroll-kicker">Congratulations, Super Scroller</p>
-            <h3 id="scroll-unlock-title">You have unlocked the {scrollPrompt.toUpperCase()} SCROLL feature trial *</h3>
-            <button type="button" onClick={unlockScrollMode}>Hooray! I love {scrollPrompt} scroll</button>
-            <small>*trial stacks automatically. double is $49.99/week. triple is billed as enthusiasm. quadruple is a wellness incident.</small>
-          </div>
-        </div>
+        </ViewportPortal>
       )}
 
       {isHelpyOpen && (
-        <div className="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="helpy-title">
-          <form className="helpy-modal" onSubmit={publishHelpyPost}>
-            <header>
-              <div>
-                <p>Make a post</p>
-                <h3 id="helpy-title">Helpy found a version of you that tests well.</h3>
-              </div>
-              <button type="button" onClick={() => setIsHelpyOpen(false)}>Close</button>
-            </header>
+        <ViewportPortal>
+          <div className="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="helpy-title">
+            <form className="helpy-modal" onSubmit={publishHelpyPost}>
+              <header>
+                <div>
+                  <p>Make a post</p>
+                  <h3 id="helpy-title">Helpy found a version of you that tests well.</h3>
+                </div>
+                <button type="button" onClick={() => setIsHelpyOpen(false)}>Close</button>
+              </header>
 
             <div className={`helpy-preview ig-post ${helpyBasePost.image}`} aria-label="Post preview">
               <div className="helpy-preview-image">
@@ -1512,8 +1528,9 @@ export function FeedPage({
             </div>
 
             <button className="helpy-submit" type="submit" disabled={!isHelpyReady}>Publish draft</button>
-          </form>
-        </div>
+            </form>
+          </div>
+        </ViewportPortal>
       )}
     </section>
   )

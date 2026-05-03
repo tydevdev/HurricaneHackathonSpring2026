@@ -458,7 +458,7 @@ function App() {
       }
 
       // 9s: ambient reorganization (once per idle stretch)
-      if (s === 9 && !idleReorgDoneRef.current) {
+      if (s === 9 && visibleStage >= 2 && !idleReorgDoneRef.current) {
         idleReorgDoneRef.current = true
         // Silently shuffle tab order
         setTabOrder((current) => {
@@ -504,7 +504,7 @@ function App() {
       window.clearInterval(interval)
       events.forEach((eventName) => window.removeEventListener(eventName, resetIdle))
     }
-  }, [addInstability, interruptionMode, spawnPopup])
+  }, [addInstability, interruptionMode, spawnPopup, visibleStage])
 
   function dismissPopup(id: number) {
     setPopups((current) => current.filter((popup) => popup.id !== id))
@@ -608,7 +608,7 @@ function App() {
 
   function handleTab(tabId: TabId) {
     const isNewScreen = tabId !== activeTab
-    if (isNewScreen) {
+    if (isNewScreen && visibleStage >= 2) {
       setTabOrder((current) => shuffleTabs(current))
     }
 

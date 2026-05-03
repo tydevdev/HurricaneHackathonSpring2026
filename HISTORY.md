@@ -1,11 +1,20 @@
 # History
 
+## [2026-05-02 23:44] Gate Click Tab Shuffle Behind Stage 2
+
+- Updated `slopularity/src/App.tsx` so click-driven app tab shuffling only starts once visible decay reaches stage 2, matching the idle tab reorganization gate.
+- Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record that stage 1 navigation should stay stable while Landing remains outside the shuffled app tabs.
+- Validation run: `npm run lint`; `npm run build`.
+
 ## [2026-05-02 23:40] Expand Feed And News Comment Pools
 
 - Updated `slopularity/src/content.ts` with larger generated comment pools for Feed posts and News articles so expanded threads have more variety before repeating.
 - Updated `slopularity/src/pages/FeedPage.tsx` with additional commenter handles and reply-product names for richer synthetic replies.
 - Updated `slopularity/src/pages/AssistantPage.tsx` with more product plugs, prompt chips, and response closers so repeat assistant prompts feel less canned.
 - Updated `slopularity/src/pages/FriendsPage.tsx` with larger human, brand, and activity-memory response pools so friend conversations repeat less.
+- Updated `slopularity/src/pages/ShopPage.tsx` with expanded urgency, card-description, deal-reason, and bonus-offer copy pools.
+- Updated `slopularity/src/App.tsx` so tab reorganization waits until decay stage 2 instead of shuffling the first clean impression.
+- Updated `slopularity/src/content.ts` popup seeds with per-reason opener variants now that popups can select from string pools.
 - Validation run: `npm run lint`; `node --experimental-strip-types --test tests/*.test.ts`; `npm run build`.
 
 ## [2026-05-02 23:31] Delay Human Dev Rescue

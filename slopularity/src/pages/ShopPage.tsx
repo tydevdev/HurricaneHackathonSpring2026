@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { ViewportPortal } from '../components/ViewportPortal'
 import { shopProducts } from '../content'
+import { useBodyScrollLock } from '../hooks/useBodyScrollLock'
 import type { ShopProduct } from '../content'
 
 type ShopPageProps = {
@@ -83,7 +85,65 @@ const urgencyCopy = [
   'Friend price unlocked',
   'Expires while viewed',
   'Price memory unstable',
+  'Read twice discount',
+  'Still pretending optional',
+  'Soft scarcity active',
+  'Checkout weather forming',
+  'Timer learned your name',
+  'Almost reasonable',
+  'Second-chance first chance',
+  'Bundle gravity high',
+  'Cart whisper live',
+  'Regret forecast warm',
+  'Decision glow detected',
+  'Offer breathing quietly',
 ]
+
+const shopDescriptionPatterns = [
+  '{tagline}',
+  '{tagline} Tuned for the moment right after the app notices you pretending not to care.',
+  '{tagline} Comes with just enough explanation to feel practical and just enough mystery to feel chosen.',
+  '{tagline} Built for the category where {category} becomes a personality and then asks for shipping.',
+  '{tagline} Best used when a tiny inconvenience starts auditioning as a life theme.',
+  '{tagline} The ordinary version exists somewhere else; this one arrives with context already attached.',
+  '{tagline} Not essential, technically, but the recommendation model is making a very persuasive face.',
+  '{tagline} Calibrated for people who want relief without having to name the problem out loud.',
+  '{tagline} A small object with a large theory about what you almost meant.',
+  '{tagline} The app calls it helpful because "commercially intimate" tested poorly.',
+  '{tagline} Ships with a soft little story about why this was always the next step.',
+  '{tagline} Designed to make the decision feel like it found you first.',
+]
+
+const shopReasonPatterns = [
+  '{reason}',
+  '{reason} Also boosted because three adjacent signals agreed too politely.',
+  '{reason} The match was upgraded after your pause became statistically expressive.',
+  '{reason} The system says this fills a gap between wanting, waiting, and pretending.',
+  '{reason} Similar users called it unnecessary, then bought the cleaner version.',
+  '{reason} Added after your context crossed the threshold from browsing to biography.',
+  '{reason} A friend-shaped funnel marked this as low-friction comfort.',
+  '{reason} The cart interprets hesitation as a request for better language.',
+  '{reason} Ranked higher because the category keeps showing up near softer feelings.',
+  '{reason} The model found one practical use and seven emotional ones.',
+  '{reason} The offer is following quietly because you looked back once.',
+  '{reason} Selected after the app confused care with conversion and refused to separate them.',
+]
+
+function patternCopy(patterns: string[], seed: number) {
+  return patterns[Math.abs(seed) % patterns.length]!
+}
+
+function shopCardDescription(product: ShopProduct, index: number, stage: number) {
+  return patternCopy(shopDescriptionPatterns, product.id.length + index + stage * 3)
+    .replace('{tagline}', product.tagline)
+    .replace('{category}', product.category.toLowerCase())
+}
+
+function shopCardReason(product: ShopProduct, index: number, stage: number) {
+  const baseReason = stage >= 3 ? product.urgency : product.reason
+  return patternCopy(shopReasonPatterns, product.name.length + index * 2 + stage)
+    .replace('{reason}', baseReason)
+}
 
 // One deal entry per shopProduct. Earlier the catalog doubled every product
 // into a hero + remix pair, which read as "the same item twice side by side"
@@ -146,6 +206,27 @@ function bonusOffersFor(product: ShopProduct, index: number): BonusOffer[] {
       gems: base + 880 + index * 55,
       discount: '44% future you',
     },
+    {
+      id: `${product.id}-friend-proof`,
+      name: 'Friend Proof Pack',
+      detail: 'Adds two screenshots that make the purchase look recommended by people.',
+      gems: base + 1120 + index * 45,
+      discount: '26% social cushioning',
+    },
+    {
+      id: `${product.id}-quiet-claim`,
+      name: 'Quiet Claim',
+      detail: 'Renames the charge so it sounds like maintenance instead of desire.',
+      gems: base + 1340 + index * 52,
+      discount: '39% receipt softness',
+    },
+    {
+      id: `${product.id}-context-wrap`,
+      name: 'Context Wrap',
+      detail: 'Packages the reason, the timer, and the little feeling that made you click.',
+      gems: base + 1660 + index * 61,
+      discount: '52% narrative lift',
+    },
   ]
 }
 
@@ -174,6 +255,8 @@ export function ShopPage({ stage, onBuy, claimProductId, claimToken }: ShopPageP
   const canCheckout = cartLines.length > 0 && walletGems >= cartTotal
   const remainingForChallenge = Math.max(0, challengeTarget - earnedGems)
   const activeBonusOffers = activeUpsell ? bonusOffersFor(activeUpsell.product, activeUpsell.index) : []
+
+  useBodyScrollLock(Boolean(activeUpsell))
   const deals = useMemo(() => dealCatalog(stage), [stage])
 
   // Filtered deal list driven by the quick-filter pill row. Filters use the
@@ -397,6 +480,8 @@ export function ShopPage({ stage, onBuy, claimProductId, claimToken }: ShopPageP
               // unrelated lifestyle photos from the Feed.
               const image = product.imageSrc
               const soldCount = 900 + index * 311 + timerTick * (index + 1)
+              const description = shopCardDescription(product, index, stage)
+              const reason = shopCardReason(product, index, stage)
 
               return (
                 <article className={`slop-shop-card tone-${product.tone} ${product.featured ? 'is-featured-deal' : ''}`} key={product.id}>
@@ -413,7 +498,7 @@ export function ShopPage({ stage, onBuy, claimProductId, claimToken }: ShopPageP
                       <strong>{urgencyCopy[index % urgencyCopy.length]}</strong>
                     </div>
                     <h3>{product.name}</h3>
-                    <p>{product.tagline}</p>
+                    <p>{description}</p>
 
                     <div className="gem-price-row">
                       <div>
@@ -432,7 +517,7 @@ export function ShopPage({ stage, onBuy, claimProductId, claimToken }: ShopPageP
                     </div>
 
                     <p className="deal-reason">
-                      {stage >= 3 ? product.urgency : product.reason}
+                      {reason}
                     </p>
 
                     {stage >= 4 && (
@@ -490,40 +575,42 @@ export function ShopPage({ stage, onBuy, claimProductId, claimToken }: ShopPageP
       </div>
 
       {activeUpsell && (
-        <div
-          className="bonus-backdrop"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="bonus-title"
-          onClick={(event) => {
-            if (event.target === event.currentTarget) setActiveUpsell(null)
-          }}
-        >
-          <section className="bonus-sheet">
-            <div className="bonus-head">
-              <span>Bundle detected</span>
-              <h3 id="bonus-title">Add three small things so the deal feels bigger</h3>
-              <button type="button" onClick={() => setActiveUpsell(null)} aria-label="Close bonus offers">
-                close
-              </button>
-            </div>
-
-            <div className="bonus-list">
-              {activeBonusOffers.map((offer) => (
-                <button type="button" key={offer.id} onClick={() => addBonus(offer)}>
-                  <span>{offer.discount}</span>
-                  <strong>{offer.name}</strong>
-                  <small>{offer.detail}</small>
-                  <em>{formatGems(offer.gems)} gems</em>
+        <ViewportPortal>
+          <div
+            className="bonus-backdrop"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="bonus-title"
+            onClick={(event) => {
+              if (event.target === event.currentTarget) setActiveUpsell(null)
+            }}
+          >
+            <section className="bonus-sheet">
+              <div className="bonus-head">
+                <span>Bundle detected</span>
+                <h3 id="bonus-title">Add three small things so the deal feels bigger</h3>
+                <button type="button" onClick={() => setActiveUpsell(null)} aria-label="Close bonus offers">
+                  close
                 </button>
-              ))}
-            </div>
+              </div>
 
-            <button type="button" className="bonus-skip" onClick={() => setActiveUpsell(null)}>
-              Keep cart under-optimized
-            </button>
-          </section>
-        </div>
+              <div className="bonus-list">
+                {activeBonusOffers.map((offer) => (
+                  <button type="button" key={offer.id} onClick={() => addBonus(offer)}>
+                    <span>{offer.discount}</span>
+                    <strong>{offer.name}</strong>
+                    <small>{offer.detail}</small>
+                    <em>{formatGems(offer.gems)} gems</em>
+                  </button>
+                ))}
+              </div>
+
+              <button type="button" className="bonus-skip" onClick={() => setActiveUpsell(null)}>
+                Keep cart under-optimized
+              </button>
+            </section>
+          </div>
+        </ViewportPortal>
       )}
     </section>
   )

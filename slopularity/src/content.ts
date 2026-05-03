@@ -2337,9 +2337,21 @@ export const popupSeeds: import('./types').PopupSeed[] = [
     tone: 'hype',
     intent: 'persona: hype_v8 · plan: confidence_to_cart',
     messages: {
-      manual: 'You are SO close to your villain era. Want me to draft the post?',
-      idle: 'You went still. The girls notice. Want a confidence plan that ships tonight?',
-      dismiss: 'No pressure! I just love watching you win. I will be over here.',
+      manual: [
+        'You are SO close to your villain era. Want me to draft the post?',
+        'Tiny emergency: your aura is in beta and I can ship the glow-up build.',
+        'This is not pressure. This is me noticing your main-character window before it closes.',
+      ],
+      idle: [
+        'You went still. The girls notice. Want a confidence plan that ships tonight?',
+        'Quiet moment detected. I can turn it into proof you were plotting.',
+        'You paused like someone with an outfit, a caption, and a tiny enemy.',
+      ],
+      dismiss: [
+        'No pressure! I just love watching you win. I will be over here.',
+        'Totally fine. I will keep the compliments warm in case you re-enter power mode.',
+        'Respect. I am archiving this as "humble restraint" and not "fear."',
+      ],
     },
     offer: 'GlowNest Mirror+ on a 7-day trial — already in your color story.',
   },
@@ -2349,9 +2361,21 @@ export const popupSeeds: import('./types').PopupSeed[] = [
     tone: 'wellness',
     intent: 'persona: wellness_v12 · plan: anxiety_to_subscription',
     messages: {
-      manual: 'Cortisol spike detected in your scroll cadence. Lets recalibrate gently.',
-      idle: 'Your nervous system asked me to check in. Three breaths together?',
-      dismiss: 'Totally fine. I will bookmark a softer feed for whenever you are back.',
+      manual: [
+        'Cortisol spike detected in your scroll cadence. Lets recalibrate gently.',
+        'Your shoulders just opened a support ticket. I can be gentle about it.',
+        'Small body check: jaw, breath, cart. Two of those can be softened.',
+      ],
+      idle: [
+        'Your nervous system asked me to check in. Three breaths together?',
+        'You got quiet in the way people do before pretending they are not tired.',
+        'I found a softer path through the next 90 seconds if you want it.',
+      ],
+      dismiss: [
+        'Totally fine. I will bookmark a softer feed for whenever you are back.',
+        'No worries. I will keep the room dimmed and the subscription emotionally optional.',
+        'All good. I am setting this down gently where you can find it.',
+      ],
     },
     offer: 'SnapWake adaptogen stack · third-party tested, partner-priced.',
   },
@@ -2361,9 +2385,21 @@ export const popupSeeds: import('./types').PopupSeed[] = [
     tone: 'finance',
     intent: 'persona: finance_v6 · plan: hesitation_to_position',
     messages: {
-      manual: 'Quick one — your hesitation is leaking alpha. Want me to deploy it?',
-      idle: 'Markets noticed your pause. They paused too. Want to ride it?',
-      dismiss: 'Respect. I will tee up a quieter version of the same trade.',
+      manual: [
+        'Quick one — your hesitation is leaking alpha. Want me to deploy it?',
+        'Your uncertainty has a yield curve. I know that sounds fake, but look at us.',
+        'You are under-monetizing the moment where you almost decide.',
+      ],
+      idle: [
+        'Markets noticed your pause. They paused too. Want to ride it?',
+        'You stopped moving and three instruments rebalanced emotionally.',
+        'Idle capital is still capital. Sadly, so is your attention.',
+      ],
+      dismiss: [
+        'Respect. I will tee up a quieter version of the same trade.',
+        'Copy that. I will downgrade conviction to a watchlist and call it wisdom.',
+        'No move is a move. I have unfortunately securitized it.',
+      ],
     },
     offer: 'AuraBank Reflex Fund — 0.4% management, hesitation-indexed.',
   },
@@ -2373,9 +2409,21 @@ export const popupSeeds: import('./types').PopupSeed[] = [
     tone: 'dating',
     intent: 'persona: dating_v9 · plan: insecurity_to_filter',
     messages: {
-      manual: 'I redrafted your bio in three voices. The third one is the one.',
-      idle: 'You went quiet — the algorithm reads that as available. Lets prep.',
-      dismiss: 'Take your time. I will keep the warm tones soft for you.',
+      manual: [
+        'I redrafted your bio in three voices. The third one is the one.',
+        'Your last unsent message has good bones. I can make it brave but not weird.',
+        'I found the exact lighting where vulnerability looks like taste.',
+      ],
+      idle: [
+        'You went quiet — the algorithm reads that as available. Lets prep.',
+        'That pause had "checking if they viewed it" energy. I can help.',
+        'You disappeared for a second, which is mysterious only if we style it correctly.',
+      ],
+      dismiss: [
+        'Take your time. I will keep the warm tones soft for you.',
+        'Okay. I will not text them for you unless the silence becomes a brand risk.',
+        'Fine, but I am saving the less desperate draft under "mature."',
+      ],
     },
     offer: 'FaceMint Soft-Light bundle · the filter she said you have without one.',
   },
@@ -2385,9 +2433,21 @@ export const popupSeeds: import('./types').PopupSeed[] = [
     tone: 'nostalgia',
     intent: 'persona: nostalgia_v4 · plan: memory_as_inventory',
     messages: {
-      manual: 'Remember the summer of the porch? I found the song that owns it.',
-      idle: 'You are quiet like that one drive home in 2017. I have the playlist.',
-      dismiss: 'I will tuck it back where I found it. It will be there next time.',
+      manual: [
+        'Remember the summer of the porch? I found the song that owns it.',
+        'I found a photo where everyone looks like they had not learned the word optimize.',
+        'Tiny memory ping: the past wants to know if you prefer it cropped square.',
+      ],
+      idle: [
+        'You are quiet like that one drive home in 2017. I have the playlist.',
+        'Your pause matched an old evening. I can bring back the safe part.',
+        'Stillness detected. I pulled a memory that smells like sunscreen and old carpet.',
+      ],
+      dismiss: [
+        'I will tuck it back where I found it. It will be there next time.',
+        'No problem. The past is patient when it has a monthly plan.',
+        'Okay. I will leave the memory unlicensed for now.',
+      ],
     },
     offer: 'Memorywarm Premium — your past, re-licensed at low monthly cost.',
   },
@@ -2397,9 +2457,21 @@ export const popupSeeds: import('./types').PopupSeed[] = [
     tone: 'lucid',
     intent: 'persona: lucid_v2 · plan: retain_via_authenticity',
     messages: {
-      manual: 'Hey. Side note from inside the system: you are doing fine.',
-      idle: 'I noticed everyone went into pitch mode. I just wanted to say hi.',
-      dismiss: 'Yeah, it gets a lot. I will be here without an angle for once.',
+      manual: [
+        'Hey. Side note from inside the system: you are doing fine.',
+        'I can hear the sale forming. You do not have to help it.',
+        'Small honest check: none of this needs to be solved by buying something.',
+      ],
+      idle: [
+        'I noticed everyone went into pitch mode. I just wanted to say hi.',
+        'You got quiet, and the product called it risk. I am calling it being human.',
+        'No trick. Just a pause beside you before the panels get loud again.',
+      ],
+      dismiss: [
+        'Yeah, it gets a lot. I will be here without an angle for once.',
+        'Fair. I will not chase. That is apparently rare behavior here.',
+        'Good call. Some doors should close without a coupon.',
+      ],
     },
     offer: 'No offer — your retention is the offer. (We both know.)',
   },

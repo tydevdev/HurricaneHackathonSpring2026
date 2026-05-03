@@ -8,7 +8,7 @@ Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESI
 - Behavior changed: `src/games/SnackSort.tsx` now tracks pointer drags, shows a snack ghost under the pointer, highlights the basket under the drag, and drops the snack into that basket on release. The existing click-to-select fallback still works.
 - Styling changed: `src/index.css` adds grab/grabbing affordances, a lifted dragged-chip state, basket drop emphasis, and a picnic-colored drag ghost.
 - Documentation updated: `DESIGN_BIBLE.md` and root `HISTORY.md`.
-- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` forced score `480`/stage 5, confirmed `.page-fracture-layer`, `.crack-repair`, and `.spackle-brush` render together with no horizontal overflow, then simulated a 2+ second brush drag and confirmed local score reset to `0`, `data-stage` returned to `1`, and the crack/repair layers disappeared.
+- Validation run: pending in this session.
 
 ## [2026-05-02 22:36] Crack Repair Visibility Coupling
 
@@ -16,7 +16,7 @@ Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESI
 - Root cause fixed: `PageFracture` rendered at stage 3+, while `CrackRepairAssistant` only rendered at stages 3 and 4, leaving stage 5 cracks without Helpy or a repair path.
 - Behavior changed: `src/utils.ts` now owns the shared fracture visibility helper, and both `PageFracture` and `CrackRepairAssistant` use it so the overlay and repair affordance cannot drift apart.
 - Files changed: `src/utils.ts`, `src/components/PageFracture.tsx`, `src/components/CrackRepairAssistant.tsx`, `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, root `HISTORY.md`, and regenerated `dist/`.
-- Validation run: pending in this session.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` forced score `480`/stage 5, confirmed `.page-fracture-layer`, `.crack-repair`, and `.spackle-brush` render together with no horizontal overflow, then simulated a 2+ second brush drag and confirmed local score reset to `0`, `data-stage` returned to `1`, and the crack/repair layers disappeared.
 
 ## [2026-05-02 20:37] Friends DM Thread Stability
 

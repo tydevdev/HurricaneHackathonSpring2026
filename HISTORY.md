@@ -1,5 +1,12 @@
 # History
 
+## [2026-05-02 22:40] Expand Ambient Bug Crawl
+
+- Updated `slopularity/src/components/BugScatter.tsx` so stage 4+ ambient crawls now pick from caterpillar, beetle, cockroach, ant, spider, and cricket emoji variants.
+- Halved the random crawl timer from 30-300 seconds to 15-150 seconds while preserving the existing stage 4 threshold and reduced-motion opt-out.
+- Updated `slopularity/DECAY_FEATURES.md` and `slopularity/DESIGN_BIBLE.md` to record the new variety and frequency.
+- Validation run: pending in this session.
+
 ## [2026-05-02 22:39] Add Snack Sort Drag Placement
 
 - Updated `slopularity/src/games/SnackSort.tsx` so snack chips can be dragged directly into baskets with pointer input while preserving the click-to-select fallback.
@@ -828,4 +835,4 @@
 - Fixed the stage 5 gap where cracks could appear without Helpy, the brush, or any repair path.
 - Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record that visible cracks must always come with Spackle repair.
 - Regenerated `slopularity/dist/` so the published app includes the repair coupling.
-- Validation run: pending in this session.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` forced score `480`/stage 5, confirmed cracks, Helpy, and the brush all render together with no horizontal overflow, then simulated a 2+ second brush drag and confirmed score `0`, stage 1, and no crack/repair layers.

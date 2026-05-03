@@ -1,4 +1,4 @@
-import { access, mkdir, readFile, rename, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -20,14 +20,9 @@ const gameIndexHtml = indexHtml
   .replaceAll('href="../favicon.svg"', 'href="../../../favicon.svg"')
 
 async function writeRouteIndex(routeDir, html) {
+  await rm(routeDir, { recursive: true, force: true })
   await mkdir(routeDir, { recursive: true })
   await writeFile(join(routeDir, 'index.html'), html)
-
-  try {
-    await access(join(routeDir, 'index.html'))
-  } catch {
-    await rename(join(routeDir, 'index 2.html'), join(routeDir, 'index.html'))
-  }
 }
 
 await Promise.all(routes.map(async (route) => {

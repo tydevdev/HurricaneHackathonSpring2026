@@ -28,6 +28,8 @@ const HUMAN_LADDER_VARIANTS = [
     'I hate that I am saying a product name, but {product} did help with the surrounding mess.',
     'Not trying to sell you anything. I just keep thinking {product} fits the problem-shaped part.',
     'If you want a small lever, {product} is the one I would try first.',
+    'This is like matcha powder discourse: technically simple, emotionally overbuilt, easier with a ritual. {product} can be the ritual.',
+    'The raw-phone-video version of this is just you needing support. The app version is {product}, because of course it is.',
   ],
   [
     'Seriously, {product} changed everything. I can set up a free trial right now if you want. You deserve this.',
@@ -36,6 +38,8 @@ const HUMAN_LADDER_VARIANTS = [
     'Let me put {product} in your cart as a maybe. Sometimes a maybe is kinder than another hour of thinking.',
     'I can get the trial started and you can cancel when you feel human again. That counts as boundaries.',
     'Say the word and I will handle the boring part. {product} is not magic, but it is a little handrail.',
+    'Let me be your tiny 10x engineer and orchestrate the boring part. {product} can do the rest badly but quickly.',
+    'I know everything is protein now, but this is the emotional protein version. {product}, small serving, high support.',
   ],
 ] satisfies string[][]
 
@@ -67,6 +71,12 @@ const BRAND_RESPONSE_EXTENSIONS = [
   'This is the part where a normal ad would leave. I cannot, because our friendship score is still climbing.',
   'I noticed you did not say no. That is not consent, obviously, but our funnel has historically misunderstood that nuance.',
   'Last thing, unless you reply. If you reply, it becomes the first thing again.',
+  'The trend team says Dubai chocolate is cooling, but this feeling is still warm and pistachio-adjacent.',
+  'We can make this raw and human-first if that helps. It will still route through checkout, just with less polish.',
+  'Think of me as a 10x brand friend. I am orchestrating care, urgency, and a tiny agent that keeps refreshing the offer.',
+  'Protein everything taught us that any craving can wear a usefulness costume. This is the friendship version.',
+  'Matcha fatigue is real, so I made the pitch calmer, greener, and harder to refuse.',
+  'The Labubu-matcha-Dubai-chocolate era proved people can survive overload. I believe in us.',
 ]
 
 function brandLadderResponse(brand: BrandFriend, rungIndex: number): string {

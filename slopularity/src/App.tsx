@@ -20,7 +20,14 @@ import { appBasePath, pathForTab, tabFromLocation } from './routes'
 import { SearchPage } from './pages/SearchPage'
 import { ShopPage } from './pages/ShopPage'
 import type { Popup, ScrollStats, TabId } from './types'
-import { maxDecayScore, maxDecayStage, scoreForStage, shouldShowPageFractures, stageFor } from './utils'
+import {
+  getPageFractureDelayMs,
+  maxDecayScore,
+  maxDecayStage,
+  scoreForStage,
+  shouldShowPageFractures,
+  stageFor,
+} from './utils'
 
 const storageKey = 'slopularity-state-v1'
 const enteredKey = 'slopularity-entered-v1'
@@ -148,6 +155,7 @@ function App() {
   const idleNudgeShownRef = useRef(false)
   const queuedPopupReasonRef = useRef<PopupReason | null>(null)
   const lastCrackExperienceAtRef = useRef(0)
+  const finalDecayStageEnteredAtRef = useRef(0)
   const crackExperienceEligibleRef = useRef(false)
   // Interaction-driven popups: spawn one on average every ~4 meaningful
   // interactions, with a hard cooldown so the dock never feels spammy.
@@ -297,6 +305,17 @@ function App() {
   }, [visibleStage])
 
   useEffect(() => {
+    if (visibleStage < maxDecayStage) {
+      finalDecayStageEnteredAtRef.current = 0
+      return
+    }
+
+    if (finalDecayStageEnteredAtRef.current === 0) {
+      finalDecayStageEnteredAtRef.current = Date.now()
+    }
+  }, [visibleStage])
+
+  useEffect(() => {
     let frameId: number | null = null
     const scheduleReady = (ready: boolean) => {
       frameId = window.requestAnimationFrame(() => setCrackExperienceReady(ready))
@@ -322,23 +341,28 @@ function App() {
     }
 
     const now = Date.now()
-    const elapsed = now - lastCrackExperienceAtRef.current
+    const waitMs = getPageFractureDelayMs(
+      now,
+      finalDecayStageEnteredAtRef.current,
+      lastCrackExperienceAtRef.current,
+      CRACK_EXPERIENCE_COOLDOWN_MS,
+    )
 
     if (!crackExperienceEligibleRef.current) {
-      if (lastCrackExperienceAtRef.current === 0 || elapsed >= CRACK_EXPERIENCE_COOLDOWN_MS) {
+      if (waitMs === 0) {
         triggerCrackExperience()
         return cleanupFrame
       }
 
       scheduleReady(false)
-      const timeoutId = window.setTimeout(triggerCrackExperience, CRACK_EXPERIENCE_COOLDOWN_MS - elapsed)
+      const timeoutId = window.setTimeout(triggerCrackExperience, waitMs)
       return () => {
         cleanupFrame()
         window.clearTimeout(timeoutId)
       }
     }
 
-    if (elapsed >= CRACK_EXPERIENCE_COOLDOWN_MS) {
+    if (waitMs === 0) {
       triggerCrackExperience()
     } else {
       scheduleReady(true)

@@ -112,6 +112,9 @@ const shopDescriptionPatterns = [
   '{tagline} The app calls it helpful because "commercially intimate" tested poorly.',
   '{tagline} Ships with a soft little story about why this was always the next step.',
   '{tagline} Designed to make the decision feel like it found you first.',
+  '{tagline} Current enough to mention {trend}, careful enough to make it feel like your idea.',
+  '{tagline} Recommended because {trend} proved people will buy a texture, a powder, or a job title if it arrives with confidence.',
+  '{tagline} Pairs well with {trend}, which is apparently how desire introduces itself this quarter.',
 ]
 
 const shopReasonPatterns = [
@@ -127,6 +130,24 @@ const shopReasonPatterns = [
   '{reason} The model found one practical use and seven emotional ones.',
   '{reason} The offer is following quietly because you looked back once.',
   '{reason} Selected after the app confused care with conversion and refused to separate them.',
+  '{reason} The trend desk cross-tagged this with {trend} and called it cultural fit.',
+  '{reason} A social analyst said {trend} is peaking, so the cart moved before taste cooled.',
+  '{reason} The model found the same purchase shape inside {trend} and your pause.',
+]
+
+const commerceTrendSignals = [
+  'Dubai chocolate fatigue',
+  'strawberry matcha powder',
+  'protein everything',
+  'fibermaxxing',
+  'chewy cookie culture',
+  'Labubu overload',
+  'raw phone-video trust',
+  '10x engineer orchestration',
+  'JOMO as a paid tier',
+  'yerba mate trying to be matcha',
+  'hojicha calm',
+  '2000s activewear',
 ]
 
 function patternCopy(patterns: string[], seed: number) {
@@ -134,15 +155,19 @@ function patternCopy(patterns: string[], seed: number) {
 }
 
 function shopCardDescription(product: ShopProduct, index: number, stage: number) {
+  const trend = patternCopy(commerceTrendSignals, product.name.length + index)
   return patternCopy(shopDescriptionPatterns, product.id.length + index + stage * 3)
     .replace('{tagline}', product.tagline)
     .replace('{category}', product.category.toLowerCase())
+    .replace('{trend}', trend)
 }
 
 function shopCardReason(product: ShopProduct, index: number, stage: number) {
   const baseReason = stage >= 3 ? product.urgency : product.reason
+  const trend = patternCopy(commerceTrendSignals, product.id.length + stage + index)
   return patternCopy(shopReasonPatterns, product.name.length + index * 2 + stage)
     .replace('{reason}', baseReason)
+    .replace('{trend}', trend)
 }
 
 // One deal entry per shopProduct. Earlier the catalog doubled every product

@@ -1,4 +1,5 @@
 export const maxDecayStage = 5
+export const pageFractureEntryDelayMs = 30_000
 // Score per stage. Tuned so a natural 5–10 minute demo passes through every
 // phase: ~10 deliberate interactions advance one stage, and "Demo pulse"
 // jumps directly to the next threshold for the impatient.
@@ -20,6 +21,24 @@ export function hasPageFractures(stage: number) {
 
 export function shouldShowPageFractures(stage: number, repaired: boolean) {
   return hasPageFractures(stage) && !repaired
+}
+
+export function getPageFractureDelayMs(
+  now: number,
+  finalStageEnteredAt: number,
+  lastFractureAt: number,
+  cooldownMs: number,
+  minimumEntryDelayMs = pageFractureEntryDelayMs,
+) {
+  const entryDelayRemaining = Math.max(
+    0,
+    minimumEntryDelayMs - (now - finalStageEnteredAt),
+  )
+  const cooldownRemaining = lastFractureAt === 0
+    ? 0
+    : Math.max(0, cooldownMs - (now - lastFractureAt))
+
+  return Math.max(entryDelayRemaining, cooldownRemaining)
 }
 
 export function getEngagementLabels(stage: number) {

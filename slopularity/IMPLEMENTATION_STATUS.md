@@ -2,6 +2,26 @@
 
 Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESIGN_BIBLE.md` stays the product/design execution guide. This file records what is actively intentional in the app right now, what is still a skeleton, and which feature flags are keeping unfinished mechanics out of the way.
 
+## [2026-05-02 23:50] Final-Stage Crack Delay
+
+- Active focus: making page cracks rare enough to feel like a late-stage event instead of a constant interruption.
+- Behavior changed: `src/App.tsx` now tracks the moment the user enters decay stage 5 and keeps the fracture overlay hidden until the user has spent at least 30 seconds in that stage.
+- Behavior changed: `src/utils.ts` now owns the page-fracture delay helper, which combines the 30-second final-stage entry delay with the existing 120-second crack cooldown and waits for whichever is longer.
+- Test updated: `tests/utils.test.ts` covers the final-stage entry delay and the cooldown override.
+- Documentation updated: `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, `IMPLEMENTATION_STATUS.md`, and root `HISTORY.md`.
+- Validation run: pending.
+
+## [2026-05-02 23:44] Richer Trend-Aware Copy Pools
+
+- Active focus: making the surfaces test users are reading most feel written, varied, and current instead of thin placeholder copy.
+- Behavior changed: `src/content.ts` now adds a trend-aware culture-signal layer for Feed captions, Feed comments, News headlines, and News comment threads. Current hooks include Dubai chocolate, strawberry matcha, protein everything, fibermaxxing, chewy desserts, Labubu/matcha/Dubai-chocolate overload, raw phone-video trust, JOMO, yerba mate, hojicha, 2000s activewear, and agentic 10x engineer language.
+- Behavior changed: Feed and News comments can now draw from larger topic-aware pools and still stay tied to the post/article sponsor, location, publisher, and insecurity/fear hook.
+- Behavior changed: `src/pages/AssistantPage.tsx` now includes a larger offer set plus culture receipts so Helpy can connect prompts to current trend logic instead of repeating the same generic pivot.
+- Behavior changed: `src/pages/FriendsPage.tsx` now has larger human/brand quick-reply, ladder, memory, and cross-brand pools with more trend-aware dialogue.
+- Behavior changed: `src/pages/ShopPage.tsx` now rotates richer product descriptions, deal reasons, urgency labels, and bonus offers, including trend-linked commerce rationales.
+- Documentation updated: `DESIGN_BIBLE.md`, `IMPLEMENTATION_STATUS.md`, and root `HISTORY.md`.
+- Validation run: internet trend pass completed; `npm run lint`; `node --experimental-strip-types --test tests/*.test.ts`; `npm run build`; generated bundle check confirmed trend strings landed in `dist/assets/app-*.js`; route-page check confirmed normal `/app/feed/`, `/app/news/`, `/app/shop/`, `/app/assistant/`, and related nested `index.html` files exist with no duplicate `* 2` route folders.
+
 ## [2026-05-02 23:31] Stacked Page Warp Modes
 
 - Active focus: expanding recoverable page-switch damage into a broader stage-3/4/5 lottery with rare stacking.

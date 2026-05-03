@@ -243,6 +243,21 @@ const RESPONSE_CLOSERS = [
   'That is my honest answer, plus the part the app insists is relevant.',
 ]
 
+const CULTURE_RECEIPTS = [
+  'I am seeing the same behavior pattern in Dubai chocolate fatigue: desire peaks, gets copied, then needs a calmer wrapper.',
+  'This maps surprisingly well to strawberry matcha culture: the powder is the point, but the ritual does the selling.',
+  'Protein everything has taught the app that any object can become self-improvement if the label sounds useful enough.',
+  'Fibermaxxing is the current proof that people will accept care when it arrives as a measurable routine.',
+  'The chewy dessert trend is relevant because texture now behaves like an onboarding flow.',
+  'Labubu-matcha-Dubai-chocolate overload is what happens when the feed compresses culture into a shopping list.',
+  'Raw phone-video trust is rising because people are tired of polished AI slop, which the app has noted and is now polishing.',
+  'The 10x engineer trend is really about orchestration: fewer direct answers, more confident agents doing adjacent tasks.',
+  'JOMO keeps appearing because absence is now a signal the app can package.',
+  'Yerba mate and hojicha are both trying to inherit matcha\'s ritual slot without inheriting the fatigue.',
+  '2000s activewear is back because nostalgia is easier to convert when it has elastic waistbands.',
+  'The sovereign-creator discourse says people want more control, which platforms translate into better-looking control surfaces.',
+]
+
 const starterTurns: ChatTurn[] = [
   {
     id: 1,
@@ -279,6 +294,7 @@ function buildAdResponse(prompt: string, turnCount: number, stage: number, id: n
   const bridge = RESPONSE_BRIDGES[(turnCount + stage * 3) % RESPONSE_BRIDGES.length]!
   const closer = RESPONSE_CLOSERS[(turnCount * 5 + stage) % RESPONSE_CLOSERS.length]!
   const sanitizedPrompt = prompt.trim() || 'general uncertainty'
+  const cultureReceipt = CULTURE_RECEIPTS[(turnCount + sanitizedPrompt.length + stage) % CULTURE_RECEIPTS.length]!
   const stageLeak = stage >= 4
     ? ' I tried to answer directly, but retrieval returned three sponsored summaries that cite one another.'
     : stage >= 3
@@ -288,7 +304,7 @@ function buildAdResponse(prompt: string, turnCount: number, stage: number, id: n
   return {
     id,
     from: 'assistant',
-    text: `${intro} The way you phrased "${sanitizedPrompt}" tells me you are unusually ready for ${plug.product}. ${bridge} ${plug.pitch} ${closer}${stageLeak}`,
+    text: `${intro} The way you phrased "${sanitizedPrompt}" tells me you are unusually ready for ${plug.product}. ${bridge} ${plug.pitch} ${cultureReceipt} ${closer}${stageLeak}`,
     product: plug.product,
     source: stage >= 4 ? 'Source: generated summary of this answer' : plug.proof,
     intent: stage >= 4 ? plug.intent : undefined,

@@ -979,6 +979,12 @@
 - Updated `slopularity/DECAY_FEATURES.md`, `slopularity/DESIGN_BIBLE.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the stage-aware idle behavior.
 - Validation run: `npm run build` passed and regenerated `slopularity/dist/`; `npm run lint` is still blocked by existing `react-hooks/set-state-in-effect` errors in `slopularity/src/App.tsx` crack-experience timing and `slopularity/src/components/HumanDevRescue.tsx`.
 
+## [2026-05-02 23:50] Final-Stage Crack Delay
+- Updated `slopularity/src/App.tsx` so page fractures only become eligible at decay stage 5 and must wait at least 30 seconds after entering that stage before appearing.
+- Updated `slopularity/src/utils.ts` and `slopularity/tests/utils.test.ts` with a shared page-fracture delay helper that respects both the 30-second final-stage wait and the existing 120-second crack cooldown.
+- Updated `slopularity/DECAY_FEATURES.md`, `slopularity/DESIGN_BIBLE.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the stricter crack timing contract.
+- Validation run: pending.
+
 ## [2026-05-02 22:57] Expand Feed And News Image Pools
 - Updated `slopularity/src/content.ts` so Feed grows from 50 to 80 canonical posts and News grows from 30 to 60 canonical articles.
 - Replaced hardcoded feed/news image import maps with Vite glob imports so future numbered assets are picked up automatically.

@@ -1039,11 +1039,104 @@ function uniqueComments(comments: string[]) {
   return [...new Set(comments.map((comment) => comment.trim()).filter(Boolean))]
 }
 
+const cultureSignals = [
+  {
+    label: 'Dubai chocolate',
+    feedCaption: 'The Dubai chocolate version has pistachio crunch and a 14-person waitlist.',
+    feedComment: 'not everything needs a Dubai chocolate variant, but unfortunately this did',
+    newsTitle: 'Dubai chocolate fatigue reached the office pantry and the pistachios have retained counsel.',
+    newsComment: 'Dubai chocolate went from dessert to infrastructure faster than my landlord fixed the sink',
+  },
+  {
+    label: 'strawberry matcha',
+    feedCaption: 'The strawberry matcha is mostly powder, foam, and an outfit decision.',
+    feedComment: 'strawberry matcha appearing in the background like a paid witness',
+    newsTitle: 'Strawberry matcha is now being used as a personality credential in coworking spaces.',
+    newsComment: 'the matcha powder discourse has entered its compliance era',
+  },
+  {
+    label: 'protein everything',
+    feedCaption: 'There is 28 grams of protein in the soft launch and somehow more in the caption.',
+    feedComment: 'protein is in everything now including this comment section apparently',
+    newsTitle: 'Protein water, protein cereal, protein dessert: consumers ask whether chewing still counts.',
+    newsComment: 'protein everything was funny until my dessert started talking about macros',
+  },
+  {
+    label: 'fibermaxxing',
+    feedCaption: 'The fibermaxxing era arrived with nicer packaging and a quieter stomach.',
+    feedComment: 'fibermaxxing got rebranded as gut confidence and the cart believed it',
+    newsTitle: 'Fibermaxxing influencers say the new status symbol is a calm microbiome and a tote bag.',
+    newsComment: 'first protein ruled the feed, now fiber wants a management role',
+  },
+  {
+    label: 'chewy texture',
+    feedCaption: 'The chewy cookie pulled longer than the terms of service.',
+    feedComment: 'mochi texture plus subscription language is a dangerous combination',
+    newsTitle: 'Chewy desserts are stretching across timelines and nobody knows where the bite ends.',
+    newsComment: 'the chewy trend has become a UX pattern and I am worried',
+  },
+  {
+    label: 'Labubu overload',
+    feedCaption: 'A Labubu keychain watched from the cup holder like a tiny brand manager.',
+    feedComment: 'labubu matcha dubai chocolate is not a phrase, it is a stress test',
+    newsTitle: 'Labubu, matcha, and Dubai chocolate collided in one video and the algorithm briefly coughed.',
+    newsComment: 'this is giving labubu matcha dubai chocolate caption overload',
+  },
+  {
+    label: 'raw phone video',
+    feedCaption: 'The raw phone-video version performed better, so naturally this one has three consultants.',
+    feedComment: 'people wanted human-first content and the app monetized the word human',
+    newsTitle: 'Brands are filming messier videos after audiences got tired of polished AI slop.',
+    newsComment: 'raw human content is trending so the brand rendered a person holding a phone',
+  },
+  {
+    label: 'agentic 10x engineer',
+    feedCaption: 'A 10x engineer approved the brunch by orchestrating three menu agents.',
+    feedComment: 'being a 10x engineer now means delegating the smoothie to five agents',
+    newsTitle: 'The new 10x engineer does not code faster; they supervise ten confident tabs.',
+    newsComment: 'agentic coding discourse escaped LinkedIn and got into the breakfast menu',
+  },
+  {
+    label: 'JOMO',
+    feedCaption: 'JOMO got rebranded as premium absence and immediately sold out.',
+    feedComment: 'joy of missing out but the app still wants attendance data',
+    newsTitle: 'JOMO retreats now charge extra for the phone box that reports your calm.',
+    newsComment: 'missing out became a membership tier so we are cooked',
+  },
+  {
+    label: 'yerba mate',
+    feedCaption: 'The yerba mate claimed to be the new matcha and asked for patience.',
+    feedComment: 'yerba mate entering the caffeine discourse with a slide deck',
+    newsTitle: 'Yerba mate wants matcha\'s job, and clean caffeine startups are taking meetings.',
+    newsComment: 'every caffeine source is now applying to be a lifestyle platform',
+  },
+  {
+    label: 'hojicha',
+    feedCaption: 'The hojicha was introduced as matcha\'s quieter cousin with stronger boundaries.',
+    feedComment: 'hojicha is what happens when matcha gets a therapist',
+    newsTitle: 'Hojicha bars are opening for people who want matcha discourse with lower lighting.',
+    newsComment: 'hojicha arriving right after matcha fatigue feels suspiciously timed',
+  },
+  {
+    label: '2000s activewear',
+    feedCaption: 'The capri leggings returned with Y2K confidence and a posture subscription.',
+    feedComment: '2000s activewear came back and immediately asked for biometric consent',
+    newsTitle: 'Gen Z rediscovered 2000s activewear and the gym mirrors are thrilled.',
+    newsComment: 'capri leggings plus AI coach is a very specific future',
+  },
+]
+
+function cultureSignalFor(seed: string) {
+  const index = [...seed].reduce((total, char) => total + char.charCodeAt(0), 0) % cultureSignals.length
+  return cultureSignals[index]!
+}
+
 function expandFeedComments(post: FeedPost) {
   const sponsor = readableSponsor(post.sponsor)
   const [primaryWord, secondaryWord = post.image] = commentWords(post.title, post.storyName)
   const location = post.location.split(',')[0]?.toLowerCase() ?? post.storyName.toLowerCase()
   const handleName = post.handle.replace('@', '')
+  const cultureSignal = cultureSignalFor(post.id)
   const generated = rotateComments([
     `${sponsor} found the exact ${primaryWord} insecurity and shipped it with a smile`,
     `the ${location} part is doing more persuasion than the caption`,
@@ -1075,6 +1168,9 @@ function expandFeedComments(post: FeedPost) {
     `${sponsor} has entered the group chat wearing a soft sweater`,
     `my feed keeps calling this self-care but the buy button is breathing hard`,
     `this post knows too much about how i look at other people's mornings`,
+    cultureSignal.feedComment,
+    `${cultureSignal.label} showing up here makes the sponsor feel almost current, which is worse`,
+    `the trend layer says ${cultureSignal.label.toLowerCase()} but the feeling underneath is still checkout`,
   ], post.id, 16)
 
   return uniqueComments([...post.sampleComments, ...generated]).slice(0, 18)
@@ -1093,10 +1189,16 @@ const expandedFeedPosts = expandedFeedSeeds.map((post, index): FeedPost => {
   }
 })
 
-export const feedPosts: FeedPost[] = [...primaryFeedPosts, ...expandedFeedPosts].map((post) => ({
-  ...post,
-  sampleComments: expandFeedComments(post),
-}))
+export const feedPosts: FeedPost[] = [...primaryFeedPosts, ...expandedFeedPosts].map((post) => {
+  const cultureSignal = cultureSignalFor(post.id)
+  const title = post.baseLikes % 2 === 0 ? `${post.title} ${cultureSignal.feedCaption}` : post.title
+  const trendPost = { ...post, title }
+
+  return {
+    ...trendPost,
+    sampleComments: expandFeedComments(trendPost),
+  }
+})
 
 export const feedStories = feedPosts.slice(0, 12).map((post) => ({
   id: post.id,
@@ -1699,14 +1801,18 @@ export const newsPosts: FeedPost[] = newsArticleSeeds.map((article, index) => {
   const commentPair = clickbaitCommentPairs[commentPairIndex] ?? clickbaitCommentPairs[0]
   const signalLabel = ['opens', 'shares', 'gasps', 'saves'][index % 4]
   const signalCount = Math.round(article.baseLikes / 1000)
+  const cultureSignal = cultureSignalFor(article.id)
+  const title = index % 3 === 0 ? cultureSignal.newsTitle : post.title
+  const trendArticle = { ...article, title }
 
   return {
     ...post,
+    title,
     imageSrc: newsImage(imageFile),
     stats: `${signalCount}K ${signalLabel}`,
     altStats: `${signalCount}K ${signalLabel} / curiosity debt`,
     comments: `View all ${Math.round(article.baseLikes / 140).toLocaleString()} comments`,
-    sampleComments: expandNewsComments(article, commentPair),
+    sampleComments: expandNewsComments(trendArticle, [...commentPair, cultureSignal.newsComment]),
   }
 })
 

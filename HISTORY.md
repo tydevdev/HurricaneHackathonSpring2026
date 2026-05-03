@@ -5,7 +5,7 @@
 - Updated `slopularity/src/components/BugScatter.tsx` so stage 4+ ambient crawls now pick from caterpillar, beetle, cockroach, ant, spider, and cricket emoji variants.
 - Halved the random crawl timer from 30-300 seconds to 15-150 seconds while preserving the existing stage 4 threshold and reduced-motion opt-out.
 - Updated `slopularity/DECAY_FEATURES.md` and `slopularity/DESIGN_BIBLE.md` to record the new variety and frequency.
-- Validation run: pending in this session.
+- Validation run: `npm run lint`; `npm run build`; checked generated `dist/assets/app-*.js` for the expanded bug palette and 15-150 second timer.
 
 ## [2026-05-02 22:39] Add Snack Sort Drag Placement
 

@@ -6,6 +6,7 @@ type BugScatterProps = {
 
 type BugRun = {
   id: number
+  emoji: string
   style: BugStyle
 }
 
@@ -19,8 +20,9 @@ type BugStyle = CSSProperties & {
   '--bug-duration': string
 }
 
-const minBugDelayMs = 30_000
-const maxBugDelayMs = 300_000
+const bugEmojis = ['🐛', '🪲', '🪳', '🐜', '🕷️', '🦗']
+const minBugDelayMs = 15_000
+const maxBugDelayMs = 150_000
 const bugForceEvent = 'slopularity:force-bug-scatter'
 
 function randomBetween(min: number, max: number) {
@@ -29,6 +31,10 @@ function randomBetween(min: number, max: number) {
 
 function randomDelay() {
   return randomBetween(minBugDelayMs, maxBugDelayMs)
+}
+
+function chooseBugEmoji() {
+  return bugEmojis[Math.floor(Math.random() * bugEmojis.length)] ?? bugEmojis[0]!
 }
 
 function makeBugStyle(): BugStyle {
@@ -70,6 +76,7 @@ export function BugScatter({ stage }: BugScatterProps) {
     sequenceRef.current += 1
     setBugRun({
       id: sequenceRef.current,
+      emoji: chooseBugEmoji(),
       style: makeBugStyle(),
     })
 
@@ -124,7 +131,7 @@ export function BugScatter({ stage }: BugScatterProps) {
 
   return (
     <div className="bug-scatter-layer" aria-hidden="true">
-      <span key={bugRun.id} className="bug-scatter-bug" style={bugRun.style}>🐛</span>
+      <span key={bugRun.id} className="bug-scatter-bug" style={bugRun.style}>{bugRun.emoji}</span>
     </div>
   )
 }

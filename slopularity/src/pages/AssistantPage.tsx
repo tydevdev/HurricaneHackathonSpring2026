@@ -299,12 +299,27 @@ export function AssistantPage({ assistantText, stage, onAsk }: AssistantPageProp
   const [draft, setDraft] = useState('')
   const [turns, setTurns] = useState<ChatTurn[]>(starterTurns)
   const [pendingPrompt, setPendingPrompt] = useState<string | null>(null)
+  const [chipOffset, setChipOffset] = useState(0)
   const threadRef = useRef<HTMLDivElement | null>(null)
 
   const activePlug = useMemo(
     () => adPlugs[(turns.length + stage) % adPlugs.length]!,
     [stage, turns.length],
   )
+
+  // Show only a small rotating slice of the prompt pool so the chips don't
+  // fight the chat thread for vertical space. The slice grows by one at
+  // each decay stage — at higher phases the system gets a little chattier.
+  const visibleChipCount = Math.min(promptChips.length, 2 + Math.max(0, stage - 1))
+  const visibleChips = useMemo(() => {
+    if (promptChips.length === 0) return []
+    return Array.from({ length: visibleChipCount }, (_, i) => {
+      // Mix in turns.length so the chips also rotate as the conversation
+      // continues, even without an explicit shuffle press.
+      const idx = (chipOffset + turns.length + i) % promptChips.length
+      return promptChips[idx]!
+    })
+  }, [chipOffset, turns.length, visibleChipCount])
 
   const ignoredCount = Math.max(0, turns.filter((turn) => turn.from === 'user').length)
   const routingNote = assistantText || 'waiting for a monetizable question'
@@ -448,7 +463,7 @@ export function AssistantPage({ assistantText, stage, onAsk }: AssistantPageProp
 
           <div className="assistant-bottom-row">
             <div className="assistant-prompts" aria-label="Suggested prompts">
-              {promptChips.map((prompt) => (
+              {visibleChips.map((prompt) => (
                 <button
                   key={prompt}
                   type="button"
@@ -458,15 +473,17 @@ export function AssistantPage({ assistantText, stage, onAsk }: AssistantPageProp
                   {prompt}
                 </button>
               ))}
+              <button
+                type="button"
+                className="assistant-prompt-shuffle"
+                onClick={() => setChipOffset((current) => current + visibleChipCount)}
+                disabled={Boolean(pendingPrompt)}
+                aria-label="Shuffle suggested prompts"
+                title="Shuffle suggested prompts"
+              >
+                ↻
+              </button>
             </div>
-            <button
-              type="button"
-              className="assistant-soft-offer"
-              onClick={() => submitPrompt(activePlug.product)}
-              disabled={Boolean(pendingPrompt)}
-            >
-              {activePlug.cta} · {activePlug.price}
-            </button>
           </div>
         </form>
 

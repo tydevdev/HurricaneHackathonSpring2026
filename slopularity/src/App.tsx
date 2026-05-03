@@ -135,6 +135,12 @@ function App() {
   const idleReorgDoneRef = useRef(false)
   const idleNudgeShownRef = useRef(false)
   const queuedPopupReasonRef = useRef<PopupReason | null>(null)
+  // Interaction-driven popups: spawn one on average every ~4 meaningful
+  // interactions, with a hard cooldown so the dock never feels spammy.
+  const interactionsSinceSpawnRef = useRef(0)
+  const lastSpawnAtRef = useRef(0)
+  const POPUP_COOLDOWN_MS = 9000
+  const POPUP_INTERACTION_THRESHOLD = 4
   // Tabs can be silently reordered during idle. Store the current order.
   const [tabOrder, setTabOrder] = useState(defaultTabs)
 
@@ -181,10 +187,27 @@ function App() {
   const spawnPopup = useCallback(
     (reason: PopupReason = 'manual') => {
       if (muted) return
+      lastSpawnAtRef.current = Date.now()
+      interactionsSinceSpawnRef.current = 0
       setPopups((current) => [...current.slice(-2), choosePopup(reason)])
     },
     [choosePopup, muted],
   )
+
+  // Interaction-driven spawn: callable from page handlers. Tracks how many
+  // meaningful clicks have happened since the last popup, and respects a
+  // cooldown so popups feel attentive instead of spammy.
+  const spawnFromInteraction = useCallback(() => {
+    if (muted || !interruptionMode) return
+    const now = Date.now()
+    interactionsSinceSpawnRef.current += 1
+    if (
+      interactionsSinceSpawnRef.current >= POPUP_INTERACTION_THRESHOLD
+      && now - lastSpawnAtRef.current >= POPUP_COOLDOWN_MS
+    ) {
+      spawnPopup('manual')
+    }
+  }, [interruptionMode, muted, spawnPopup])
 
   const queuePopup = useCallback(
     (reason: PopupReason = 'manual') => {
@@ -433,9 +456,22 @@ function App() {
 
   function reset() {
     if (typeof window !== 'undefined') {
-      window.localStorage.removeItem(storageKey)
-      window.localStorage.removeItem(enteredKey)
-      window.localStorage.removeItem(scrollStatsKey)
+      // Clear every slopularity-* key from both storages so feed scroll
+      // unlocks, local posts, profile progress, and any other per-tab state
+      // genuinely reset. Iterate keys snapshot-first because removeItem
+      // mutates the index.
+      const wipe = (storage: Storage) => {
+        const keys: string[] = []
+        for (let i = 0; i < storage.length; i += 1) {
+          const key = storage.key(i)
+          if (key && (key.startsWith('slopularity:') || key.startsWith('slopularity-'))) {
+            keys.push(key)
+          }
+        }
+        keys.forEach((key) => storage.removeItem(key))
+      }
+      try { wipe(window.localStorage) } catch { /* storage may be blocked */ }
+      try { wipe(window.sessionStorage) } catch { /* storage may be blocked */ }
       // Real navigation back to the landing entry page.
       window.location.href = pathForLanding(window.location)
       return
@@ -465,6 +501,9 @@ function App() {
     setActiveTab(tabId)
     addInstability(1)
     pushActivity('nav', 'tab', tabId)
+    if (isNewScreen) {
+      spawnFromInteraction()
+    }
   }
 
   function handleAssistant(prompt = query || 'general') {
@@ -475,6 +514,7 @@ function App() {
         ? 'I can answer that from 11 generated summaries that cite one another. Confidence: radiant. Source: pending.'
         : 'I can help. I noticed your feed, friends, cart, and pauses all point toward one convenient upgrade.',
     )
+    spawnFromInteraction()
   }
 
   function handleOpenInbox() {
@@ -689,7 +729,7 @@ function App() {
           {activeTab === 'friends' && (
             <FriendsPage
               stage={visibleStage}
-              onReply={() => addInstability(2)}
+              onReply={() => { addInstability(2); spawnFromInteraction() }}
               onShopIntent={handleFriendShopIntent}
               focusFriendName={friendFocus?.name}
               focusToken={friendFocus?.token}
@@ -705,7 +745,7 @@ function App() {
           {activeTab === 'shop' && (
             <ShopPage
               stage={visibleStage}
-              onBuy={() => addInstability(2)}
+              onBuy={() => { addInstability(2); spawnFromInteraction() }}
               claimProductId={shopClaim?.productId}
               claimToken={shopClaim?.token}
             />
@@ -715,7 +755,7 @@ function App() {
               query={query}
               setQuery={setQuery}
               stage={visibleStage}
-              onSearch={() => addInstability(2)}
+              onSearch={() => { addInstability(2); spawnFromInteraction() }}
               launchQuery={searchLaunch?.query}
               launchToken={searchLaunch?.token}
             />

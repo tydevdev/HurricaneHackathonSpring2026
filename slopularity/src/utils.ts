@@ -1,5 +1,8 @@
 export const maxDecayStage = 5
-export const decayStageStep = 120
+// Score per stage. Tuned so a natural 5–10 minute demo passes through every
+// phase: ~10 deliberate interactions advance one stage, and "Demo pulse"
+// jumps directly to the next threshold for the impatient.
+export const decayStageStep = 10
 export const maxDecayScore = (maxDecayStage - 1) * decayStageStep
 
 export function scoreForStage(stage: number) {

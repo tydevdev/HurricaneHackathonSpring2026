@@ -2212,12 +2212,16 @@ p {
   100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.double-scroll-close {
+/* Higher specificity than `.double-scroll-modal button` so width / padding /
+   min-height / font-size / box-shadow aren't overridden by the CTA rule. */
+.double-scroll-modal button.double-scroll-close {
   position: absolute;
   top: 10px;
   right: 10px;
   width: 32px;
+  min-width: 32px;
   height: 32px;
+  min-height: 32px;
   display: grid;
   place-items: center;
   padding: 0;
@@ -2228,12 +2232,13 @@ p {
   border: 0;
   border-radius: 999px;
   cursor: pointer;
+  box-shadow: none;
   transition: background 0.15s ease, color 0.15s ease;
   pointer-events: auto;
   z-index: 6;
 }
-.double-scroll-close:hover,
-.double-scroll-close:focus-visible {
+.double-scroll-modal button.double-scroll-close:hover,
+.double-scroll-modal button.double-scroll-close:focus-visible {
   color: #050505;
   background: rgba(15, 23, 42, 0.14);
 }

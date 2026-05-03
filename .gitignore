@@ -29,9 +29,13 @@ pnpm-debug.log*
 .turbo/
 .vite/
 coverage/
+test-results/
+**/test-results/
 
 # iCloud conflict duplicates
 slopularity/src/* 2.*
 slopularity/src/pages/* 2.*
+slopularity/dist/* [0-9].html
+slopularity/dist/assets/* [0-9].*
 
 # Vite build output is intentionally tracked for published GitHub Pages demos.

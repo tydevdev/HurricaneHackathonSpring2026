@@ -788,3 +788,15 @@
 - Updated `slopularity/DECAY_FEATURES.md`, `slopularity/DESIGN_BIBLE.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the slower shared decay ladder.
 - Regenerated `slopularity/dist/` so the published app uses the slower threshold.
 - Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` confirmed score `239` stays stage 2 with no cracks or repair UI, score `240` enters stage 3 with cracks and repair UI, and score `480` reaches stage 5 with fractures.
+
+## [2026-05-02 21:16] Rework Spackle Crack Repair For Mobile
+
+- Rewrote `slopularity/src/components/CrackRepairAssistant.tsx` so the repair card is a single cohesive bottom-center unit with the brush button and progress bar in one row, instead of a detached corner card with a free-floating brush.
+- Moved pointer capture from the tiny brush button to the full overlay div so touch dragging works reliably on phone; the drag starts only when pressing the brush but can continue across the whole screen.
+- Replaced the pointer-move-only progress model with a rAF-based timer that fills the bar even when the finger stays mostly still, fixing the main phone interaction bug where progress wouldn't advance.
+- Added dynamic message text ("Keep going!" during drag), a labeled progress bar with percentage, and a subtle brush wiggle animation to make the interaction discoverable.
+- Replaced all old `.helpy-rescue`/`.spackle-meter`/fixed-position brush CSS with dedicated `.crack-repair-*` classes so the repair card has its own responsive layout that doesn't collide with the LandingPage Helpy.
+- Re-added the `.helpy-rescue` mobile responsive rules that were accidentally displaced during the CSS swap.
+- Updated `slopularity/DECAY_FEATURES.md` to describe the new card-integrated interaction.
+- Files changed: `CrackRepairAssistant.tsx`, `index.css`, `DECAY_FEATURES.md`, `HISTORY.md`.
+- Validation run: `npm run lint`; `npm run build`; both clean.

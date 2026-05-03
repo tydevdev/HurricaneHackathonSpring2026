@@ -1,85 +1,94 @@
-import { useRef, useState, type CSSProperties, type PointerEvent } from 'react'
+import { useCallback, useEffect, useRef, useState, type PointerEvent } from 'react'
 
 type CrackRepairAssistantProps = {
   stage: number
   onRepair: () => void
 }
 
-type BrushPosition = {
-  x: number
-  y: number
-}
-
-type DragState = {
-  lastX: number
-  lastY: number
-  startedAt: number
-  distance: number
-}
-
-type RepairStyle = CSSProperties & {
-  '--brush-x': string
-  '--brush-y': string
-  '--repair-progress': string
-}
-
 const repairStages = new Set([3, 4])
 const requiredDragMs = 2000
-const requiredDistance = 80
-
-function defaultBrushPosition(): BrushPosition {
-  if (typeof window === 'undefined') {
-    return { x: 320, y: 520 }
-  }
-
-  return {
-    x: Math.max(48, window.innerWidth - 72),
-    y: Math.max(88, window.innerHeight - 96),
-  }
-}
+const requiredMinDistance = 60
 
 export function CrackRepairAssistant({ stage, onRepair }: CrackRepairAssistantProps) {
-  const [brushPosition, setBrushPosition] = useState(defaultBrushPosition)
   const [dragging, setDragging] = useState(false)
   const [progress, setProgress] = useState(0)
-  const dragRef = useRef<DragState | null>(null)
+  const [repaired, setRepaired] = useState(false)
+  const dragRef = useRef<{
+    startedAt: number
+    lastX: number
+    lastY: number
+    distance: number
+  } | null>(null)
   const repairedRef = useRef(false)
-  const visible = repairStages.has(stage)
+  const rafRef = useRef(0)
 
-  if (!visible) {
-    return null
-  }
+  const visible = repairStages.has(stage) && !repaired
 
-  const style: RepairStyle = {
-    '--brush-x': `${brushPosition.x}px`,
-    '--brush-y': `${brushPosition.y}px`,
-    '--repair-progress': `${progress}`,
-  }
-
-  function finishRepair() {
+  const finishRepair = useCallback(() => {
     if (repairedRef.current) return
     repairedRef.current = true
     setProgress(1)
     setDragging(false)
     dragRef.current = null
-    onRepair()
+
+    // Brief flash at 100% before hiding
+    setTimeout(() => {
+      setRepaired(true)
+      onRepair()
+    }, 400)
+  }, [onRepair])
+
+  // Animate progress smoothly during drag via rAF
+  useEffect(() => {
+    if (!dragging) return undefined
+
+    let running = true
+    function tick() {
+      if (!running) return
+      const drag = dragRef.current
+      if (!drag) return
+
+      const elapsed = performance.now() - drag.startedAt
+      const next = Math.min(1, elapsed / requiredDragMs)
+      setProgress(next)
+
+      if (elapsed >= requiredDragMs && drag.distance >= requiredMinDistance) {
+        finishRepair()
+        return
+      }
+
+      rafRef.current = requestAnimationFrame(tick)
+    }
+
+    rafRef.current = requestAnimationFrame(tick)
+    return () => {
+      running = false
+      cancelAnimationFrame(rafRef.current)
+    }
+  }, [dragging, finishRepair])
+
+  if (!visible) {
+    return null
   }
 
-  function handlePointerDown(event: PointerEvent<HTMLButtonElement>) {
-    event.currentTarget.setPointerCapture(event.pointerId)
+  function handlePointerDown(event: PointerEvent<HTMLDivElement>) {
+    // Only start from the brush button
+    const target = event.target as HTMLElement
+    if (!target.closest('.spackle-brush')) return
+
+    ;(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId)
     const now = performance.now()
     dragRef.current = {
+      startedAt: now,
       lastX: event.clientX,
       lastY: event.clientY,
-      startedAt: now,
       distance: 0,
     }
-    setBrushPosition({ x: event.clientX, y: event.clientY })
     setDragging(true)
     setProgress(0)
   }
 
-  function handlePointerMove(event: PointerEvent<HTMLButtonElement>) {
+  function handlePointerMove(event: PointerEvent<HTMLDivElement>) {
     const drag = dragRef.current
     if (!drag || !dragging) return
 
@@ -88,19 +97,6 @@ export function CrackRepairAssistant({ stage, onRepair }: CrackRepairAssistantPr
     drag.distance += Math.hypot(dx, dy)
     drag.lastX = event.clientX
     drag.lastY = event.clientY
-    setBrushPosition({ x: event.clientX, y: event.clientY })
-
-    if (drag.distance < 12) {
-      return
-    }
-
-    const elapsed = performance.now() - drag.startedAt
-    const nextProgress = Math.min(1, elapsed / requiredDragMs)
-    setProgress(nextProgress)
-
-    if (elapsed >= requiredDragMs && drag.distance >= requiredDistance) {
-      finishRepair()
-    }
   }
 
   function cancelDrag() {
@@ -109,44 +105,64 @@ export function CrackRepairAssistant({ stage, onRepair }: CrackRepairAssistantPr
     setProgress(0)
   }
 
+  const progressPct = Math.round(progress * 100)
+
   return (
     <div
       className={`crack-repair ${dragging ? 'is-dragging' : ''}`}
-      style={style}
+      style={{ '--repair-progress': String(progress) } as React.CSSProperties}
       aria-live="polite"
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={cancelDrag}
+      onPointerCancel={cancelDrag}
+      onLostPointerCapture={cancelDrag}
     >
+      {/* Full-screen wash effect while dragging */}
       {dragging && <div className="spackle-wash" aria-hidden="true" />}
 
-      <div className="helpy-rescue crack-repair-card" role="dialog" aria-label="Helpy crack repair">
-        <div className="helpy-rescue-bubble">
-          <div className="helpy-rescue-avatar" aria-hidden="true">
-            <span className="helpy-rescue-face">🤖</span>
-          </div>
-          <div className="helpy-rescue-body">
-            <p className="helpy-rescue-name">Helpy</p>
-            <p className="helpy-rescue-msg">
-              Uh oh, looks like there&apos;s some cracks. Take this Spackle and seal them.
+      <div className="crack-repair-card" role="dialog" aria-label="Helpy crack repair">
+        {/* Helpy message */}
+        <div className="crack-repair-header">
+          <span className="crack-repair-avatar" aria-hidden="true">🤖</span>
+          <div className="crack-repair-body">
+            <p className="crack-repair-name">Helpy</p>
+            <p className="crack-repair-msg">
+              {dragging
+                ? 'Keep going! Sealing the cracks…'
+                : 'Uh oh — cracks detected. Drag the brush to seal them.'}
             </p>
-            <div className="spackle-meter" aria-hidden="true">
-              <span />
-            </div>
           </div>
         </div>
-      </div>
 
-      <button
-        type="button"
-        className="spackle-brush"
-        aria-label="Drag the paintbrush around the cracks for two seconds"
-        title="Drag for 2 seconds"
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={cancelDrag}
-        onPointerCancel={cancelDrag}
-        onLostPointerCapture={cancelDrag}
-      >
-        🖌️
-      </button>
+        {/* Progress bar + brush in one row */}
+        <div className="crack-repair-action">
+          <div
+            className="spackle-progress-track"
+            role="progressbar"
+            aria-valuenow={progressPct}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label="Repair progress"
+          >
+            <div
+              className="spackle-progress-fill"
+              style={{ width: `${progressPct}%` }}
+            />
+            <span className="spackle-progress-label">
+              {progressPct > 0 ? `${progressPct}%` : 'Drag brush →'}
+            </span>
+          </div>
+          <button
+            type="button"
+            className="spackle-brush"
+            aria-label="Press and drag to seal the cracks"
+            title="Hold and drag for 2 seconds"
+          >
+            🖌️
+          </button>
+        </div>
+      </div>
     </div>
   )
 }

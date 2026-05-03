@@ -774,10 +774,17 @@
 
 ## [2026-05-02 20:39] Add Helpy Spackle Crack Repair
 
-- Updated `slopularity/src/utils.ts`, `slopularity/src/App.tsx`, and `slopularity/src/pages/ProfilePage.tsx` so decay now has five visible stages with 12 score points per stage instead of the previous 6-point ladder.
+- Updated `slopularity/src/utils.ts`, `slopularity/src/App.tsx`, and `slopularity/src/pages/ProfilePage.tsx` so decay now has five visible stages.
 - Added `slopularity/src/components/CrackRepairAssistant.tsx` and styling in `slopularity/src/index.css` so Helpy appears at crack stages 3 and 4 with Spackle and a draggable paintbrush emoji.
 - Dragging the brush for 2 seconds now resets the shared decay score to `0`, which returns the app to stage 1 and removes cracks through the existing global stage model.
 - Extended late-stage CSS so stage 5 keeps source-leak styling, ghost duplicates, chromatic drift, red phase state, and the fracture layer instead of falling back to clean selectors.
 - Updated `slopularity/DECAY_FEATURES.md`, `slopularity/DESIGN_BIBLE.md`, and `slopularity/IMPLEMENTATION_STATUS.md` with the five-stage ladder and Spackle repair intent.
 - Regenerated `slopularity/dist/` so the published app includes the repair mechanic.
 - Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` confirmed stage 3 repair appears, a simulated 2+ second brush drag resets score to `0` and removes cracks, stage 5 renders as `phase 5 of 5` with fractures, and phone-sized 390x844 has no horizontal overflow.
+
+## [2026-05-02 20:41] Slow Visible Decay Thresholds
+
+- Updated `slopularity/src/utils.ts` so each visible decay stage now requires 120 instability points, making cracks appear at score `240` instead of `24`.
+- Updated `slopularity/DECAY_FEATURES.md`, `slopularity/DESIGN_BIBLE.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the slower shared decay ladder.
+- Regenerated `slopularity/dist/` so the published app uses the slower threshold.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` confirmed score `239` stays stage 2 with no cracks or repair UI, score `240` enters stage 3 with cracks and repair UI, and score `480` reaches stage 5 with fractures.

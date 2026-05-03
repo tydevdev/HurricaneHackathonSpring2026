@@ -119,7 +119,7 @@ Each entry includes:
 | Ambient bug crawl | Reach stage 4 and stay in the app | A bug emoji occasionally crawls diagonally from off one side of the screen to the other on a random 30-second to 5-minute timer | 4 | implemented |
 | Page fracture overlay | Reach stage 3+, then switch tabs or advance into later stages | Hairline cracks spread across the page; stage 4+ grows larger cracks and paper-like UI shards break loose and fall off screen | 3-5 | implemented |
 | Helpy Spackle repair | Reach stage 3 or 4 | Helpy returns in the corner with Spackle; dragging the paintbrush emoji for 2 seconds seals the cracks and resets the decay score to 0 | 3-4 | implemented |
-| Five-stage decay ladder | Trigger ordinary instability events or demo controls | Decay now has five visible stages, with 12 score points required per stage instead of 6, so escalation takes twice as much interaction | all | implemented |
+| Five-stage decay ladder | Trigger ordinary instability events or demo controls | Decay now has five visible stages, with 120 score points required per stage, so escalation is 10x slower than the first Spackle pass | all | implemented |
 | Appbar demo pulse | Click `Demo pulse` in the appbar | Advances to the next real decay-stage threshold and immediately summons one friend-queue popup for live demos | all | implemented |
 | Profile decay demo controls | Click Profile's `Increase decay` or `Stage 5` demo controls | Manually advances the same instability score that drives every decay threshold, for demos | all | implemented |
 

@@ -1,5 +1,5 @@
 export const maxDecayStage = 5
-export const decayStageStep = 12
+export const decayStageStep = 120
 export const maxDecayScore = (maxDecayStage - 1) * decayStageStep
 
 export function scoreForStage(stage: number) {

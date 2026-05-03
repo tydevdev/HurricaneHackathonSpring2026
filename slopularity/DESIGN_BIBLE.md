@@ -386,7 +386,7 @@ Recommended thresholds:
 - stage 4: source leakage, larger fractures, broken controls, and repair temptation
 - stage 5: the same source-leak world under heavier pressure; do not lose late-stage CSS by only targeting stage 4 selectors
 
-The score resets to 0 when a mechanic explicitly repairs the system, but the visible app phases are 1-5. Each phase threshold is 12 instability points, so future instability additions should assume escalation is slower and more earned than the earlier 6-point ladder.
+The score resets to 0 when a mechanic explicitly repairs the system, but the visible app phases are 1-5. Each phase threshold is 120 instability points, so future instability additions should assume visible cracks and late decay take a long run of interactions rather than appearing during the first few clicks.
 
 At stage 4+, the interface may also leak small ambient impossibilities that feel like production debris rather than a modal or explanation. One implemented example is a bug emoji that occasionally crosses diagonally from offscreen to offscreen at a random interval between 30 seconds and 5 minutes. It must stay pointer-events-none, respect reduced motion, and remain rare enough that it feels like the app is rotting at the edge of attention instead of becoming a game mechanic.
 

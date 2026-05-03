@@ -13,11 +13,18 @@ Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESI
 ## [2026-05-02 20:39] Helpy Spackle Repair And Five-Stage Decay
 
 - Active focus: global decay math in `src/utils.ts`, app-level repair orchestration in `src/App.tsx`, and the new `src/components/CrackRepairAssistant.tsx`.
-- Behavior changed: decay now has five visible stages and each stage takes 12 instability points instead of 6, making escalation twice as slow as the previous ladder.
+- Behavior changed: decay now has five visible stages and each stage takes 120 instability points instead of 12, making visible escalation 10x slower than the first Spackle pass.
 - Behavior changed: at stages 3 and 4, Helpy returns in the corner with Spackle and a draggable paintbrush emoji; dragging for 2 seconds resets the shared decay score to 0, which removes the fracture overlay through the normal stage model.
 - Behavior preserved: stage 4+ source leaks, ghost duplicates, chromatic drift, bugs, popup leaks, and the existing fracture layer remain centralized and readable. Stage 5 inherits the late-stage CSS instead of dropping back to clean styling.
 - Files changed: `src/utils.ts`, `src/App.tsx`, `src/components/CrackRepairAssistant.tsx`, `src/pages/ProfilePage.tsx`, `src/index.css`, `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
 - Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` forced stage 3, confirmed cracks plus Helpy Spackle and brush, simulated a 2+ second brush drag, confirmed local score reset to `0`, `data-stage` returned to `1`, and crack/repair layers disappeared. Stage 5 was forced at score `48` and confirmed as `phase 5 of 5` with the fracture layer still present. Phone-sized 390x844 smoke confirmed stage 3 repair UI and no horizontal overflow.
+
+## [2026-05-02 20:41] Slow Visible Decay Thresholds
+
+- Active focus: slowing the shared stage threshold in `src/utils.ts` without changing the Spackle interaction, demo controls, or late-stage visuals.
+- Behavior changed: each visible decay stage now requires 120 instability points, so cracks begin at score `240` instead of `24`.
+- Files changed: `src/utils.ts`, `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` confirmed score `239` stays stage 2 with no cracks or repair UI, score `240` enters stage 3 with cracks and repair UI, and score `480` reaches stage 5 with fractures.
 
 ## [2026-05-02 20:12] Page Fracture Decay
 

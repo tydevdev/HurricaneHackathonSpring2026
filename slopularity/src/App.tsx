@@ -185,7 +185,10 @@ function App() {
   const choosePopup = useCallback(
     (reason: PopupReason): Popup => {
       const seed = popupSeeds[(score + popups.length + reason.length) % popupSeeds.length]!
-      const message = seed.messages[reason]
+      const messagePool = seed.messages[reason]
+      const message = Array.isArray(messagePool)
+        ? messagePool[(score + popups.length + reason.charCodeAt(0)) % messagePool.length]!
+        : messagePool
       return {
         id: Date.now() + popups.length,
         name: seed.name,

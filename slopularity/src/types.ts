@@ -25,8 +25,8 @@ export type PopupSeed = {
   role: string
   tone: PopupTone
   intent: string
-  /** A pool of opener variants — picked by reason. */
-  messages: { manual: string; idle: string; dismiss: string }
+  /** Opener variants picked by reason and interaction count. */
+  messages: Record<'manual' | 'idle' | 'dismiss', string | string[]>
   offer: string
 }
 
@@ -53,8 +53,8 @@ export type BrandFriend = {
   tagline: string
   status: 'online'
   voice: string
-  /** 5-rung emotional upsell ladder — each deeper than the last. */
-  responses: [string, string, string, string, string]
+  /** Emotional upsell ladder — each deeper than the last. */
+  responses: string[]
   product: string
   productSub: string
   memory: string

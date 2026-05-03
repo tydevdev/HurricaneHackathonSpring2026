@@ -82,6 +82,7 @@ export function PageFracture({ stage, surfaceKey }: PageFractureProps) {
         <div className="page-fracture-shards">
           {shardStyles.map((style, index) => (
             <span
+              // Stable by design: remounting the parent restarts the fall.
               key={index}
               className={`page-fracture-shard shard-${index + 1}`}
               style={style}

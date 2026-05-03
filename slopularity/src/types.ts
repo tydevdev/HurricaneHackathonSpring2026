@@ -15,6 +15,7 @@ export type Popup = {
   tone: PopupTone
   message: string
   offer: string
+  source: 'manual' | 'idle' | 'dismiss'
   /** Internal label leaked at stage 4+. */
   intent: string
 }

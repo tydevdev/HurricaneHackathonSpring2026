@@ -159,6 +159,8 @@ The feed is the active implementation focus as of May 2, 2026. It should start a
 
 The feed should start glossy and emotionally familiar: wellness, adventure, productivity, beauty, travel, luxury, and self-improvement blended into one scroll. Its comments are intentionally compromised from the start: every thread should read like spam bots, fake fans, and too-polished "real users" laundering product plugs through social proof. As instability rises, the feed should reveal repeated faces, recycled captions, comments answering unseen prompts, fake engagement, impossible sponsor placement, and action labels that turn insecurity into product flow.
 
+The bottom-feed `Click me click me see more!!!!!!!!` control is a shameless retention lure, not pagination. Preserve the exact overeager label, the feed-only placement after the loop status, and the reward overload: confetti, lasers, and a smooth return to the top so the user is celebrated into repeating the same surface.
+
 The canonical feed now contains 50 image-backed posts. Preserve the expanded range as a broad lifestyle loop rather than a narrow influencer set: work, travel, home automation, beauty, grocery, fitness, finance, sleep, pets, and friendship should all feel absorbed into the same social product grammar.
 
 The feed must stay smooth even when the user scrolls aggressively. Keep the canonical pool broad, but render only a bounded live window per lane, lazy-decode feed/story images, and use single-target scroll checks for unlocks instead of observing or mounting every possible repeated post. The `DOUBLE SCROLL` and `TRIPLE SCROLL` modes should feel overwhelming because of layout and copy, not because the browser is being overloaded.
@@ -174,6 +176,7 @@ Interaction hooks:
 - repeated scrolls that mutate captions or counts
 - after the user has seen at least ten posts, a forced celebratory subscription modal may unlock `DOUBLE SCROLL`: two simultaneous feed lanes that make the feed feel like a feature and a threat at the same time. Another ten-post-equivalent scroll depth can unlock `TRIPLE SCROLL`, and a third interval can unlock `QUADRUPLE SCROLL`, pushing the same post universe into four simultaneous lanes on wide screens or four interleaved full-width posts on phones.
 - comments that preview inline but open into a focused modal/bottom sheet with post context, sorting controls, quick replies, per-comment trust actions, and human input converted into brand-safe testimonial replies
+- the topbar `inbox` action routes into Friends and lands on a live conversation; do not leave it as decorative chrome
 - sponsor disclosures that move, soften, or rename themselves
 - posts that reappear with tiny differences
 - top-right post menus should feel like social-app overflow menus that have been absorbed by the product machine: `cancel`, `envision as yourself with AI`, and comment-trail actions should route into existing feed actions instead of being dead jokes
@@ -214,14 +217,19 @@ Intention: connection as an interruptive sales interface.
 
 Popups should first read as social notifications, but they must not interrupt active consumption. They should wait until the user has stopped scrolling, clicking, typing, moving the pointer, or touching the screen for about 10 seconds; then they can slide in with intimate timing, follow the user across tabs, react to hesitation or idle time, and return softer after dismissal.
 
-This mechanic is currently feature-flagged off (`featureFlags.interruptionLayer = false`) so feed-sprint work is not interrupted. When the flag is flipped on, the dock now behaves as follows:
+This mechanic is active behind `featureFlags.interruptionLayer = true`. The dock now behaves as a compact relationship queue rather than a loose stack:
 
-- Popups stack in a bottom-LEFT dock with a header that reads "Friends checking in" and shows a count. The dock never overlaps the right-side developer-fragments rail.
+- The dock stays bottom-left on desktop and lifts above mobile nav on phones. It shows one active message at a time, with older check-ins compressed into queue rows so the app remains usable.
+- If the idle eye is present at the same time, the queue wins the layer stack. On phone, the eye recedes above the queue and loses its callout so the message surface is readable.
+- The header reads "Friend queue" and shows active/queued count. At stage 4 it leaks `// monetize_loneliness`.
+- Each popup has a visible signal chip (`summoned`, `quiet signal`, or `soft follow-up`) so the interruption has an in-world reason. At stage 4 this becomes a `source:*` debug leak.
 - Each popup has a real `×` close button. Clicking it (or "Not now") removes the popup permanently.
+- "Reply in Friends" routes to the Friends surface and dismisses the popup. The recommendation card routes to Shop and dismisses the popup, so the buttons now serve the surfaces they imply instead of only adding hidden instability.
 - The "softer follow-up" rule is one-shot per session: at stage ≥ 3, the *first* dismiss after popups are nearly empty arms exactly one gentler check-in via `'dismiss'` reason. After that, dismissing means dismissing.
 - A "Friends muted" toggle in the appbar clears the dock and blocks new spawns. Re-enabling it re-arms the one-shot follow-up.
 - Switching to another app tab clears all visible popup layers and queued follow-up popups. Popups may follow a user across a tab only while the user stays on that screen; navigation is treated as a real dismissal so Feed-to-Games, Feed-to-Search, or similar screen changes feel clean.
-- Idle ticks can spawn popups at the 10-second stillness mark. Manual demo pulse and dismiss follow-ups may queue the next popup tone, but the popup still waits for the same idle gate and respects the muted state.
+- Idle ticks can spawn popups at the 10-second stillness mark. Dismiss follow-ups may queue the next popup tone, but the popup still waits for the same idle gate and respects the muted state.
+- The appbar `Demo pulse` is a live-presentation control: it should visibly advance to the next real decay threshold and summon one friend-queue popup immediately. Do not make demo feedback depend on hidden score changes or idle timing.
 
 Interaction hooks:
 
@@ -229,6 +237,7 @@ Interaction hooks:
 - multiple popups compete over the same conversion (max 3 visible)
 - muting becomes its own loud "Friends muted" affordance — paid-blocking is reserved for a later stage
 - leaked fields such as `friendship_intent`, `handoff_to_checkout`, or `abandonment_risk` appear in the popup `<small>` once stage ≥ 4
+- Friend popup CTAs must never be dead acknowledgements. Reply actions open the Friends/DM surface focused on the popup sender, and offer actions route through Shop with a product claim where possible.
 
 ### Idle Attention
 
@@ -282,8 +291,10 @@ Current implementation:
 - Preserve the top challenge meter. It should reward both cart filling and completed checkout volume, making progress feel like a game instead of spending.
 - Product cards should keep the Temu-style contradiction: large red `99% OFF` badges, countdown timers, inflated "was" gem prices, and the actual product price translated into gems and a quieter cash equivalent.
 - Product imagery comes from the feed image pool so commerce feels like the feed has been repackaged into deals.
+- The product grid now includes remixed variants of the same core products (`Travel Size`, `Family Pack`, `Auto Bundle`) so the page feels like an endless marketplace without introducing unrelated inventory.
+- Preserve the pressure strip and booster row as the shop's secondary layer: deal rank, cart watchers, shipping ladder, mystery rebate, friend cart sync. These should add pressure without overlapping the product cards.
 - Adding a product must open the bonus sheet with exactly three add-on offers. Those add-ons should feel plausible, small, and predatory: timer protection, proof/review layers, future auto-reorder calm, or similar.
-- Desktop should read as a dense deal feed with a sticky cart rail. Phone should stack into one column with no horizontal overflow, touch-sized buttons, and the cart panel before the product grid.
+- Desktop should read as a dense deal feed with a sticky cart rail. Phone should stack into one column with no horizontal overflow, touch-sized buttons, and the cart panel before the product grid. Do not make the shop's own header sticky; it overlaps the Cart Quest layer under the shared app chrome.
 
 Interaction hooks:
 
@@ -294,6 +305,8 @@ Interaction hooks:
 - gem conversion hides dollar spending behind a second currency
 - add-to-cart interrupts with three discounted extras
 - cart challenge reframes spending as progress
+- remixed duplicate SKUs make the catalog feel artificially huge
+- pressure boosters turn shipping, rebates, and friends into purchase pressure
 
 ### Search
 
@@ -323,12 +336,12 @@ The assistant should sound useful, calm, and competent. It should contradict oth
 
 Current implementation:
 
-- Assistant is now a polished app workspace rather than a single bubble: large Helpy header, conversation thread, composer, prompt chips, status readouts, sponsored recommendation rail, and routing receipt.
+- Assistant is now a chat-first workspace rather than a dashboard around a mini chat window: compact Helpy header, full-width transcript canvas, always-visible composer, prompt chips, status readouts, and an understated routing receipt.
 - Every user prompt is preserved as a chat turn, but Helpy's response deliberately treats the prompt as a signal instead of a request. The answer starts with praise, quotes the prompt, and pivots into a product offer.
-- The right-side product rail rotates across GlowNest Mirror+, SnapWake Adaptogen Stack, AuraBank Reflex Fund, and Context Bundle based on conversation count and current stage.
-- The routing receipt is part of the joke: it visibly completes "praise user", "avoid exact question", and "attach product" as the user keeps asking, while direct answers remain scarce.
+- The current offer bias rotates across GlowNest Mirror+, SnapWake Adaptogen Stack, AuraBank Reflex Fund, and Context Bundle, but it lives inside the thread/composer instead of competing as a separate sidebar.
+- The routing receipt is part of the joke: it visibly completes "praise", "dodge", and "attach offer" as the user keeps asking, while direct answers remain scarce.
 - At stage 4, assistant replies leak that retrieval returned sponsored summaries citing one another, and individual replies expose internal intent labels such as `intent: question_to_allocation`.
-- Phone layout collapses to a single-column chat surface with full-width composer actions, horizontal suggested prompts, and the product rail below the conversation.
+- Phone layout keeps the composer visible in the first view, uses compact status cells, and lets the transcript scroll behind the input instead of burying chat controls below the fold.
 
 Interaction hooks:
 
@@ -460,13 +473,15 @@ Intention: the first taste of collapse before the user enters the app.
 
 The landing page is a single focused screen with one button: "Enter the Singularity." The page looks polished and confident on first arrival — the tagline, brand bar, and CTA all suggest a premium product ready to welcome you.
 
-The button does not enter the app immediately. Instead, clicking it triggers a three-stage degradation sequence:
+The button does not enter the app immediately. Instead, clicking it triggers a four-stage degradation sequence:
 
 1. **Click 1 — Shuffle**: The page briefly blinks (fake page navigation), then returns with UI elements rearranged: the meta eyebrow, headline, subtitle, and CTA shift their visual order via CSS flexbox ordering. The button moves to a different position. Everything looks like the same page, but shuffled, as if the product looped the user back without noticing.
 
-2. **Click 2 — Garble**: The same shuffle happens again, more aggressively wrong. The button is now visibly crooked (rotated ~3.5°). The headline text garbles from "Everything you need. Before you know you need it." to "Everything you before. Need you need you know it." The subtitle also garbles.
+2. **Click 2 — Dodge**: The same shuffle happens again, but the CTA is now defensive. When the user tries to approach it with a pointer, the CTA dodges three times across the hero before becoming slow enough to catch. Touch and click fallback attempts still advance the dodge count so phone users are not trapped.
 
-3. **Click 3 — Hinge fall**: Instead of a page transition, the entire landing page swings on a hinge (CSS `transform-origin: top center`) and falls off the bottom of the screen like a door coming off its frame (~1.2s animation). After the fall completes, Helpy appears in the bottom-right corner with a rescue bubble: "Looks like you need some help! Click **HERE** to open the app" — and "HERE" actually navigates to `/app/`.
+3. **Click 3 — Garble**: After the dodge stage is caught, the shuffle continues more aggressively wrong. The button is now visibly crooked (rotated ~3.5°). The headline text garbles from "Everything you need. Before you know you need it." to "Everything you before. Need you need you know it." The subtitle also garbles.
+
+4. **Click 4 — Hinge fall**: Instead of a page transition, the entire landing page swings on a hinge (CSS `transform-origin: top center`) and falls off the bottom of the screen like a door coming off its frame (~1.2s animation). After the fall completes, Helpy appears in the bottom-right corner with a rescue bubble: "Looks like you need some help! Click **HERE** to open the app" — and "HERE" actually navigates to `/app/`.
 
 The previous multi-section marketing manifesto (pillars, marquee, stats, preview window, second CTA, full footer) has been stripped in favor of this single focused gate. The CSS for those sections remains inert in the stylesheet.
 
@@ -494,6 +509,8 @@ Verification notes:
 Intention: the platform poses as a social hub but is actually a parasocial brand marketplace where your "friends" are major corporations that glaze you relentlessly to drive sales.
 
 The Friends page has been overhauled into a full split-pane DM messaging interface containing both human friends (6 archetypes) and **8 brand friends** (Coca-Cola, Fortnite, McDonald's, Nike, Spotify, Amazon, Apple, Netflix). 
+
+The inbox should behave like a real messaging product before it decays: live search filters by friend, brand, handle, role, status, and message preview; filter tabs separate brands from people; unread counts clear when a thread opens; drafts surface in the conversation list; threads can be pinned, marked read/unread, archived, and restored; quick replies send reliably without racing the input state; multiple conversations may have independent typing timers. Product cards inside DMs should route into Shop and, when possible, claim the matching product so the sales funnel feels connected instead of ornamental.
 
 Typing a message to any friend triggers an emotional upsell ladder. For human friends, it's a 3-rung ladder:
 1. **Rung 1**: Pure empathy. "I hear you. That sounds really heavy."
@@ -561,7 +578,7 @@ Three idle tiers activate sequentially when the user stops interacting:
 
 1. **5 seconds — Watching Eye + Friend Check-In**: A large CSS-drawn eye appears fixed at the center of the screen. It blinks every 3 seconds. Its red pupil pulses and follows the user's cursor with a lagged max shift. An all-caps callout sits beneath it with needy attention copy like "HEY LOOK OVER HERE" or "COME BACK PLEASE!!!"; 20% of appearances should say "HELP ME PLEASE". One friend popup may also appear at this exact stillness threshold. If a demo pulse or dismiss follow-up was queued, that tone is used; otherwise the idle-specific message appears and adds +2 instability. The eye disappears instantly on any interaction (pointer/mouse movement, pointer down, input, wheel, keydown, click, touch, scroll).
 
-2. **7 seconds — Idle Nudge Rotation**: A center-bottom popup rises into view with one of six hooks: paused-user matches, a new post the app predicts the user will love, a clickbait article about pausing, a fake friend text encouraging them back, a hesitation discount, or an assistant offer to decide the next action. Each primary button routes to the relevant app surface (+2 instability plus normal navigation instability). "Not now" dismisses (+1 instability).
+2. **7 seconds — Idle Nudge Rotation**: A center-bottom popup rises into view with one of six hooks: paused-user matches, a new post the app predicts the user will love, a clickbait article about pausing, a fake friend text encouraging them back, a hesitation discount, or an assistant offer to decide the next action. Each primary button and each row routes to a concrete action (+2 instability plus normal navigation instability): Feed post actions focus and highlight a real post, DM actions open the Friends message surface, Search actions submit a query, Shop actions claim a deal, and Assistant actions generate a response. "Not now" dismisses (+1 instability).
 
 3. **9 seconds — Ambient Reorganization**: The app silently swaps two random tabs in the tab bar. Nothing is acknowledged. The user returns to a slightly different layout with no explanation.
 

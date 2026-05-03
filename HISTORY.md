@@ -7,6 +7,79 @@
 - Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the fracture mechanic and preserve reduced-motion expectations.
 - Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` forced stage 4 at 1280x900 and 390x844, confirmed `.page-fracture-layer`, 10 crack paths, 4 falling shards, fixed pointer-events-none overlay, `fracture-shard-fall` animation, and no horizontal overflow.
 
+## [2026-05-02 20:08] Rework Assistant As Chat Surface
+
+- Reworked `slopularity/src/pages/AssistantPage.tsx` so Assistant is centered on the conversation instead of a mini chat window inside a dashboard.
+- Updated `slopularity/src/index.css` with a compact Assistant header, full-width scrollable transcript, visible composer, embedded offer bias, prompt chips, bottom routing receipt, and desktop/phone responsive sizing.
+- Preserved the existing Helpy behavior: prompt turns, praise-and-ad replies, rotating product offers, assistant activity tracking, and stage-4 recursive source leaks still work.
+- Patched the current Friends/Search launcher lint/build blockers that were preventing the Slopularity proof lane from running cleanly.
+- Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the chat-first Assistant direction.
+- Validation run: `npm run lint`; `npm run build`; Playwright CLI screenshots at 1280x900 and 390x844 against `vite preview` confirmed `/app/assistant/` renders and the composer is visible in the first view.
+
+## [2026-05-02 20:05] Improve Friends Inbox And DMs
+
+- Updated `slopularity/src/pages/FriendsPage.tsx` with live conversation search, unread tracking, draft previews, pinned threads, archive/restore controls, read/unread actions, and explicit empty states.
+- Reworked DM sending so quick replies send through a direct text path, typing indicators are tracked per thread, pending reply timers are cleaned up on unmount, and opened threads clear unread state.
+- Connected DM product cards to Shop by recording offer-click activity and passing matching product ids for GlowNest, SnapWake, AuraBank, FaceMint, and Memorywarm offers.
+- Updated `slopularity/src/App.tsx` and `slopularity/src/index.css` for the connected Shop intent and responsive inbox controls.
+- Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` with the Friends/DM behavior contract.
+- Validation run: `npm run lint`; `npm run build`; Vite preview route smoke at `http://127.0.0.1:4178/app/friends/` returned `200 text/html`, and the built app bundle returned `200 text/javascript`.
+
+## [2026-05-02 20:01] Expand Shop And Fix Overlaps
+
+- Expanded `slopularity/src/pages/ShopPage.tsx` with remixed duplicate SKUs, shelf tags, deal pressure signals, and booster panels for shipping, rebates, and friend cart sync.
+- Updated `slopularity/src/index.css` so the shop header no longer overlaps Cart Quest, price rows stack safely, labels wrap or truncate deliberately, mobile exchange packs stack, and booster/cart/product copy stays inside its containers.
+- Patched current lint blockers in `slopularity/src/App.tsx` and `slopularity/src/pages/LandingPage.tsx` without changing the requested shop behavior.
+- Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` with the expanded shop mechanics and layout constraints.
+- Regenerated `slopularity/dist/` for the GitHub Pages build.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome screenshots at 1280x900, 390x844, and 390x2200 confirmed the expanded shop renders without the header/Cart Quest overlap and stacks correctly on phone.
+
+## [2026-05-02 20:01] Wire Feed Inbox Button
+
+- Updated `slopularity/src/pages/FeedPage.tsx` so the topbar `inbox` button accepts a real navigation handler instead of doing nothing.
+- Updated `slopularity/src/App.tsx` so Feed and News route `inbox` clicks into Friends, focus Honey's conversation, and record the inbox intent.
+- Updated `slopularity/DESIGN_BIBLE.md` and `slopularity/IMPLEMENTATION_STATUS.md` to preserve the behavior contract.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP against `vite preview` at 1280x900 confirmed `/app/feed/` `inbox` click routes to `/app/friends/`, renders `Messages`, and focuses Honey.
+
+## [2026-05-02 20:00] Fix Appbar Demo Pulse
+
+- Updated `slopularity/src/App.tsx` so `Demo pulse` advances to the next real decay-stage threshold instead of adding a hidden +5 score that could leave stage 1 unchanged.
+- The button now summons a friend-queue popup immediately, so the demo control has an obvious visible result without waiting for idle detection.
+- Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the appbar demo-pulse contract.
+- Validation run: pending in this session.
+
+## [2026-05-02 20:00] Add Feed Bottom Celebration Button
+
+- Added a Feed-only bottom button in `slopularity/src/pages/FeedPage.tsx` labeled `Click me click me see more!!!!!!!!`.
+- Clicking the button now records engagement, shows an oversized confetti-and-laser burst, and smoothly scrolls back to the top of the Feed shell.
+- Updated `slopularity/src/index.css` with the footer CTA, fixed celebration layer, responsive sizing, and reduced-motion handling.
+- Fixed current React lint blockers in `slopularity/src/pages/FeedPage.tsx`, `slopularity/src/pages/FriendsPage.tsx`, `slopularity/src/pages/SearchPage.tsx`, and `slopularity/src/pages/ShopPage.tsx` by deferring route-triggered state updates and wiring the Friends search input.
+- Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to document the retention-lure behavior.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP against `vite preview` at `http://127.0.0.1:4177/app/` forced Feed quadruple mode, clicked the bottom button, confirmed 120 confetti pieces, 22 lasers, upward scroll, and no horizontal overflow; `/app/news/` confirmed no Feed-only button and no horizontal overflow.
+
+## [2026-05-02 19:58] Friend Queue Popup Rework
+
+- Reworked `slopularity/src/components/PopupSwarm.tsx` from stacked ad-chat cards into a single active friend queue with compact queued senders, clearer source chips, and tighter dismissal controls.
+- Updated `slopularity/src/App.tsx` and `slopularity/src/types.ts` so popups carry their spawn source and popup actions now route to Friends or Shop instead of only mutating hidden instability.
+- Rebuilt `slopularity/src/index.css` popup styling for desktop and phone-sized viewports, including reduced-motion handling, active/queued hierarchy, signal chips, and a clickable recommendation card.
+- Patched `slopularity/src/pages/AssistantPage.tsx` to use deterministic chat turn ids so the repo's current React purity lint rule stays green.
+- Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to preserve the new behavior contract.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` at 1280x900 and 390x844 forced stage 4, confirmed the friend queue renders with source chip and offer button, no horizontal overflow, mobile idle eye recedes above the queue, and popup actions route to `/app/shop/` and `/app/friends/`.
+
+## [2026-05-02 19:56] Add Onboarding Button Dodge
+
+- Updated `slopularity/src/pages/LandingPage.tsx` so the onboarding gate now includes a middle dodge stage before the garbled/fall stages.
+- Added `slopularity/src/index.css` motion for the CTA dodging three pointer approaches, then becoming catchable.
+- Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the new gate behavior.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP against `vite preview` at 1280x900 confirmed three visible dodge positions, the garbled headline after catching the CTA, and Helpy after the hinge-fall; 390x844 touch smoke confirmed the fallback sequence reaches Helpy with no horizontal overflow.
+
+## [2026-05-02 19:56] Remove CRT Scanline Overlays
+
+- Removed the fixed root-page `body::before` scanline overlay from `styles.css`.
+- Removed Slopularity's stage-4 full-screen scanline pseudo-element and reduced-motion reference from `slopularity/src/index.css`.
+- Kept the rest of the stage-4 decay behavior intact: ghost duplicates, chromatic text, title leaks, bug crawl, and phase-pill pulse.
+- Validation run: `git pull --rebase --autostash origin main`; `npm run lint`; `npm run build`; source and `dist/` grep confirmed no remaining scanline selectors or CRT overlay tokens.
+
 ## [2026-05-02 19:52] Add Feed Quadruple Scroll
 
 - Updated `slopularity/src/pages/FeedPage.tsx` so the shared Feed/News scroll escalation continues from single to double to triple to `QUADRUPLE SCROLL`.
@@ -15,13 +88,6 @@
 - Updated `slopularity/src/App.tsx` with a minimal tabbar click-handler cleanup so the current React lint rule stays green.
 - Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the fourth scroll behavior.
 - Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP against `vite preview` at 1280x900 forced `scrollMode: "quadruple"` and confirmed four desktop lanes, 96 live post cards, correct `Quadruple Scroll feed` label, and no horizontal overflow; 390x844 forced quadruple mode confirmed 24 vertical stacks with four full-width posts each, no `.double-scroll-lane` nodes, and no horizontal overflow; a fresh desktop session scrolled and accepted DOUBLE, TRIPLE, then QUADRUPLE unlock modals in sequence, ending with stored mode `quadruple` and four rendered lanes.
-
-## [2026-05-02 19:56] Remove CRT Scanline Overlays
-
-- Removed the fixed root-page `body::before` scanline overlay from `styles.css`.
-- Removed Slopularity's stage-4 full-screen scanline pseudo-element and reduced-motion reference from `slopularity/src/index.css`.
-- Kept the rest of the stage-4 decay behavior intact: ghost duplicates, chromatic text, title leaks, bug crawl, and phase-pill pulse.
-- Validation run: `git pull --rebase --autostash origin main`; `npm run lint`; `npm run build`; source and `dist/` grep confirmed no remaining scanline selectors or CRT overlay tokens.
 
 ## [2026-05-02 19:10] Games Lobby And Playrooms
 
@@ -688,3 +754,12 @@
 - Updated `slopularity/src/pages/LandingPage.tsx` so landing `data-reveal` elements receive `is-revealed` after mount instead of staying transparent on GitHub Pages.
 - Regenerated `slopularity/dist/` so the published `/slopularity/dist/` page uses the fixed landing bundle.
 - Validation run: `npm run lint`; `npm run build`; Playwright smoke against `vite preview` at desktop and 390x844 confirmed the landing headline and enter button render, all reveal elements compute to opacity 1, there are zero console errors, and there is no mobile horizontal overflow.
+
+## [2026-05-02 20:13] Popup Notification Action Wiring
+
+- Updated `slopularity/src/components/LonelinessPopup.tsx` so each idle nudge carries a typed action payload, and each row inside the popup is clickable instead of decorative.
+- Updated `slopularity/src/App.tsx`, `slopularity/src/pages/FeedPage.tsx`, `slopularity/src/pages/FriendsPage.tsx`, `slopularity/src/pages/SearchPage.tsx`, and `slopularity/src/pages/ShopPage.tsx` so popup actions now focus a real Feed post, open DMs, submit Search queries, claim Shop deals, or ask the Assistant.
+- Updated `slopularity/src/components/PopupSwarm.tsx` so friend popup replies and offer CTAs route into Friends or Shop instead of only incrementing instability.
+- Updated `slopularity/src/index.css`, `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the notification deep-link behavior and Feed highlight.
+- Regenerated `slopularity/dist/` so the published build includes the wired popup actions.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome smoke against `vite preview` confirmed the "Open post" idle nudge routes to `/app/feed/` and highlights `glass-ledger`, and a friend popup reply routes to `/app/friends/` with Messages open and an active conversation.

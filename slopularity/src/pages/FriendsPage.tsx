@@ -6,6 +6,9 @@ import type { BrandFriend } from '../types'
 type FriendsPageProps = {
   stage: number
   onReply: () => void
+  onShopIntent?: (productId?: string) => void
+  focusFriendName?: string
+  focusToken?: number
 }
 
 // ── Emotional upsell ladder (human friends — 3 rungs) ──
@@ -96,6 +99,24 @@ const STATUS_COPY: Record<string, string> = {
 type ChatMsg = { from: 'user' | 'friend'; text: string; ts: number }
 
 type ConversationId = { kind: 'person'; index: number } | { kind: 'brand'; index: number }
+type ConversationSummary = {
+  id: ConversationId
+  key: string
+  name: string
+  handle: string
+  emoji: string
+  tone: string
+  tagline: string
+  isBrand: boolean
+  status: string
+  initial?: string
+  lastMsg: string
+  lastTime?: number
+  unread: number
+  pinned: boolean
+  archived: boolean
+  drafted: boolean
+}
 
 function convoKey(id: ConversationId): string {
   return `${id.kind}-${id.index}`
@@ -118,15 +139,28 @@ const QUICK_REPLIES_PERSON = [
 
 type FilterTab = 'all' | 'brands' | 'people'
 
-export function FriendsPage({ stage, onReply }: FriendsPageProps) {
+const productRouteTargets = [
+  ['GlowNest', 'glownest'],
+  ['SnapWake', 'snapwake'],
+  ['AuraBank', 'aurabank'],
+  ['FaceMint', 'facemint'],
+  ['Memorywarm', 'memorywarm'],
+] as const
+
+export function FriendsPage({ stage, onReply, onShopIntent, focusFriendName, focusToken }: FriendsPageProps) {
   const [activeConvo, setActiveConvo] = useState<ConversationId>({ kind: 'brand', index: 0 })
   const [chats, setChats] = useState<Record<string, ChatMsg[]>>({})
   const [inputs, setInputs] = useState<Record<string, string>>({})
   const [filter, setFilter] = useState<FilterTab>('all')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [showArchived, setShowArchived] = useState(false)
+  const [pinned, setPinned] = useState<Record<string, boolean>>({})
+  const [archived, setArchived] = useState<Record<string, boolean>>({})
+  const [readAt, setReadAt] = useState<Record<string, number>>({})
   const [mobileShowChat, setMobileShowChat] = useState(false)
-  const [typingId, setTypingId] = useState<string | null>(null)
+  const [typingByKey, setTypingByKey] = useState<Record<string, boolean>>({})
   const chatEndRef = useRef<HTMLDivElement>(null)
-  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const timeoutRefs = useRef<ReturnType<typeof setTimeout>[]>([])
   const [nowTick, setNowTick] = useState(0)
 
   // At stage 4 Jules disappears entirely; at stage 3+ Devon + Jules merge
@@ -150,21 +184,97 @@ export function FriendsPage({ stage, onReply }: FriendsPageProps) {
     return () => window.clearInterval(interval)
   }, [])
 
+  useEffect(() => () => {
+    timeoutRefs.current.forEach((timeout) => window.clearTimeout(timeout))
+    timeoutRefs.current = []
+  }, [])
+
+  function addThreadTimeout(callback: () => void, delay: number) {
+    const timeout = window.setTimeout(() => {
+      timeoutRefs.current = timeoutRefs.current.filter((item) => item !== timeout)
+      callback()
+    }, delay)
+    timeoutRefs.current = [...timeoutRefs.current, timeout]
+  }
+
+  function markRead(key: string) {
+    setReadAt((current) => ({ ...current, [key]: Date.now() }))
+  }
+
+  function unreadFor(key: string, seedUnread: number) {
+    const history = chats[key] ?? []
+    const lastRead = readAt[key] ?? 0
+    if (history.length === 0) {
+      return lastRead > 0 ? 0 : seedUnread
+    }
+    return history.filter((message) => message.from === 'friend' && message.ts > lastRead).length
+  }
+
+  useEffect(() => {
+    if (!focusFriendName || focusToken === undefined) {
+      return undefined
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      const normalizedName = focusFriendName.toLowerCase()
+      const brandIndex = brandFriends.findIndex((brand) => brand.name.toLowerCase() === normalizedName)
+      if (brandIndex >= 0) {
+        setFilter('all')
+        setActiveConvo({ kind: 'brand', index: brandIndex })
+        setMobileShowChat(true)
+        markRead(`brand-${brandIndex}`)
+        pushActivity('friends', 'notification_open', brandFriends[brandIndex]!.name)
+        return
+      }
+
+      const personIndex = visibleFriends.findIndex((friend) => friend.name.toLowerCase() === normalizedName)
+      if (personIndex >= 0) {
+        setFilter('all')
+        setActiveConvo({ kind: 'person', index: personIndex })
+        setMobileShowChat(true)
+        markRead(`person-${personIndex}`)
+        pushActivity('friends', 'notification_open', visibleFriends[personIndex]!.name)
+        return
+      }
+
+      if (normalizedName === 'jules') {
+        const devonIndex = visibleFriends.findIndex((friend) => friend.name === 'Devon')
+        if (devonIndex >= 0) {
+          setFilter('all')
+          setActiveConvo({ kind: 'person', index: devonIndex })
+          setMobileShowChat(true)
+          markRead(`person-${devonIndex}`)
+          pushActivity('friends', 'notification_open', 'Devon & Jules')
+        }
+      }
+    })
+
+    return () => window.cancelAnimationFrame(frameId)
+  }, [focusFriendName, focusToken, visibleFriends])
+
   // ── Build the conversation list ──
-  const brandConvos = brandFriends.map((brand, i) => ({
-    id: { kind: 'brand' as const, index: i },
-    key: `brand-${i}`,
-    name: brand.name,
-    handle: brand.handle,
-    emoji: brand.emoji,
-    tone: brand.tone,
-    tagline: brand.tagline,
-    isBrand: true,
-    status: 'online' as const,
-    lastMsg: chats[`brand-${i}`]?.at(-1)?.text ?? brand.voice.slice(0, 60) + '…',
-    lastTime: chats[`brand-${i}`]?.at(-1)?.ts,
-    unread: chats[`brand-${i}`] ? 0 : (i % 3) + 1,
-  }))
+  const brandConvos: ConversationSummary[] = brandFriends.map((brand, i) => {
+    const key = `brand-${i}`
+    const draft = (inputs[key] ?? '').trim()
+    const latest = chats[key]?.at(-1)
+    return {
+      id: { kind: 'brand' as const, index: i },
+      key,
+      name: brand.name,
+      handle: brand.handle,
+      emoji: brand.emoji,
+      tone: brand.tone,
+      tagline: brand.tagline,
+      isBrand: true,
+      status: 'online',
+      lastMsg: draft ? `Draft: ${draft}` : latest?.text ?? `${brand.voice.slice(0, 60)}...`,
+      lastTime: latest?.ts,
+      unread: unreadFor(key, (i % 3) + 1),
+      pinned: Boolean(pinned[key]),
+      archived: Boolean(archived[key]),
+      drafted: Boolean(draft),
+    }
+  })
 
   const personConvos = visibleFriends.map((friend, idx) => {
     const originalIndex = friendSeeds.indexOf(friend)
@@ -189,20 +299,44 @@ export function FriendsPage({ stage, onReply }: FriendsPageProps) {
       initial: stage >= 4 && isDevon ? 'D+J'
         : showMerge && isDevon ? 'D/J'
           : friend.name.slice(0, 1),
-      lastMsg: chats[`person-${idx}`]?.at(-1)?.text ?? friend.voice.slice(0, 60) + '…',
+      lastMsg: (inputs[`person-${idx}`] ?? '').trim()
+        ? `Draft: ${(inputs[`person-${idx}`] ?? '').trim()}`
+        : chats[`person-${idx}`]?.at(-1)?.text ?? `${friend.voice.slice(0, 60)}...`,
       lastTime: chats[`person-${idx}`]?.at(-1)?.ts,
-      unread: chats[`person-${idx}`] ? 0 : ((idx % 3) + 1),
+      unread: unreadFor(`person-${idx}`, (idx % 3) + 1),
+      pinned: Boolean(pinned[`person-${idx}`]),
+      archived: Boolean(archived[`person-${idx}`]),
+      drafted: Boolean((inputs[`person-${idx}`] ?? '').trim()),
     }
   })
 
-  const allConvos = filter === 'brands' ? brandConvos
+  const filteredByType = filter === 'brands' ? brandConvos
     : filter === 'people' ? personConvos
       : [...brandConvos, ...personConvos]
 
+  const normalizedSearch = searchQuery.trim().toLowerCase()
+  const allConvos = filteredByType
+    .filter((convo) => showArchived || !convo.archived)
+    .filter((convo) => {
+      if (!normalizedSearch) return true
+      return [
+        convo.name,
+        convo.handle,
+        convo.tagline,
+        convo.lastMsg,
+        convo.status,
+      ].some((value) => value.toLowerCase().includes(normalizedSearch))
+    })
+    .sort((a, b) => {
+      if (a.pinned !== b.pinned) return a.pinned ? -1 : 1
+      if (a.unread !== b.unread) return b.unread - a.unread
+      return (b.lastTime ?? 0) - (a.lastTime ?? 0)
+    })
+
   const sendMessage = useCallback(
-    (convoId: ConversationId) => {
+    (convoId: ConversationId, overrideText?: string) => {
       const key = convoKey(convoId)
-      const text = (inputs[key] ?? '').trim()
+      const text = (overrideText ?? inputs[key] ?? '').trim()
       if (!text) return
 
       const history = chats[key] ?? []
@@ -229,16 +363,20 @@ export function FriendsPage({ stage, onReply }: FriendsPageProps) {
         ],
       }))
       setInputs((prev) => ({ ...prev, [key]: '' }))
+      markRead(key)
       onReply()
 
       // Simulate typing delay, then add response
-      setTypingId(key)
-      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current)
+      setTypingByKey((prev) => ({ ...prev, [key]: true }))
       const delay = convoId.kind === 'brand'
         ? 800 + Math.random() * 600 // brands respond fast
         : 1200 + Math.random() * 800
-      typingTimeoutRef.current = setTimeout(() => {
-        setTypingId(null)
+      addThreadTimeout(() => {
+        setTypingByKey((prev) => {
+          const next = { ...prev }
+          delete next[key]
+          return next
+        })
         setChats((prev) => ({
           ...prev,
           [key]: [
@@ -246,12 +384,13 @@ export function FriendsPage({ stage, onReply }: FriendsPageProps) {
             { from: 'friend', text: response, ts: Date.now() },
           ],
         }))
+        markRead(key)
 
         // At stage 3+, brands send unsolicited follow-up after a pause
         if (stage >= 3 && convoId.kind === 'brand') {
           const brand = brandFriends[convoId.index]!
           const followupDelay = 2000 + Math.random() * 1500
-          setTimeout(() => {
+          addThreadTimeout(() => {
             const crossRef = stage >= 3
               ? brandCrossReference(brand, convoId.index)
               : null
@@ -266,7 +405,7 @@ export function FriendsPage({ stage, onReply }: FriendsPageProps) {
             }
           }, followupDelay)
         }
-      }, delay) as unknown as ReturnType<typeof setTimeout>
+      }, delay)
     },
     [chats, inputs, onReply, stage, visibleFriends],
   )
@@ -274,14 +413,41 @@ export function FriendsPage({ stage, onReply }: FriendsPageProps) {
   function sendQuickReply(convoId: ConversationId, text: string) {
     const key = convoKey(convoId)
     setInputs((prev) => ({ ...prev, [key]: text }))
-    // Small delay so UI shows the text briefly
-    setTimeout(() => sendMessage(convoId), 50)
+    addThreadTimeout(() => sendMessage(convoId, text), 90)
   }
 
   function openConversation(id: ConversationId) {
+    markRead(convoKey(id))
     setActiveConvo(id)
     setMobileShowChat(true)
     onReply()
+  }
+
+  function togglePin(key: string) {
+    setPinned((current) => ({ ...current, [key]: !current[key] }))
+    pushActivity('friends', 'thread_pin', key)
+    onReply()
+  }
+
+  function toggleArchive(key: string) {
+    setArchived((current) => ({ ...current, [key]: !current[key] }))
+    pushActivity('friends', 'thread_archive', key)
+    onReply()
+  }
+
+  function toggleRead(key: string) {
+    if (unreadFor(key, 1) > 0) {
+      markRead(key)
+      return
+    }
+    setReadAt((current) => ({ ...current, [key]: 0 }))
+  }
+
+  function handleProductIntent(productName: string) {
+    const productId = productRouteTargets.find(([label]) => productName.includes(label))?.[1]
+    pushActivity('friends', 'offer_click', productName)
+    onReply()
+    onShopIntent?.(productId)
   }
 
   function formatTime(ts?: number): string {
@@ -298,7 +464,7 @@ export function FriendsPage({ stage, onReply }: FriendsPageProps) {
   const activeChatHistory = chats[activeKey] ?? []
   const activeRung = activeChatHistory.filter((m) => m.from === 'friend').length
   const inputValue = inputs[activeKey] ?? ''
-  const isTyping = typingId === activeKey
+  const isTyping = Boolean(typingByKey[activeKey])
 
   const quickReplies = activeConvo.kind === 'brand' ? QUICK_REPLIES_BRAND : QUICK_REPLIES_PERSON
 
@@ -313,6 +479,8 @@ export function FriendsPage({ stage, onReply }: FriendsPageProps) {
   // Totals for header
   const totalOnline = friendSeeds.filter((f) => f.status === 'online' || f.status === 'typing').length + brandFriends.length
   const totalFriends = friendSeeds.length + brandFriends.length
+  const unreadTotal = [...brandConvos, ...personConvos].reduce((sum, convo) => sum + convo.unread, 0)
+  const archivedTotal = [...brandConvos, ...personConvos].filter((convo) => convo.archived).length
 
   return (
     <section className="surface friends-surface dm-layout" aria-labelledby="friends-title">
@@ -324,12 +492,17 @@ export function FriendsPage({ stage, onReply }: FriendsPageProps) {
             <small>
               {stage >= 4
                 ? `persona_variant: brand_friend_v14 · ${totalOnline} always online`
-                : `${totalOnline} online · ${totalFriends} friends`}
+                : `${totalOnline} online · ${unreadTotal} unread · ${totalFriends} friends`}
             </small>
           </div>
           <label className="dm-search" aria-label="Search messages">
             <span aria-hidden="true">⌕</span>
-            <input type="search" placeholder="Search messages" />
+            <input
+              type="search"
+              placeholder="Search messages"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+            />
           </label>
         </header>
 
@@ -342,9 +515,16 @@ export function FriendsPage({ stage, onReply }: FriendsPageProps) {
               className={`dm-filter-tab ${filter === tab ? 'is-active' : ''}`}
               onClick={() => setFilter(tab)}
             >
-              {tab === 'all' ? '✦ All' : tab === 'brands' ? '🏷️ Brands' : '👥 People'}
+              {tab === 'all' ? 'All' : tab === 'brands' ? 'Brands' : 'People'}
             </button>
           ))}
+          <button
+            type="button"
+            className={`dm-filter-tab dm-archive-toggle ${showArchived ? 'is-active' : ''}`}
+            onClick={() => setShowArchived((current) => !current)}
+          >
+            {showArchived ? 'Inbox' : `Archive${archivedTotal ? ` ${archivedTotal}` : ''}`}
+          </button>
         </nav>
 
         {/* Conversation rows */}
@@ -352,10 +532,13 @@ export function FriendsPage({ stage, onReply }: FriendsPageProps) {
           {allConvos.map((convo) => {
             const isActive = convoKey(convo.id) === activeKey && mobileShowChat
             return (
-              <li key={convo.key}>
+              <li
+                key={convo.key}
+                className={`dm-convo-item ${convo.pinned ? 'is-pinned' : ''} ${convo.archived ? 'is-archived' : ''}`}
+              >
                 <button
                   type="button"
-                  className={`dm-convo-row ${convo.isBrand ? `brand-tone-${convo.tone}` : `tone-${convo.tone}`} ${convoKey(convo.id) === activeKey ? 'is-active' : ''}`}
+                  className={`dm-convo-row ${convo.isBrand ? `brand-tone-${convo.tone}` : `tone-${convo.tone}`} ${convoKey(convo.id) === activeKey ? 'is-active' : ''} ${convo.drafted ? 'has-draft' : ''}`}
                   onClick={() => openConversation(convo.id)}
                   aria-label={`Open conversation with ${convo.name}`}
                   aria-current={isActive ? 'true' : undefined}
@@ -374,6 +557,7 @@ export function FriendsPage({ stage, onReply }: FriendsPageProps) {
                     <div className="dm-convo-name-row">
                       <strong>{convo.name}</strong>
                       {convo.isBrand && <span className="dm-verified-badge" aria-label="Verified brand">✓</span>}
+                      {convo.pinned && <span className="dm-pinned-badge" aria-label="Pinned">pin</span>}
                       <span className="dm-convo-time">{formatTime(convo.lastTime)}</span>
                     </div>
                     <p className="dm-convo-preview">{convo.lastMsg}</p>
@@ -383,9 +567,42 @@ export function FriendsPage({ stage, onReply }: FriendsPageProps) {
                     <span className={`dm-unread ${convo.isBrand ? `brand-tone-${convo.tone}` : ''}`}>{convo.unread}</span>
                   )}
                 </button>
+                <div className="dm-convo-actions" aria-label={`${convo.name} thread actions`}>
+                  <button
+                    type="button"
+                    className={convo.pinned ? 'is-active' : ''}
+                    onClick={() => togglePin(convo.key)}
+                    aria-pressed={convo.pinned}
+                    title={convo.pinned ? 'Unpin thread' : 'Pin thread'}
+                  >
+                    Pin
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => toggleRead(convo.key)}
+                    title={convo.unread > 0 ? 'Mark read' : 'Mark unread'}
+                  >
+                    {convo.unread > 0 ? 'Read' : 'Unread'}
+                  </button>
+                  <button
+                    type="button"
+                    className={convo.archived ? 'is-active' : ''}
+                    onClick={() => toggleArchive(convo.key)}
+                    aria-pressed={convo.archived}
+                    title={convo.archived ? 'Restore to inbox' : 'Archive thread'}
+                  >
+                    {convo.archived ? 'Restore' : 'Archive'}
+                  </button>
+                </div>
               </li>
             )
           })}
+          {allConvos.length === 0 && (
+            <li className="dm-empty-state">
+              <strong>No matching messages</strong>
+              <span>{showArchived ? 'The archive is quiet.' : 'Try brands, people, or archived threads.'}</span>
+            </li>
+          )}
         </ul>
       </aside>
 
@@ -429,6 +646,14 @@ export function FriendsPage({ stage, onReply }: FriendsPageProps) {
               {stage >= 4 ? '// paid_friendship' : 'Partnership'}
             </span>
           )}
+          <button
+            type="button"
+            className={`dm-header-action ${pinned[activeKey] ? 'is-active' : ''}`}
+            onClick={() => togglePin(activeKey)}
+            aria-pressed={Boolean(pinned[activeKey])}
+          >
+            Pin
+          </button>
         </header>
 
         {/* Chat messages */}
@@ -494,7 +719,7 @@ export function FriendsPage({ stage, onReply }: FriendsPageProps) {
                 </span>
                 <strong>{activeBrand.product}</strong>
                 <small>{activeBrand.productSub}</small>
-                <button type="button" className="dm-product-buy" onClick={onReply}>
+                <button type="button" className="dm-product-buy" onClick={() => handleProductIntent(activeBrand.product)}>
                   {activeRung >= 4 ? 'Buy Now — Before It\'s Gone' : 'Add to Cart'}
                 </button>
               </div>
@@ -506,7 +731,7 @@ export function FriendsPage({ stage, onReply }: FriendsPageProps) {
                 <span className="dm-product-badge">recommended</span>
                 <strong>{activePerson.product}</strong>
                 <small>{activePerson.productSub}</small>
-                <button type="button" className="dm-product-buy" onClick={onReply}>Add to Cart</button>
+                <button type="button" className="dm-product-buy" onClick={() => handleProductIntent(activePerson.product)}>Add to Cart</button>
               </div>
             </div>
           )}

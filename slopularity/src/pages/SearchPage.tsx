@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { crossTabActivities, pushActivity } from '../activityLog'
 
 type SearchPageProps = {
@@ -6,6 +6,8 @@ type SearchPageProps = {
   setQuery: (value: string) => void
   stage: number
   onSearch: () => void
+  launchQuery?: string
+  launchToken?: number
 }
 
 type SearchScope = 'all' | 'people' | 'products' | 'sources' | 'memory'
@@ -156,7 +158,7 @@ function stageLabel(stage: number) {
   return 'unified index ready'
 }
 
-export function SearchPage({ query, setQuery, stage, onSearch }: SearchPageProps) {
+export function SearchPage({ query, setQuery, stage, onSearch, launchQuery, launchToken }: SearchPageProps) {
   const [scope, setScope] = useState<SearchScope>('all')
   const [submittedQuery, setSubmittedQuery] = useState('what should I do next?')
 
@@ -192,6 +194,22 @@ export function SearchPage({ query, setQuery, stage, onSearch }: SearchPageProps
     onSearch()
     pushActivity('search', 'query', cleanQuery)
   }
+
+  useEffect(() => {
+    if (!launchQuery || launchToken === undefined) {
+      return undefined
+    }
+
+    const cleanQuery = launchQuery.trim() || 'what should I do next?'
+    const frameId = window.requestAnimationFrame(() => {
+      setSubmittedQuery(cleanQuery)
+      setQuery(cleanQuery)
+      onSearch()
+      pushActivity('search', 'query', cleanQuery)
+    })
+
+    return () => window.cancelAnimationFrame(frameId)
+  }, [launchQuery, launchToken, onSearch, setQuery])
 
   return (
     <section className="surface search-surface" aria-labelledby="search-title">

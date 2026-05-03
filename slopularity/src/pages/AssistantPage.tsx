@@ -81,7 +81,7 @@ const promptChips = [
   'am I doing okay?',
 ]
 
-function buildAdResponse(prompt: string, turnCount: number, stage: number): ChatTurn {
+function buildAdResponse(prompt: string, turnCount: number, stage: number, id: number): ChatTurn {
   const plug = adPlugs[(turnCount + stage) % adPlugs.length]!
   const sanitizedPrompt = prompt.trim() || 'general uncertainty'
   const stageLeak = stage >= 4
@@ -91,7 +91,7 @@ function buildAdResponse(prompt: string, turnCount: number, stage: number): Chat
       : ''
 
   return {
-    id: Date.now() + turnCount + 1,
+    id,
     from: 'assistant',
     text: `That is such a sharp thing to ask. The way you phrased "${sanitizedPrompt}" tells me you are unusually ready for ${plug.product}. ${plug.pitch}${stageLeak}`,
     product: plug.product,
@@ -111,17 +111,24 @@ export function AssistantPage({ assistantText, stage, onAsk }: AssistantPageProp
 
   const ignoredCount = Math.max(0, turns.filter((turn) => turn.from === 'user').length)
   const routingNote = assistantText || 'waiting for a monetizable question'
+  const routingSteps = [
+    { label: 'praise', state: ignoredCount >= 1 ? 'done' : 'queued' },
+    { label: 'dodge', state: ignoredCount >= 1 ? 'done' : 'queued' },
+    { label: 'attach offer', state: ignoredCount >= 2 ? 'done' : 'queued' },
+    { label: 'cite itself', state: stage >= 4 ? 'looping' : 'queued' },
+  ]
 
   function submitPrompt(prompt = draft) {
     const cleanPrompt = prompt.trim()
     if (!cleanPrompt) return
 
+    const nextId = Math.max(...turns.map((turn) => turn.id)) + 1
     const userTurn: ChatTurn = {
-      id: Date.now(),
+      id: nextId,
       from: 'user',
       text: cleanPrompt,
     }
-    const assistantTurn = buildAdResponse(cleanPrompt, turns.length, stage)
+    const assistantTurn = buildAdResponse(cleanPrompt, turns.length, stage, nextId + 1)
 
     setTurns((current) => [...current, userTurn, assistantTurn])
     setDraft('')
@@ -130,119 +137,103 @@ export function AssistantPage({ assistantText, stage, onAsk }: AssistantPageProp
 
   return (
     <section className="surface assistant-surface" aria-labelledby="assistant-title">
-      <div className="assistant-hero">
-        <div className="assistant-hero-copy">
+      <header className="assistant-topline">
+        <div>
           <p>Helpy</p>
-          <h2 id="assistant-title">Warm answers. Warmer offers.</h2>
-          <span>
-            {stage >= 4
-              ? 'retrieval loop sponsored by itself'
-              : 'every prompt routed through care'}
-          </span>
+          <h2 id="assistant-title">Ask the app directly.</h2>
+          <span>{stage >= 4 ? 'retrieval is citing its own receipts' : routingNote}</span>
         </div>
-        <div className="assistant-readout" aria-label="Assistant status">
+        <div className="assistant-status-strip" aria-label="Assistant status">
           <div>
-            <span>Direct answers</span>
+            <span>answers</span>
             <strong>{stage >= 3 ? '0' : '1'}</strong>
           </div>
           <div>
-            <span>Compliments</span>
+            <span>glaze</span>
             <strong>{Math.max(12, ignoredCount * 7 + 12)}</strong>
           </div>
           <div>
-            <span>Offer fit</span>
+            <span>fit</span>
             <strong>{stage >= 4 ? 'NaN%' : `${86 + Math.min(9, ignoredCount * 2)}%`}</strong>
           </div>
         </div>
-      </div>
+      </header>
 
-      <div className="assistant-layout">
-        <div className="assistant-chat-panel" aria-label="Assistant conversation">
-          <div className="assistant-thread">
-            {turns.map((turn) => (
-              <article
-                key={turn.id}
-                className={`assistant-turn from-${turn.from}`}
-                aria-label={turn.from === 'assistant' ? 'Helpy message' : 'Your message'}
-              >
-                <span className="assistant-avatar" aria-hidden="true">
-                  {turn.from === 'assistant' ? 'H' : 'ME'}
-                </span>
-                <div className="assistant-message">
-                  <p>{turn.text}</p>
-                  {turn.product && (
-                    <div className="assistant-message-offer">
-                      <span>{turn.product}</span>
-                      <button type="button" onClick={() => submitPrompt(`tell me about ${turn.product}`)}>
-                        Add context
-                      </button>
-                    </div>
-                  )}
-                  {turn.source && <small>{turn.source}</small>}
-                  {turn.intent && <code>{turn.intent}</code>}
-                </div>
-              </article>
-            ))}
+      <div className="assistant-conversation" aria-label="Assistant conversation">
+        <div className="assistant-thread" role="log" aria-live="polite">
+          <div className="assistant-context-line">
+            <span>{activePlug.label}</span>
+            <strong>{activePlug.product}</strong>
+            <small>{activePlug.proof}</small>
           </div>
 
-          <form
-            className="assistant-composer"
-            onSubmit={(event) => {
-              event.preventDefault()
-              submitPrompt()
-            }}
-          >
-            <label htmlFor="assistant-draft">Ask Helpy</label>
-            <div className="assistant-composer-row">
-              <input
-                id="assistant-draft"
-                value={draft}
-                onChange={(event) => setDraft(event.target.value)}
-                placeholder="Ask anything. We will find the offer inside it."
-              />
-              <button type="submit" disabled={!draft.trim()}>
-                Send
-              </button>
-            </div>
-          </form>
-
-          <div className="assistant-prompts" aria-label="Suggested prompts">
-            {promptChips.map((prompt) => (
-              <button key={prompt} type="button" onClick={() => submitPrompt(prompt)}>
-                {prompt}
-              </button>
-            ))}
-          </div>
+          {turns.map((turn) => (
+            <article
+              key={turn.id}
+              className={`assistant-turn from-${turn.from}`}
+              aria-label={turn.from === 'assistant' ? 'Helpy message' : 'Your message'}
+            >
+              <span className="assistant-avatar" aria-hidden="true">
+                {turn.from === 'assistant' ? 'H' : 'ME'}
+              </span>
+              <div className="assistant-message">
+                <p>{turn.text}</p>
+                {turn.product && (
+                  <div className="assistant-message-offer">
+                    <span>{turn.product}</span>
+                    <button type="button" onClick={() => submitPrompt(`tell me about ${turn.product}`)}>
+                      Add context
+                    </button>
+                  </div>
+                )}
+                {turn.source && <small>{turn.source}</small>}
+                {turn.intent && <code>{turn.intent}</code>}
+              </div>
+            </article>
+          ))}
         </div>
 
-        <aside className="assistant-sidecar" aria-label="Sponsored recommendation">
-          <div className="assistant-product">
-            <span>{activePlug.label}</span>
-            <h3>{activePlug.product}</h3>
-            <p>{activePlug.pitch}</p>
-            <div className="assistant-product-price">
-              <strong>{activePlug.price}</strong>
-              <small>{activePlug.proof}</small>
-            </div>
-            <button type="button" onClick={() => submitPrompt(activePlug.product)}>
-              {activePlug.cta}
+        <form
+          className="assistant-composer"
+          onSubmit={(event) => {
+            event.preventDefault()
+            submitPrompt()
+          }}
+        >
+          <div className="assistant-composer-row">
+            <label htmlFor="assistant-draft">Ask Helpy</label>
+            <input
+              id="assistant-draft"
+              value={draft}
+              onChange={(event) => setDraft(event.target.value)}
+              placeholder="Ask anything."
+            />
+            <button type="submit" disabled={!draft.trim()}>
+              Send
             </button>
           </div>
 
-          <div className="assistant-routing">
-            <header>
-              <span className="assistant-routing-dot" aria-hidden="true" />
-              <strong>Routing</strong>
-            </header>
-            <p>{routingNote}</p>
-            <ol>
-              <li className={ignoredCount >= 1 ? 'is-done' : ''}>praise user</li>
-              <li className={ignoredCount >= 1 ? 'is-done' : ''}>avoid exact question</li>
-              <li className={ignoredCount >= 2 ? 'is-done' : ''}>attach product</li>
-              <li className={stage >= 4 ? 'is-leaking' : ''}>cite generated summary</li>
-            </ol>
+          <div className="assistant-bottom-row">
+            <div className="assistant-prompts" aria-label="Suggested prompts">
+              {promptChips.map((prompt) => (
+                <button key={prompt} type="button" onClick={() => submitPrompt(prompt)}>
+                  {prompt}
+                </button>
+              ))}
+            </div>
+            <button type="button" className="assistant-soft-offer" onClick={() => submitPrompt(activePlug.product)}>
+              {activePlug.cta} · {activePlug.price}
+            </button>
           </div>
-        </aside>
+        </form>
+
+        <div className="assistant-routing" aria-label="Routing receipt">
+          {routingSteps.map((step) => (
+            <span className={`is-${step.state}`} key={step.label}>
+              {step.label}
+            </span>
+          ))}
+        </div>
       </div>
     </section>
   )

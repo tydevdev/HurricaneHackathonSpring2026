@@ -10,6 +10,82 @@ Use this file as the current-build ledger. `PLAN.md` stays the idea canon. `DESI
 - Files changed: `src/components/PageFracture.tsx`, `src/App.tsx`, `src/index.css`, `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
 - Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` forced stage 4 at 1280x900 and 390x844, confirmed `.page-fracture-layer`, 10 crack paths, 4 falling shards, fixed pointer-events-none overlay, `fracture-shard-fall` animation, and no horizontal overflow.
 
+## [2026-05-02 20:13] Popup Notification Action Wiring
+
+- Active focus: making idle nudges and friend popups perform visible, concrete actions instead of acting like dead acknowledgements.
+- Behavior changed: idle nudge actions now carry typed action payloads for Feed post focus, Friends/DM focus, Search query submission, Shop deal claims, and Assistant prompts; rows inside the idle popup are clickable too.
+- Behavior changed: friend popup replies open the Friends messaging surface focused on the sender, friend popup offers route through Shop, and DM product cards can hand off into Shop.
+- Files changed: `src/App.tsx`, `src/components/LonelinessPopup.tsx`, `src/components/PopupSwarm.tsx`, `src/pages/FeedPage.tsx`, `src/pages/FriendsPage.tsx`, `src/pages/SearchPage.tsx`, `src/pages/ShopPage.tsx`, `src/index.css`, `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome smoke against `vite preview` confirmed the "Open post" idle nudge routes to `/app/feed/` and highlights `glass-ledger`, and a friend popup reply routes to `/app/friends/` with Messages open and an active conversation.
+
+## [2026-05-02 20:08] Assistant Chat-First Rework
+
+- Active focus: `AssistantPage.tsx` structure and assistant-specific styling in `index.css`.
+- Behavior changed: Assistant is no longer a dashboard with a mini chat window and side product rail. The chat transcript is the main surface, with a compact header, scrollable conversation pane, always-visible composer, prompt chips, embedded offer bias, and bottom routing receipt.
+- Behavior preserved: prompt submission still records the user turn, triggers Helpy's praise-and-ad response, advances assistant activity, rotates the same product set, and exposes recursive source leakage at stage 4.
+- Build blockers fixed: current in-progress Friends/Search launcher changes were made lint/build clean without changing the Assistant behavior.
+- Files changed: `src/pages/AssistantPage.tsx`, `src/index.css`, `src/pages/FriendsPage.tsx`, `src/pages/SearchPage.tsx`, `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
+- Validation run: `npm run lint`; `npm run build`; Playwright CLI screenshots against `vite preview` at 1280x900 and 390x844 confirmed `/app/assistant/` renders the chat-first Assistant route, the composer is visible in the first view, and no screenshot capture failed.
+
+## [2026-05-02 20:05] Friends Inbox Functionality
+
+- Active focus: making the Friends page and DM feature work more like a real inbox without losing the brand-friend sales funnel.
+- Behavior changed: conversation search is now live, the sidebar tracks unread counts, drafts, pins, archived threads, read/unread state, and filtered brand/person views; empty search/archive states are explicit.
+- DM behavior changed: quick replies send through a direct text path instead of racing React input state, typing indicators are tracked per thread, timed replies are cleaned up on unmount, and opening a thread clears its unread state.
+- Shop connection changed: DM product-card CTAs now push a Friends offer-click activity, route to Shop, and pass a matching shop product id for GlowNest, SnapWake, AuraBank, FaceMint, and Memorywarm offers.
+- Files changed: `src/pages/FriendsPage.tsx`, `src/App.tsx`, `src/index.css`, `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
+- Validation run: `npm run lint`; `npm run build`; Vite preview route smoke at `http://127.0.0.1:4178/app/friends/` returned `200 text/html`, and the built app bundle returned `200 text/javascript`.
+
+## [2026-05-02 20:01] Shop Expansion And Overlap Cleanup
+
+- Active focus: expanding the Shop surface while fixing overlapping/cart-quest layout issues in `ShopPage.tsx` and `index.css`.
+- Behavior changed: Shop now doubles the product grid with remixed duplicate SKUs, shelf tags, pressure-signal tiles, and booster panels for shipping, rebates, and friend cart sync.
+- Layout fixed: the shop header is no longer sticky, so it cannot overlap Cart Quest; price rows, deal metadata, booster copy, cash equivalents, and mobile exchange packs now use safer stacked/wrapping layouts.
+- Build/lint blockers fixed: `App.tsx` stopped clearing ref-owned popup state inside the tab click path and now relies on the existing active-tab effect; `LandingPage.tsx` defers its dodge reset so the current React lint rules pass.
+- Files changed: `src/pages/ShopPage.tsx`, `src/index.css`, `src/App.tsx`, `src/pages/LandingPage.tsx`, `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome screenshots against `vite preview` at 1280x900, 390x844, and 390x2200 confirmed the expanded shop renders without the header/Cart Quest overlap and that phone layout stacks exchange packs, pressure tiles, boosters, cart, filters, and product cards.
+
+## [2026-05-02 20:01] Feed Inbox Action
+
+- Active focus: the Feed/News topbar `inbox` action.
+- Behavior changed: clicking `inbox` now routes to Friends, focuses Honey's conversation, and records the feed inbox intent instead of acting as inert chrome.
+- Files changed: `src/App.tsx`, `src/pages/FeedPage.tsx`, `DESIGN_BIBLE.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP against `vite preview` at 1280x900 confirmed `/app/feed/` `inbox` click routes to `/app/friends/`, renders `Messages`, and focuses Honey.
+
+## [2026-05-02 20:00] Appbar Demo Pulse Fix
+
+- Active focus: `Demo pulse` in the appbar.
+- Behavior changed: clicking `Demo pulse` now advances the persisted instability score to the next real `stageFor(score)` threshold and summons a friend-queue popup immediately.
+- Behavior fixed: a fresh demo no longer appears to do nothing from stage 1, and the popup feedback no longer waits behind idle detection.
+- Files changed: `src/App.tsx`, `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
+- Validation run: pending in this session.
+
+## [2026-05-02 20:00] Feed Bottom Celebration Button
+
+- Active focus: Feed-only bottom CTA in `FeedPage.tsx` and celebration styling in `index.css`.
+- Behavior changed: Feed now ends with `Click me click me see more!!!!!!!!`; clicking it fires a fixed confetti storm plus laser sweep, records engagement, and smoothly scrolls the user back to the top of the feed shell.
+- Behavior preserved: News continues to reuse the shared feed renderer without receiving this Feed-specific bottom lure.
+- Build cleanup: current route-trigger lint blockers in Feed, Friends, Search, and Shop were moved out of synchronous effect bodies; Friends search is now wired to its filter state.
+- Files changed: `src/pages/FeedPage.tsx`, `src/pages/FriendsPage.tsx`, `src/pages/SearchPage.tsx`, `src/pages/ShopPage.tsx`, `src/index.css`, `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP against `vite preview` at `http://127.0.0.1:4177/app/` forced Feed quadruple mode, clicked the bottom button, confirmed 120 confetti pieces, 22 lasers, upward scroll, and no horizontal overflow; `/app/news/` confirmed no Feed-only button and no horizontal overflow.
+
+## [2026-05-02 19:58] Friend Queue Popup Rework
+
+- Active focus: `PopupSwarm.tsx`, popup orchestration in `App.tsx`, and shared popup styling in `index.css`.
+- Behavior changed: friend popups now render as one active queue item with compact queued senders instead of a stack of large cards.
+- Behavior changed: each popup records its source (`manual`, `idle`, or `dismiss`) and shows it as a signal chip; stage 4 converts the chip to a debug-style `source:*` leak.
+- Behavior changed: `Reply in Friends` now opens the Friends surface and the recommendation card opens Shop; both actions dismiss the popup and still advance instability.
+- Build blocker fixed: `AssistantPage.tsx` now uses deterministic turn ids instead of `Date.now()` in the prompt-submit path, satisfying the current React purity lint rule.
+- Files changed: `src/App.tsx`, `src/components/PopupSwarm.tsx`, `src/types.ts`, `src/index.css`, `src/pages/AssistantPage.tsx`, `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP smoke against `vite preview` at 1280x900 and 390x844 forced stage 4, confirmed the friend queue renders with source chip and offer button, no horizontal overflow, mobile idle eye recedes above the queue, and popup actions route to `/app/shop/` and `/app/friends/`.
+
+## [2026-05-02 19:56] Onboarding Dodging CTA
+
+- Active focus: adding a middle-stage evasive CTA to the landing onboarding gate.
+- Behavior changed: the gate now runs shuffle, dodge, garble, and hinge-fall. During the dodge stage, the CTA moves away from three pointer approaches before becoming catchable; click/touch fallback attempts count toward the same limit.
+- Files changed: `src/pages/LandingPage.tsx`, `src/index.css`, `DESIGN_BIBLE.md`, `DECAY_FEATURES.md`, `IMPLEMENTATION_STATUS.md`, root `HISTORY.md`, and regenerated `dist/`.
+- Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP against `vite preview` at 1280x900 confirmed three visible dodge positions, the garbled headline after catching the CTA, and Helpy after the hinge-fall; 390x844 touch smoke confirmed the fallback sequence reaches Helpy with no horizontal overflow.
+
 ## [2026-05-02 19:52] Feed Quadruple Scroll
 
 - Active focus: extending Feed/News shared scroll escalation in `FeedPage.tsx`.

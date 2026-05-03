@@ -9,11 +9,18 @@ type LandingPageProps = {
   onEnter: () => void
 }
 
-/** How many clicks before the page falls off its hinges. */
-const GATE_CLICKS = 3
+/** How many successful stage clicks before the page falls off its hinges. */
+const GATE_CLICKS = 4
+const DODGE_STAGE = 2
+const DODGE_LIMIT = 3
 
 // Tagline variants: each click garbles the product promise a little more.
 const TAGLINES: { line1: string; line2: string; line2em: [string, string] }[] = [
+  {
+    line1: 'Everything you need.',
+    line2: 'Before you know you need it.',
+    line2em: ['Before you', 'you need it.'],
+  },
   {
     line1: 'Everything you need.',
     line2: 'Before you know you need it.',
@@ -35,6 +42,7 @@ const TAGLINES: { line1: string; line2: string; line2em: [string, string] }[] = 
 const SUBS = [
   'The only page you will ever need. We absorbed the rest, with consent we will explain shortly.',
   'The only page you will ever need. We absorbed the rest, with consent we will explain shortly.',
+  'The only page you will ever need. We absorbed the rest. Please click normally.',
   'The only we absorbed. Consent: page. Rest: you.',
 ]
 
@@ -42,6 +50,7 @@ const SUBS = [
 const METAS: string[][] = [
   ['EST. 2030', '·', 'ONE WEB', '·', 'ALL OF YOU'],
   ['ONE WEB', '·', 'ALL OF YOU', '·', 'EST. 2030'],
+  ['ONE WEB', '·', 'EST. 2030', '·', 'STILL HERE'],
   ['ALL OF', '·', 'EST. YOU', '·', 'ONE 2030'],
 ]
 
@@ -49,7 +58,14 @@ const METAS: string[][] = [
 const CTA_NOTES = [
   '1.4B daily lives, currently unified',
   'currently unified, 1.4B daily lives',
+  'predictive onboarding has detected intent',
   '1.4B daily currently, lives unified',
+]
+
+const DODGE_OFFSETS = [
+  { x: 'clamp(86px, 18vw, 220px)', y: '-22px', rotate: '-2deg' },
+  { x: 'clamp(-210px, -20vw, -92px)', y: '34px', rotate: '2.8deg' },
+  { x: 'clamp(48px, 9vw, 118px)', y: '74px', rotate: '-1.3deg' },
 ]
 
 export function LandingPage({ onEnter }: LandingPageProps) {
@@ -57,8 +73,10 @@ export function LandingPage({ onEnter }: LandingPageProps) {
   const [transitioning, setTransitioning] = useState(false)
   const [fallen, setFallen] = useState(false)
   const [helpyVisible, setHelpyVisible] = useState(false)
+  const [dodgeCount, setDodgeCount] = useState(0)
   const landingRef = useRef<HTMLDivElement | null>(null)
   const btnRef = useRef<HTMLButtonElement | null>(null)
+  const dodgeCountRef = useRef(0)
 
   useEffect(() => {
     const landing = landingRef.current
@@ -83,14 +101,32 @@ export function LandingPage({ onEnter }: LandingPageProps) {
       alignSelf: 'flex-end',
       marginRight: '12%',
     },
-    { // stage 2: shifted left, rotated crooked
+    { // stage 2: starts centered, then dodges pointer attempts
+      alignSelf: 'center',
+    },
+    { // stage 3: shifted left, rotated crooked
       alignSelf: 'flex-start',
       marginLeft: '8%',
       transform: 'rotate(3.5deg)',
     },
   ]
 
+  const dodgeButton = useCallback(() => {
+    if (clicks !== DODGE_STAGE || dodgeCountRef.current >= DODGE_LIMIT) {
+      return false
+    }
+
+    const nextDodge = dodgeCountRef.current + 1
+    dodgeCountRef.current = nextDodge
+    setDodgeCount(nextDodge)
+    return true
+  }, [clicks])
+
   const handleClick = useCallback(() => {
+    if (dodgeButton()) {
+      return
+    }
+
     const nextClicks = clicks + 1
 
     if (nextClicks >= GATE_CLICKS) {
@@ -105,13 +141,13 @@ export function LandingPage({ onEnter }: LandingPageProps) {
       return
     }
 
-    // First and second click: fake page transition then shuffle
+    // Middle clicks: fake page transition then shuffle
     setTransitioning(true)
     setTimeout(() => {
       setClicks(nextClicks)
       setTransitioning(false)
     }, 300)
-  }, [clicks])
+  }, [clicks, dodgeButton])
 
   // Scroll to top when shuffling (simulates page nav)
   useEffect(() => {
@@ -125,17 +161,24 @@ export function LandingPage({ onEnter }: LandingPageProps) {
   const meta = METAS[Math.min(clicks, METAS.length - 1)]!
   const ctaNote = CTA_NOTES[Math.min(clicks, CTA_NOTES.length - 1)]!
   const btnStyle = buttonStyles[Math.min(clicks, buttonStyles.length - 1)]!
+  const dodgeOffset = clicks === DODGE_STAGE && dodgeCount > 0
+    ? DODGE_OFFSETS[Math.min(dodgeCount - 1, DODGE_OFFSETS.length - 1)]!
+    : null
+  const ctaTransform = dodgeOffset
+    ? `translate(${dodgeOffset.x}, ${dodgeOffset.y}) rotate(${dodgeOffset.rotate})`
+    : btnStyle.transform
 
   // Layout order shifts with clicks
-  const orderMeta = clicks === 0 ? 1 : clicks === 1 ? 3 : 2
-  const orderHeadline = clicks === 0 ? 2 : clicks === 1 ? 1 : 4
-  const orderSub = clicks === 0 ? 3 : clicks === 1 ? 4 : 1
-  const orderCta = clicks === 0 ? 4 : clicks === 1 ? 2 : 3
+  const orderMeta = clicks === 0 ? 1 : clicks === 1 ? 3 : clicks === 2 ? 2 : 2
+  const orderHeadline = clicks === 0 ? 2 : clicks === 1 ? 1 : clicks === 2 ? 1 : 4
+  const orderSub = clicks === 0 ? 3 : clicks === 1 ? 4 : clicks === 2 ? 4 : 1
+  const orderCta = clicks === 0 ? 4 : clicks === 1 ? 2 : clicks === 2 ? 3 : 3
 
   const landingClasses = [
     'landing',
     'landing-gate',
     transitioning ? 'landing-transition' : '',
+    clicks === DODGE_STAGE ? 'landing-dodge-stage' : '',
     fallen ? 'landing-hinge-fall' : '',
   ]
     .filter(Boolean)
@@ -203,14 +246,30 @@ export function LandingPage({ onEnter }: LandingPageProps) {
               <div
                 className="landing-cta landing-gate-cta"
                 data-reveal
-                style={{ order: orderCta, ...btnStyle }}
+                style={{
+                  order: orderCta,
+                  ...btnStyle,
+                  transform: ctaTransform,
+                  transitionDelay: dodgeOffset ? '0s' : undefined,
+                  transitionDuration: dodgeOffset ? '0.18s' : undefined,
+                }}
               >
                 <button
                   ref={btnRef}
                   type="button"
-                  className={`landing-enter ${clicks >= 2 ? 'landing-enter-crooked' : ''}`}
+                  className={[
+                    'landing-enter',
+                    clicks >= 3 ? 'landing-enter-crooked' : '',
+                    clicks === DODGE_STAGE ? 'landing-enter-dodging' : '',
+                    clicks === DODGE_STAGE && dodgeCount >= DODGE_LIMIT ? 'landing-enter-tired' : '',
+                  ].filter(Boolean).join(' ')}
                   onClick={handleClick}
-                  style={clicks >= 2 ? { transform: 'rotate(3.5deg)' } : undefined}
+                  onPointerEnter={(event) => {
+                    if (event.pointerType === 'mouse') {
+                      dodgeButton()
+                    }
+                  }}
+                  style={clicks >= 3 ? { transform: 'rotate(3.5deg)' } : undefined}
                 >
                   <span>Enter the Singularity</span>
                   <span className="landing-enter-arrow" aria-hidden="true">

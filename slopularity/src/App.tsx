@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties, type Mous
 import { pushActivity } from './activityLog'
 import { BugScatter } from './components/BugScatter'
 import { IdleEye } from './components/IdleEye'
-import { LonelinessPopup, type IdleNudgeDestination } from './components/LonelinessPopup'
+import { LonelinessPopup, type IdleNudgeAction } from './components/LonelinessPopup'
 import { PageFracture } from './components/PageFracture'
 import { PopupSwarm } from './components/PopupSwarm'
 import { fragmentLeaks, newsPosts, popupSeeds, tabs as defaultTabs } from './content'
@@ -22,6 +22,15 @@ const storageKey = 'slopularity-state-v1'
 const enteredKey = 'slopularity-entered-v1'
 const scrollStatsKey = 'slopularity-scroll-stats-v1'
 type PopupReason = 'manual' | 'idle' | 'dismiss'
+
+const popupProductTargets: Record<string, string> = {
+  Honey: 'glownest',
+  Pia: 'snapwake',
+  Devon: 'aurabank',
+  Jules: 'facemint',
+  Marlo: 'memorywarm',
+  Echo: 'context',
+}
 
 const emptyScrollStats: ScrollStats = {
   activeSeconds: 0,
@@ -105,6 +114,10 @@ function App() {
   const [query, setQuery] = useState('')
   const [completedTasks, setCompletedTasks] = useState<string[]>([])
   const [scrollStats, setScrollStats] = useState<ScrollStats>(loadScrollStats)
+  const [feedSpotlight, setFeedSpotlight] = useState<{ postId: string; token: number } | null>(null)
+  const [friendFocus, setFriendFocus] = useState<{ name: string; token: number } | null>(null)
+  const [searchLaunch, setSearchLaunch] = useState<{ query: string; token: number } | null>(null)
+  const [shopClaim, setShopClaim] = useState<{ productId?: string; token: number } | null>(null)
   // We allow at most one "softer follow-up" after a dismiss, and only when
   // the user has been around long enough to read it as escalation rather than
   // a respawn loop. Tracked here so dismissals don't endlessly chain.
@@ -157,6 +170,7 @@ function App() {
         tone: seed.tone,
         message,
         offer: visibleStage >= 4 ? `${seed.offer} // handoff_to_checkout: true` : seed.offer,
+        source: reason,
         intent: seed.intent,
       }
     },
@@ -397,6 +411,25 @@ function App() {
     })
   }
 
+  function handlePopupReply(id: number) {
+    const popup = popups.find((candidate) => candidate.id === id)
+    if (popup) {
+      setFriendFocus({ name: popup.name, token: Date.now() })
+    }
+    setPopups((current) => current.filter((popup) => popup.id !== id))
+    addInstability(2)
+    handleTab('friends')
+  }
+
+  function handlePopupOffer(id: number) {
+    const popup = popups.find((candidate) => candidate.id === id)
+    const productId = popup ? popupProductTargets[popup.name] : undefined
+    setShopClaim({ productId, token: Date.now() })
+    setPopups((current) => current.filter((popup) => popup.id !== id))
+    addInstability(2)
+    handleTab('shop')
+  }
+
   function reset() {
     if (typeof window !== 'undefined') {
       window.localStorage.removeItem(storageKey)
@@ -422,7 +455,6 @@ function App() {
   function handleTab(tabId: TabId) {
     const isNewScreen = tabId !== activeTab
     if (isNewScreen) {
-      dismissScreenPopups()
       setTabOrder((current) => shuffleTabs(current))
     }
 
@@ -442,6 +474,27 @@ function App() {
         ? 'I can answer that from 11 generated summaries that cite one another. Confidence: radiant. Source: pending.'
         : 'I can help. I noticed your feed, friends, cart, and pauses all point toward one convenient upgrade.',
     )
+  }
+
+  function handleOpenInbox() {
+    setFriendFocus({ name: 'Honey', token: Date.now() })
+    pushActivity('feed', 'open_inbox', 'Honey')
+    handleTab('friends')
+  }
+
+  function handleFriendShopIntent(productId?: string) {
+    setShopClaim({ productId, token: Date.now() })
+    handleTab('shop')
+  }
+
+  function handleDemoPulse() {
+    setScore((current) => {
+      const nextStage = Math.min(4, stageFor(current) + 1)
+      const nextStageThreshold = (nextStage - 1) * 6
+      return Math.min(30, Math.max(current + 1, nextStageThreshold))
+    })
+    spawnPopup('manual')
+    pushActivity('system', 'demo_pulse', `stage_${Math.min(4, stageFor(score) + 1)}`)
   }
 
   function completeTask(title: string) {
@@ -472,10 +525,39 @@ function App() {
     addInstability(1)
   }
 
-  function handleIdleNudgeAct(destination: IdleNudgeDestination) {
+  function handleIdleNudgeAct(action: IdleNudgeAction) {
     setLonelinessVisible(false)
     addInstability(2)
-    handleTab(destination)
+
+    if (action.kind === 'feed-post') {
+      setFeedSpotlight({ postId: action.postId, token: Date.now() })
+      handleTab('feed')
+      return
+    }
+
+    if (action.kind === 'friends') {
+      if (action.friendName) {
+        setFriendFocus({ name: action.friendName, token: Date.now() })
+      }
+      handleTab('friends')
+      return
+    }
+
+    if (action.kind === 'search') {
+      setQuery(action.query)
+      setSearchLaunch({ query: action.query, token: Date.now() })
+      handleTab('search')
+      return
+    }
+
+    if (action.kind === 'shop') {
+      setShopClaim({ productId: action.productId, token: Date.now() })
+      handleTab('shop')
+      return
+    }
+
+    handleAssistant(action.prompt)
+    handleTab('assistant')
   }
 
   function handleTabbarClick(event: MouseEvent<HTMLAnchorElement>) {
@@ -558,7 +640,13 @@ function App() {
               <span>{muted ? 'Friends muted' : 'Friends on'}</span>
             </button>
           )}
-          <button type="button" className="appbar-quiet" onClick={() => { addInstability(5); queuePopup('manual') }}>
+          <button
+            type="button"
+            className="appbar-quiet"
+            onClick={handleDemoPulse}
+            aria-label="Advance the demo to the next decay phase"
+            title="Advance to the next decay phase"
+          >
             Demo pulse
           </button>
           <button type="button" className="appbar-quiet" onClick={reset} aria-label="Reset everything app to its first impression">
@@ -576,13 +664,17 @@ function App() {
             <FeedPage
               stage={visibleStage}
               onEngage={() => addInstability(1)}
+              onOpenInbox={handleOpenInbox}
               mobileNavigation={renderTabbar('feed-mobile')}
+              spotlightPostId={feedSpotlight?.postId}
+              spotlightToken={feedSpotlight?.token}
             />
           )}
           {activeTab === 'news' && (
             <FeedPage
               stage={visibleStage}
               onEngage={() => addInstability(1)}
+              onOpenInbox={handleOpenInbox}
               mobileNavigation={renderTabbar('feed-mobile')}
               posts={newsPosts}
               sectionLabel="News"
@@ -593,6 +685,9 @@ function App() {
             <FriendsPage
               stage={visibleStage}
               onReply={() => addInstability(2)}
+              onShopIntent={handleFriendShopIntent}
+              focusFriendName={friendFocus?.name}
+              focusToken={friendFocus?.token}
             />
           )}
           {activeTab === 'games' && (
@@ -606,6 +701,8 @@ function App() {
             <ShopPage
               stage={visibleStage}
               onBuy={() => addInstability(2)}
+              claimProductId={shopClaim?.productId}
+              claimToken={shopClaim?.token}
             />
           )}
           {activeTab === 'search' && (
@@ -614,6 +711,8 @@ function App() {
               setQuery={setQuery}
               stage={visibleStage}
               onSearch={() => addInstability(2)}
+              launchQuery={searchLaunch?.query}
+              launchToken={searchLaunch?.token}
             />
           )}
           {activeTab === 'assistant' && (
@@ -641,7 +740,8 @@ function App() {
           stage={visibleStage}
           muted={muted}
           onDismiss={dismissPopup}
-          onAccept={() => addInstability(2)}
+          onAccept={handlePopupReply}
+          onOffer={handlePopupOffer}
           onClearAll={clearAllPopups}
           onMute={toggleMute}
         />

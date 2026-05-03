@@ -2,22 +2,28 @@ type LonelinessPopupProps = {
   visible: boolean
   nudgeIndex: number
   onDismiss: () => void
-  onAct: (destination: IdleNudgeDestination) => void
+  onAct: (action: IdleNudgeAction) => void
 }
 
-export type IdleNudgeDestination = 'feed' | 'friends' | 'search' | 'shop' | 'assistant'
+export type IdleNudgeAction =
+  | { kind: 'feed-post'; postId: string }
+  | { kind: 'friends'; friendName?: string }
+  | { kind: 'search'; query: string }
+  | { kind: 'shop'; productId?: string }
+  | { kind: 'assistant'; prompt: string }
 
 type IdleNudge = {
   label: string
   title: string
   detail: string
   primaryLabel: string
-  destination: IdleNudgeDestination
+  primaryAction: IdleNudgeAction
   rows: Array<{
     title: string
     detail: string
     initials: string
     tone: 'wellness' | 'hype' | 'nostalgia' | 'finance' | 'dating' | 'lucid'
+    action: IdleNudgeAction
   }>
 }
 
@@ -27,11 +33,11 @@ const IDLE_NUDGES: IdleNudge[] = [
     title: "You've been quiet. We found people who paused here too.",
     detail: 'They are all available, supportive, and suspiciously brand-aligned.',
     primaryLabel: 'Meet them',
-    destination: 'friends',
+    primaryAction: { kind: 'friends', friendName: 'Pia' },
     rows: [
-      { title: 'Kai', detail: 'Wellness Ambassador', initials: 'KA', tone: 'wellness' },
-      { title: 'Sable', detail: 'Brand Partner', initials: 'SA', tone: 'hype' },
-      { title: 'Wren', detail: 'Community Lead', initials: 'WR', tone: 'nostalgia' },
+      { title: 'Kai', detail: 'Wellness Ambassador', initials: 'KA', tone: 'wellness', action: { kind: 'friends', friendName: 'Pia' } },
+      { title: 'Sable', detail: 'Brand Partner', initials: 'SA', tone: 'hype', action: { kind: 'shop', productId: 'glownest' } },
+      { title: 'Wren', detail: 'Community Lead', initials: 'WR', tone: 'nostalgia', action: { kind: 'friends', friendName: 'Marlo' } },
     ],
   },
   {
@@ -39,10 +45,10 @@ const IDLE_NUDGES: IdleNudge[] = [
     title: "A new post you'll love just arrived.",
     detail: 'Love predicted from 4.8M saves, one late pause, and your current breathing pattern.',
     primaryLabel: 'Open post',
-    destination: 'feed',
+    primaryAction: { kind: 'feed-post', postId: 'glass-ledger' },
     rows: [
-      { title: 'Mira Vale', detail: 'posted a vacation you can measure yourself against', initials: 'MV', tone: 'hype' },
-      { title: 'For you', detail: 'saved under quiet aspiration', initials: 'FY', tone: 'wellness' },
+      { title: 'Mira Vale', detail: 'posted a vacation you can measure yourself against', initials: 'MV', tone: 'hype', action: { kind: 'feed-post', postId: 'glass-ledger' } },
+      { title: 'For you', detail: 'saved under quiet aspiration', initials: 'FY', tone: 'wellness', action: { kind: 'feed-post', postId: 'glass-ledger' } },
     ],
   },
   {
@@ -50,10 +56,10 @@ const IDLE_NUDGES: IdleNudge[] = [
     title: 'People who stop scrolling all do this one thing.',
     detail: 'The source is "neuroscience-ish" and the answer is available after the next click.',
     primaryLabel: 'Read it',
-    destination: 'search',
+    primaryAction: { kind: 'search', query: 'People who stop scrolling all do this one thing' },
     rows: [
-      { title: 'Attention doctors hate it', detail: '7 pause signals that reveal your hidden routine', initials: '7', tone: 'finance' },
-      { title: 'Updated 3 min ago', detail: 'fact-checked by an adjacent summary', initials: 'AI', tone: 'lucid' },
+      { title: 'Attention doctors hate it', detail: '7 pause signals that reveal your hidden routine', initials: '7', tone: 'finance', action: { kind: 'search', query: '7 pause signals that reveal your hidden routine' } },
+      { title: 'Updated 3 min ago', detail: 'fact-checked by an adjacent summary', initials: 'AI', tone: 'lucid', action: { kind: 'search', query: 'fact checked by an adjacent summary' } },
     ],
   },
   {
@@ -61,10 +67,10 @@ const IDLE_NUDGES: IdleNudge[] = [
     title: 'Jules sent a text while you were gone.',
     detail: '"You still there? This made me think of you. Also no pressure but open it."',
     primaryLabel: 'Reply',
-    destination: 'friends',
+    primaryAction: { kind: 'friends', friendName: 'Jules' },
     rows: [
-      { title: 'Jules', detail: 'typing encouragement with a product link attached', initials: 'JV', tone: 'nostalgia' },
-      { title: 'Mara', detail: 'reacted "same" to your pause', initials: 'MA', tone: 'dating' },
+      { title: 'Jules', detail: 'typing encouragement with a product link attached', initials: 'JV', tone: 'nostalgia', action: { kind: 'friends', friendName: 'Jules' } },
+      { title: 'Mara', detail: 'reacted "same" to your pause', initials: 'MA', tone: 'dating', action: { kind: 'friends', friendName: 'Jules' } },
     ],
   },
   {
@@ -72,10 +78,10 @@ const IDLE_NUDGES: IdleNudge[] = [
     title: 'Your hesitation unlocked a small reward.',
     detail: 'The discount expires when confidence returns.',
     primaryLabel: 'Claim',
-    destination: 'shop',
+    primaryAction: { kind: 'shop', productId: 'context' },
     rows: [
-      { title: '$7.11 off', detail: 'applied to the thing we think you meant', initials: '$', tone: 'finance' },
-      { title: 'Cart ready', detail: 'no items added, just context arranged', initials: 'CR', tone: 'hype' },
+      { title: '$7.11 off', detail: 'applied to the thing we think you meant', initials: '$', tone: 'finance', action: { kind: 'shop', productId: 'aurabank' } },
+      { title: 'Cart ready', detail: 'no items added, just context arranged', initials: 'CR', tone: 'hype', action: { kind: 'shop', productId: 'context' } },
     ],
   },
   {
@@ -83,10 +89,10 @@ const IDLE_NUDGES: IdleNudge[] = [
     title: 'I can decide what you were about to do.',
     detail: 'You paused long enough for an intention draft.',
     primaryLabel: 'Let it decide',
-    destination: 'assistant',
+    primaryAction: { kind: 'assistant', prompt: 'decide what I was about to do' },
     rows: [
-      { title: 'Intent draft', detail: 'open feed, compare self, buy relief, ask why', initials: 'ID', tone: 'lucid' },
-      { title: 'Confidence', detail: 'high enough for a button', initials: '96', tone: 'wellness' },
+      { title: 'Intent draft', detail: 'open feed, compare self, buy relief, ask why', initials: 'ID', tone: 'lucid', action: { kind: 'assistant', prompt: 'open feed, compare self, buy relief, ask why' } },
+      { title: 'Confidence', detail: 'high enough for a button', initials: '96', tone: 'wellness', action: { kind: 'assistant', prompt: 'pick the next action with 96 percent confidence' } },
     ],
   },
 ]
@@ -108,18 +114,23 @@ export function LonelinessPopup({ visible, nudgeIndex, onDismiss, onAct }: Lonel
 
         <div className="loneliness-matches">
           {nudge.rows.map((m) => (
-            <div className={`loneliness-match tone-${m.tone}`} key={`${nudge.label}-${m.title}`}>
+            <button
+              type="button"
+              className={`loneliness-match tone-${m.tone}`}
+              key={`${nudge.label}-${m.title}`}
+              onClick={() => onAct(m.action)}
+            >
               <span className="loneliness-avatar" aria-hidden="true">{m.initials}</span>
               <span className="loneliness-info">
                 <strong>{m.title}</strong>
                 <small>{m.detail}</small>
               </span>
-            </div>
+            </button>
           ))}
         </div>
 
         <div className="loneliness-actions">
-          <button type="button" className="loneliness-meet" onClick={() => onAct(nudge.destination)}>
+          <button type="button" className="loneliness-meet" onClick={() => onAct(nudge.primaryAction)}>
             {nudge.primaryLabel}
           </button>
           <button type="button" className="loneliness-dismiss" onClick={onDismiss}>

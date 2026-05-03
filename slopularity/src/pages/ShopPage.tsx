@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { feedPosts, shopProducts } from '../content'
 import type { ShopProduct } from '../content'
 
 type ShopPageProps = {
   stage: number
   onBuy: () => void
+  claimProductId?: string
+  claimToken?: number
 }
 
 type CartLine = {
@@ -23,6 +25,12 @@ type BonusOffer = {
   discount: string
 }
 
+type DealProduct = ShopProduct & {
+  baseId: string
+  featured?: boolean
+  shelf: string
+}
+
 const challengeTarget = 72000
 const initialWallet = 8200
 const timerSeeds = [487, 353, 198, 621, 276, 534]
@@ -35,6 +43,31 @@ const exchangePacks = [
 
 const quickFilters = ['For you', 'Ending', 'Under 5k gems', 'Cart bait', 'Recently inferred']
 
+const pressureSignals = [
+  { label: 'Deal rank', value: '#44', detail: 'rises when you hesitate' },
+  { label: 'Cart watchers', value: '18', detail: 'also viewing your confidence' },
+  { label: 'Free shipping', value: '63%', detail: 'of the way to feeling efficient' },
+  { label: 'Price lock', value: '2m', detail: 'renews after every click' },
+]
+
+const shopBoosters = [
+  {
+    title: 'Free shipping ladder',
+    detail: 'Add 14,000 gems. The delivery fee becomes theoretical.',
+    meter: 63,
+  },
+  {
+    title: 'Mystery rebate',
+    detail: 'Rebate revealed after checkout. Rounding favors the app.',
+    meter: 41,
+  },
+  {
+    title: 'Friend cart sync',
+    detail: 'People who care about you have not objected to this bundle yet.',
+    meter: 78,
+  },
+]
+
 const urgencyCopy = [
   'Last chance again',
   'Held by timer',
@@ -44,7 +77,46 @@ const urgencyCopy = [
   'Price memory unstable',
 ]
 
-function gemPrice(product: ShopProduct, index: number, stage: number) {
+const dealRemixes = [
+  { suffix: 'Travel Size', shelf: 'Micro need', priceShift: -12, tagline: 'Smaller, faster, easier to justify.' },
+  { suffix: 'Family Pack', shelf: 'Volume calm', priceShift: 34, tagline: 'Enough to make restraint look inefficient.' },
+  { suffix: 'Auto Bundle', shelf: 'One-tap loop', priceShift: 22, tagline: 'Ships again before the feeling has a name.' },
+]
+
+function dealCatalog(stage: number): DealProduct[] {
+  const remixedProducts = shopProducts.flatMap((product, index) => {
+    const remix = dealRemixes[index % dealRemixes.length]
+    const remixedPrice = Math.max(5, product.price + remix.priceShift + (index % 2) * 7)
+
+    return [
+      {
+        ...product,
+        id: `${product.id}-hero`,
+        baseId: product.id,
+        shelf: stage >= 3 ? 'Price adapting' : 'For you',
+        featured: index < 2,
+      },
+      {
+        ...product,
+        id: `${product.id}-remix-${index}`,
+        baseId: product.id,
+        name: `${product.name} ${remix.suffix}`,
+        tagline: remix.tagline,
+        category: remix.shelf,
+        price: remixedPrice,
+        oldPrice: Math.max(product.oldPrice ?? product.price + 20, remixedPrice + 37),
+        urgency: `Reserved because ${product.name.toLowerCase()} held your attention.`,
+        reason: `Matched from ${product.category.toLowerCase()} and cart math.`,
+        internal: `${product.internal} · remix:${remix.suffix.toLowerCase().replaceAll(' ', '_')}`,
+        shelf: remix.shelf,
+      },
+    ]
+  })
+
+  return remixedProducts
+}
+
+function gemPrice(product: Pick<ShopProduct, 'price'>, index: number, stage: number) {
   return (product.price * 100) + (stage >= 3 ? index * 137 : 0)
 }
 
@@ -94,13 +166,14 @@ function bonusOffersFor(product: ShopProduct, index: number): BonusOffer[] {
   ]
 }
 
-export function ShopPage({ stage, onBuy }: ShopPageProps) {
+export function ShopPage({ stage, onBuy, claimProductId, claimToken }: ShopPageProps) {
   const [walletGems, setWalletGems] = useState(initialWallet)
   const [timerTick, setTimerTick] = useState(0)
   const [cartLines, setCartLines] = useState<CartLine[]>([])
   const [purchasedGems, setPurchasedGems] = useState(0)
   const [spentDollars, setSpentDollars] = useState(0)
   const [activeUpsell, setActiveUpsell] = useState<{ product: ShopProduct; index: number } | null>(null)
+  const lastClaimTokenRef = useRef<number | undefined>(undefined)
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -117,6 +190,7 @@ export function ShopPage({ stage, onBuy }: ShopPageProps) {
   const canCheckout = cartLines.length > 0 && walletGems >= cartTotal
   const remainingForChallenge = Math.max(0, challengeTarget - earnedGems)
   const activeBonusOffers = activeUpsell ? bonusOffersFor(activeUpsell.product, activeUpsell.index) : []
+  const deals = useMemo(() => dealCatalog(stage), [stage])
 
   function addProduct(product: ShopProduct, index: number) {
     const gems = gemPrice(product, index, stage)
@@ -133,6 +207,46 @@ export function ShopPage({ stage, onBuy }: ShopPageProps) {
     setActiveUpsell({ product, index })
     onBuy()
   }
+
+  useEffect(() => {
+    if (claimToken === undefined || lastClaimTokenRef.current === claimToken) {
+      return
+    }
+
+    lastClaimTokenRef.current = claimToken
+    const targetIndex = Math.max(0, deals.findIndex((product) => product.baseId === claimProductId || product.id === claimProductId))
+    const targetProduct = deals[targetIndex] ?? deals[0]
+    if (!targetProduct) {
+      return undefined
+    }
+
+    let scrollFrameId = 0
+    const frameId = window.requestAnimationFrame(() => {
+      const gems = gemPrice(targetProduct, targetIndex, stage)
+      setCartLines((current) => [
+        ...current,
+        {
+          id: `${targetProduct.id}-${Date.now()}-${current.length}`,
+          name: targetProduct.name,
+          gems,
+          cash: cashPrice(gems),
+          source: 'deal',
+        },
+      ])
+      setActiveUpsell({ product: targetProduct, index: targetIndex })
+      onBuy()
+      scrollFrameId = window.requestAnimationFrame(() => {
+        document.querySelector<HTMLElement>('.slop-cart-panel')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+      })
+    })
+
+    return () => {
+      window.cancelAnimationFrame(frameId)
+      if (scrollFrameId !== 0) {
+        window.cancelAnimationFrame(scrollFrameId)
+      }
+    }
+  }, [claimProductId, claimToken, deals, onBuy, stage])
 
   function addBonus(offer: BonusOffer) {
     setCartLines((current) => [
@@ -213,6 +327,31 @@ export function ShopPage({ stage, onBuy }: ShopPageProps) {
         </div>
       </div>
 
+      <div className="shop-pressure-strip" aria-label="Deal pressure signals">
+        {pressureSignals.map((signal) => (
+          <div className="pressure-signal" key={signal.label}>
+            <span>{signal.label}</span>
+            <strong>{signal.value}</strong>
+            <small>{signal.detail}</small>
+          </div>
+        ))}
+      </div>
+
+      <div className="shop-booster-row" aria-label="Cart boosters">
+        {shopBoosters.map((booster) => (
+          <article className="shop-booster" key={booster.title}>
+            <div>
+              <span>Booster</span>
+              <strong>{booster.title}</strong>
+              <p>{booster.detail}</p>
+            </div>
+            <div className="booster-meter" aria-hidden="true">
+              <span style={{ width: `${booster.meter}%` }} />
+            </div>
+          </article>
+        ))}
+      </div>
+
       <div className="slop-shop-market">
         <main className="slop-shop-main" aria-label="Deal feed">
           <div className="deal-strip" aria-label="Deal filters">
@@ -224,7 +363,7 @@ export function ShopPage({ stage, onBuy }: ShopPageProps) {
           </div>
 
           <div className="slop-shop-grid">
-            {shopProducts.map((product, index) => {
+            {deals.map((product, index) => {
               const gems = gemPrice(product, index, stage)
               const inflatedGems = gems * 100
               const image = feedPosts[(index * 7) % feedPosts.length]?.imageSrc
@@ -232,11 +371,12 @@ export function ShopPage({ stage, onBuy }: ShopPageProps) {
               const soldCount = 900 + index * 311 + timerTick * (index + 1)
 
               return (
-                <article className={`slop-shop-card tone-${product.tone}`} key={product.id}>
+                <article className={`slop-shop-card tone-${product.tone} ${product.featured ? 'is-featured-deal' : ''}`} key={product.id}>
                   <div className="deal-image">
                     {image && <img src={image} alt="" loading="lazy" decoding="async" />}
                     <span className="discount-flag">99% OFF</span>
                     <span className="live-timer">{formatTimer(remaining)}</span>
+                    <span className="shelf-tag">{product.shelf}</span>
                   </div>
 
                   <div className="deal-body">

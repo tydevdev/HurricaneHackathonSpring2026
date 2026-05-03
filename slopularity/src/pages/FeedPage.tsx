@@ -41,6 +41,8 @@ const botCommenters = [
 
 const replyProducts = ['GlowNest', 'AuraBank Select', 'SelfOS Beauty', 'MealHalo', 'FormCloud', 'CalmCan']
 const scrollConfetti = Array.from({ length: 36 }, (_, index) => index)
+const feedCelebrationConfetti = Array.from({ length: 120 }, (_, index) => index)
+const feedCelebrationLasers = Array.from({ length: 22 }, (_, index) => index)
 const scrollUnlockInterval = 10
 const initialFeedCycles = 2
 const maxFeedCycles = 5
@@ -103,6 +105,23 @@ type ConfettiStyle = CSSProperties & {
   '--confetti-delay': string
 }
 
+type FeedCelebrationConfettiStyle = CSSProperties & {
+  '--feed-confetti-hue': string
+  '--feed-confetti-start-x': string
+  '--feed-confetti-x': string
+  '--feed-confetti-y': string
+  '--feed-confetti-spin': string
+  '--feed-confetti-delay': string
+}
+
+type FeedCelebrationLaserStyle = CSSProperties & {
+  '--feed-laser-x': string
+  '--feed-laser-y': string
+  '--feed-laser-rotation': string
+  '--feed-laser-hue': string
+  '--feed-laser-delay': string
+}
+
 function getConfettiStyle(piece: number): ConfettiStyle {
   const seed = piece + 1
   const angle = ((seed * 53.13) % 360) * (Math.PI / 180)
@@ -115,6 +134,32 @@ function getConfettiStyle(piece: number): ConfettiStyle {
     '--confetti-y': `${Math.sin(angle) * radiusY}vh`,
     '--confetti-spin': `${220 + seed * 33}deg`,
     '--confetti-delay': `${(seed % 15) * 32}ms`,
+  }
+}
+
+function getFeedCelebrationConfettiStyle(piece: number): FeedCelebrationConfettiStyle {
+  const seed = piece + 1
+  const drift = ((seed * 37) % 120) - 60
+
+  return {
+    '--feed-confetti-hue': `${(seed * 29) % 360}`,
+    '--feed-confetti-start-x': `${(seed * 83) % 100}vw`,
+    '--feed-confetti-x': `${drift}vw`,
+    '--feed-confetti-y': `${42 + (seed % 8) * 9}vh`,
+    '--feed-confetti-spin': `${180 + seed * 41}deg`,
+    '--feed-confetti-delay': `${(seed % 24) * 18}ms`,
+  }
+}
+
+function getFeedCelebrationLaserStyle(laser: number): FeedCelebrationLaserStyle {
+  const seed = laser + 1
+
+  return {
+    '--feed-laser-x': `${(seed * 47) % 100}vw`,
+    '--feed-laser-y': `${8 + ((seed * 19) % 78)}vh`,
+    '--feed-laser-rotation': `${-38 + ((seed * 31) % 76)}deg`,
+    '--feed-laser-hue': `${(seed * 61) % 360}`,
+    '--feed-laser-delay': `${(seed % 11) * 48}ms`,
   }
 }
 
@@ -299,19 +344,25 @@ function pickEnhancedReenactment(file: File, postPool: FeedPost[]): FeedPost {
 type FeedPageProps = {
   stage: number
   onEngage: () => void
+  onOpenInbox?: () => void
   mobileNavigation?: ReactNode
   posts?: FeedPost[]
   sectionLabel?: string
   storageNamespace?: string
+  spotlightPostId?: string
+  spotlightToken?: number
 }
 
 export function FeedPage({
   stage,
   onEngage,
+  onOpenInbox,
   mobileNavigation,
   posts = feedPosts,
   sectionLabel = 'Feed',
   storageNamespace = 'feed',
+  spotlightPostId,
+  spotlightToken,
 }: FeedPageProps) {
   const canonicalPosts = posts.length > 0 ? posts : feedPosts
   const scrollStorageKey = `slopularity:${storageNamespace}-scroll-state`
@@ -330,6 +381,7 @@ export function FeedPage({
   const [commentFlags, setCommentFlags] = useState<Record<string, string>>({})
   const [localComments, setLocalComments] = useState<Record<string, LocalComment[]>>({})
   const [localPosts, setLocalPosts] = useState<SavedLocalPost[]>(() => readSavedLocalPosts(localPostStorageKey))
+  const [activeSpotlightPostId, setActiveSpotlightPostId] = useState<string | null>(null)
   const [cycleCount, setCycleCount] = useState(initialFeedCycles)
   const [isHelpyOpen, setIsHelpyOpen] = useState(false)
   const [helpyCaption, setHelpyCaption] = useState('Trying the future self filter before it tries me.')
@@ -337,6 +389,8 @@ export function FeedPage({
   const [helpyOptions, setHelpyOptions] = useState<string[]>(['face confidence'])
   const [helpySource, setHelpySource] = useState<HelpySource>('reenactment')
   const [uploadMessage, setUploadMessage] = useState('')
+  const [feedCelebrationKey, setFeedCelebrationKey] = useState(0)
+  const [isFeedCelebrationVisible, setIsFeedCelebrationVisible] = useState(false)
   const wasReloaded = isReloadNavigation()
   const [scrollMode, setScrollMode] = useState<ScrollMode>(() => initScrollMode(scrollStorageKey))
   const [scrollPrompt, setScrollPrompt] = useState<ScrollPrompt | null>(null)
@@ -347,7 +401,10 @@ export function FeedPage({
   const storyDragStartX = useRef<number | null>(null)
   const storyTapDirection = useRef<1 | -1 | null>(null)
   const storyPointerId = useRef<number | null>(null)
+  const feedShellRef = useRef<HTMLElement | null>(null)
   const loadMoreRef = useRef<HTMLDivElement | null>(null)
+  const feedCelebrationTimer = useRef<number | null>(null)
+  const onEngageRef = useRef(onEngage)
 
   const renderedLocalPosts = useMemo(() => (
     localPosts.map((post) => {
@@ -379,6 +436,7 @@ export function FeedPage({
   const isHelpyReady = helpyCaptionLength > 0
   const reenactmentPosts = canonicalPosts.slice(0, 20)
   const isDegrading = stage >= 4
+  const isFeedSurface = storageNamespace === 'feed'
   const isMultiScroll = scrollMode !== 'single'
   const isPhoneFeedViewport = usePhoneFeedViewport()
   const shouldRenderMultiScroll = isMultiScroll
@@ -412,6 +470,16 @@ export function FeedPage({
     }
   }, [scrollMode, scrollStorageKey, wasReloaded])
 
+  useEffect(() => () => {
+    if (feedCelebrationTimer.current !== null) {
+      window.clearTimeout(feedCelebrationTimer.current)
+    }
+  }, [])
+
+  useEffect(() => {
+    onEngageRef.current = onEngage
+  }, [onEngage])
+
   useEffect(() => {
     if (typeof window === 'undefined') {
       return
@@ -423,6 +491,25 @@ export function FeedPage({
       // Local-only posting should still work for the session if storage is full.
     }
   }, [localPostStorageKey, localPosts])
+
+  useEffect(() => {
+    if (!spotlightPostId || spotlightToken === undefined) {
+      return undefined
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      setActiveSpotlightPostId(spotlightPostId)
+      const target = document.querySelector<HTMLElement>(`[data-post-id="${spotlightPostId}"]`)
+      target?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    })
+    const clearId = window.setTimeout(() => setActiveSpotlightPostId(null), 2800)
+    onEngageRef.current()
+
+    return () => {
+      window.cancelAnimationFrame(frameId)
+      window.clearTimeout(clearId)
+    }
+  }, [onEngage, spotlightPostId, spotlightToken])
 
   useEffect(() => {
     const loadTarget = loadMoreRef.current
@@ -726,6 +813,28 @@ export function FeedPage({
     onEngage()
   }
 
+  function celebrateAndReturnToTop() {
+    if (feedCelebrationTimer.current !== null) {
+      window.clearTimeout(feedCelebrationTimer.current)
+    }
+
+    setFeedCelebrationKey((current) => current + 1)
+    setIsFeedCelebrationVisible(true)
+    feedCelebrationTimer.current = window.setTimeout(() => {
+      setIsFeedCelebrationVisible(false)
+      feedCelebrationTimer.current = null
+    }, 1900)
+
+    window.requestAnimationFrame(() => {
+      if (feedShellRef.current) {
+        feedShellRef.current.scrollIntoView({ block: 'start', behavior: 'smooth' })
+      } else {
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
+      }
+    })
+    onEngage()
+  }
+
   function nextStory(direction: 1 | -1) {
     setIsStoryDragging(false)
     setStoryDragX(0)
@@ -819,7 +928,8 @@ export function FeedPage({
 
     return (
       <article
-        className={`ig-post ${post.image}`}
+        className={`ig-post ${post.image} ${post.id === activeSpotlightPostId ? 'is-notification-target' : ''}`}
+        data-post-id={cycle === 0 ? post.id : undefined}
         data-feed-index={lane === 'single' || lane === 'left' ? feedIndex : undefined}
         data-feed-lane={lane}
         key={`${lane}-${post.id}-${cycle}`}
@@ -1053,6 +1163,7 @@ export function FeedPage({
 
   return (
     <section
+      ref={feedShellRef}
       className={`ig-feed-shell no-seamfeed ${shouldRenderMultiScroll ? 'has-multi-scroll' : ''} ${shouldRenderMultiScroll && scrollMode === 'triple' ? 'has-triple-scroll' : ''} ${shouldRenderMultiScroll && scrollMode === 'quadruple' ? 'has-quadruple-scroll' : ''} ${shouldRenderVerticalMultiScroll ? 'has-vertical-multi-scroll' : ''}`}
       aria-label={sectionLabel}
     >
@@ -1066,7 +1177,7 @@ export function FeedPage({
             <span aria-hidden="true">+</span>
             Make post
           </button>
-          <button type="button" aria-label="Messages">inbox</button>
+          <button type="button" aria-label="Open messages" onClick={onOpenInbox}>inbox</button>
         </div>
       </header>
 
@@ -1140,6 +1251,23 @@ export function FeedPage({
       <p className="loop-note" aria-live="polite">
         Looping demo feed: {renderedCycleCount} cycles loaded from {canonicalPosts.length} canonical posts · {visibleLoopedPosts.length} live cards per lane{hasLoadedAllDemoCycles ? ' · feed cache warm' : ''}.
       </p>
+
+      {isFeedSurface && (
+        <div className="feed-more-chaos">
+          <button type="button" onClick={celebrateAndReturnToTop}>Click me click me see more!!!!!!!!</button>
+        </div>
+      )}
+
+      {isFeedCelebrationVisible && (
+        <div className="feed-celebration-field" aria-hidden="true" key={feedCelebrationKey}>
+          <div className="feed-laser-field">
+            {feedCelebrationLasers.map((laser) => <span key={laser} style={getFeedCelebrationLaserStyle(laser)} />)}
+          </div>
+          <div className="feed-confetti-storm">
+            {feedCelebrationConfetti.map((piece) => <span key={piece} style={getFeedCelebrationConfettiStyle(piece)} />)}
+          </div>
+        </div>
+      )}
 
       {activeCommentPost && renderCommentSheet(activeCommentPost)}
 

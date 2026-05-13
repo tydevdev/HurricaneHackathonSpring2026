@@ -981,6 +981,11 @@
 - Updated `slopularity/DESIGN_BIBLE.md`, `slopularity/DECAY_FEATURES.md`, and `slopularity/IMPLEMENTATION_STATUS.md` to record the brand relationship CRM behavior.
 - Validation run: `npm run lint`; `npm run build`; headless Chrome/CDP against `vite preview` confirmed `/app/friends/` renders the brand relationship strip, care receipt, row fit chip, soft reply action, checkout action, no desktop overflow, soft reply adds a user bubble and raises affinity from 74% to 80%, checkout routes to `/app/shop/`, and phone-sized 390x844 has no horizontal overflow. Screenshots: `/tmp/slopularity-brand-dm-desktop.png`, `/tmp/slopularity-brand-dm-mobile.png`.
 
+## [2026-05-12 23:36] Dependency Restore Helper
+- Added `Restore Hackathon Dependencies.command` at the repository root so missing `node_modules` folders for `slopularity/` and archived Hurricane Hackathon Vite projects can be restored with `npm ci` from their lockfiles.
+- The helper skips projects whose dependencies are already installed and falls back to `npm install` only if a future project lacks `package-lock.json`.
+- Validation run: made the command executable and verified the script syntax with `zsh -n`.
+
 ## [2026-05-02 22:47] Highest-Stage Page Warp
 - Added `slopularity/src/pageWarp.ts` plus `slopularity/tests/pageWarp.test.ts` so max-decay page switching has independent 30% color-invert and 30% upside-down rolls.
 - Updated `slopularity/src/App.tsx` so the warp is applied only to the new page workspace at stage 5, while app chrome, Helpy, and repair layers remain usable.
